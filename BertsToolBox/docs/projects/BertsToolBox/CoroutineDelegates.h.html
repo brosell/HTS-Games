@@ -1,0 +1,197 @@
+<HTML>
+<HEAD>
+<TITLE>
+CoroutineDelegates.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> CoroutineDelegate_h
+<font color="blue">#define</font> CoroutineDelegate_h
+
+<font color="blue">#include</font> <font color="maroon">"Coroutine.h"</font>
+
+
+<font color="blue">class</font> CoroutineNonTypeDelegate <font color="black">:</font> <font color="blue">public</font> CoroutineDelegate  
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  CoroutineNonTypeDelegate<font color="black">(</font><font color="blue">void</font> <font color="black">(</font><font color="black">*</font>pfn<font color="black">)</font><font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">:</font>
+  m_pfn<font color="black">(</font>pfn<font color="black">)</font>
+  <font color="black">{</font>
+  <font color="black">}</font>
+  
+  virtual <font color="blue">void</font> invoke<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_pfn<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  
+  virtual ~CoroutineNonTypeDelegate<font color="black">(</font><font color="black">)</font><font color="black">{</font><font color="black">}</font>
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">void</font> <font color="black">(</font><font color="black">*</font>m_pfn<font color="black">)</font><font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>;
+
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename T<font color="black">&#62;</font>
+<font color="blue">class</font> CoroutineTypeDelegate <font color="black">:</font> <font color="blue">public</font> CoroutineDelegate  
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  CoroutineTypeDelegate<font color="black">(</font>T <font color="black">&</font>t, <font color="blue">void</font> <font color="black">(</font>T<font color="black">:</font><font color="black">:</font><font color="black">*</font>pfn<font color="black">)</font><font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">:</font>
+  m_t<font color="black">(</font>t<font color="black">)</font>,
+  m_pfn<font color="black">(</font>pfn<font color="black">)</font>
+  <font color="black">{</font>
+    
+  <font color="black">}</font>
+
+  virtual <font color="blue">void</font> invoke<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="black">(</font>m_t.<font color="black">*</font>m_pfn<font color="black">)</font><font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  virtual ~CoroutineTypeDelegate<font color="black">(</font><font color="black">)</font><font color="black">{</font><font color="black">}</font>
+  
+<font color="blue">private</font><font color="black">:</font>
+  T<font color="black">&</font> m_t;
+  <font color="blue">void</font> <font color="black">(</font>T<font color="black">:</font><font color="black">:</font><font color="black">*</font>m_pfn<font color="black">)</font><font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>;
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename T<font color="black">&#62;</font>
+<font color="blue">class</font> SpawnableCoroutineTypeDelegate<font color="black">:</font> <font color="blue">public</font> CoroutineDelegate, <font color="blue">public</font> CoroutineListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  SpawnableCoroutineTypeDelegate<font color="black">(</font>T <font color="black">&</font>t, <font color="blue">void</font> <font color="black">(</font>T<font color="black">:</font><font color="black">:</font><font color="black">*</font>pfn<font color="black">)</font><font color="black">(</font><font color="black">)</font>, string <font color="blue">name</font>, CoroutineListener<font color="black">*</font> listener <font color="black">=</font> <font color="maroon">0</font><font color="black">)</font><font color="black">:</font>
+  m_t<font color="black">(</font>t<font color="black">)</font>,
+  m_pfn<font color="black">(</font>pfn<font color="black">)</font>,
+  m_name<font color="black">(</font><font color="blue">name</font><font color="black">)</font>,
+  m_shuttingDown<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+  m_listener<font color="black">(</font>listener<font color="black">)</font>
+  <font color="black">{</font>
+    
+  <font color="black">}</font>
+
+  <font color="blue">int</font> spawn<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> handle <font color="black">=</font> Coroutine<font color="black">:</font><font color="black">:</font>create<font color="black">(</font><font color="blue">this</font>, m_name, <font color="blue">this</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>handle <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      m_spawnedHandles.insert<font color="black">(</font>handle<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">return</font> handle;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> destroy<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Debug, <font color="maroon">"SpawnableCoroutineTypeDelegate(%s) begin destroyed"</font>, m_name.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    m_shuttingDown <font color="black">=</font> <font color="blue">true</font>;
+    set<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>m_spawnedHandles.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>m_spawnedHandles.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      Coroutine<font color="black">:</font><font color="black">:</font>destroy<font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+    <font color="black">}</font>
+    m_spawnedHandles.clear<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  virtual <font color="blue">void</font> coroutineFinished<font color="black">(</font>CoroutineEvent<font color="black">*</font> ev<font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Debug, <font color="maroon">"SpawnableCoroutineTypeDelegate(%s) finished"</font>, m_name.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>m_shuttingDown<font color="black">)</font>
+    <font color="black">{</font>
+      m_spawnedHandles.erase<font color="black">(</font>ev<font color="black">-</font><font color="black">&#62;</font>id<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">if</font> <font color="black">(</font>m_listener <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      m_listener<font color="black">-</font><font color="black">&#62;</font>coroutineFinished<font color="black">(</font>ev<font color="black">)</font>;
+    <font color="black">}</font>
+
+  <font color="black">}</font>
+
+  virtual <font color="blue">void</font> invoke<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="black">(</font>m_t.<font color="black">*</font>m_pfn<font color="black">)</font><font color="black">(</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>m_name <font color="black">=</font><font color="black">=</font> <font color="maroon">"GameOver"</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">int</font> l<font color="black">=</font><font color="maroon">0</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  virtual ~SpawnableCoroutineTypeDelegate<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Debug, <font color="maroon">"SpawnableCoroutineTypeDelegate(%s) destructor"</font>, m_name.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>m_name <font color="black">=</font><font color="black">=</font> <font color="maroon">"GameOver"</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">int</font> l<font color="black">=</font><font color="maroon">0</font>;
+    <font color="black">}</font>
+
+    destroy<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> m_shuttingDown;
+  string m_name;
+  set<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font> m_spawnedHandles;
+  T<font color="black">&</font> m_t;
+  <font color="blue">void</font> <font color="black">(</font>T<font color="black">:</font><font color="black">:</font><font color="black">*</font>m_pfn<font color="black">)</font><font color="black">(</font><font color="black">)</font>;
+  CoroutineListener<font color="black">*</font> m_listener;
+<font color="black">}</font>;
+
+<font color="blue">class</font> SpawnableCoroutineNonTypeDelegate<font color="black">:</font> <font color="blue">public</font> CoroutineDelegate, <font color="blue">public</font> CoroutineListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  SpawnableCoroutineNonTypeDelegate<font color="black">(</font><font color="blue">void</font> <font color="black">(</font><font color="black">*</font>pfn<font color="black">)</font><font color="black">(</font><font color="black">)</font>, string <font color="blue">name</font><font color="black">)</font><font color="black">:</font>
+  m_pfn<font color="black">(</font>pfn<font color="black">)</font>,
+  m_name<font color="black">(</font><font color="blue">name</font><font color="black">)</font>,
+  m_shuttingDown<font color="black">(</font><font color="blue">false</font><font color="black">)</font>
+  <font color="black">{</font>
+    
+  <font color="black">}</font>
+
+  <font color="blue">void</font> spawn<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> handle <font color="black">=</font> Coroutine<font color="black">:</font><font color="black">:</font>create<font color="black">(</font><font color="blue">this</font>, m_name, <font color="blue">this</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>handle <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      m_spawnedHandles.insert<font color="black">(</font>handle<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  <font color="blue">void</font> destroy<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_shuttingDown <font color="black">=</font> <font color="blue">true</font>;
+    set<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>m_spawnedHandles.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>m_spawnedHandles.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      Coroutine<font color="black">:</font><font color="black">:</font>destroy<font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+    <font color="black">}</font>
+    m_spawnedHandles.clear<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  virtual <font color="blue">void</font> coroutineFinished<font color="black">(</font>CoroutineEvent<font color="black">*</font> ev<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>m_shuttingDown<font color="black">)</font>
+    <font color="black">{</font>
+      m_spawnedHandles.erase<font color="black">(</font>ev<font color="black">-</font><font color="black">&#62;</font>id<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  virtual <font color="blue">void</font> invoke<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="black">(</font><font color="black">*</font>m_pfn<font color="black">)</font><font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  virtual ~SpawnableCoroutineNonTypeDelegate<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    destroy<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> m_shuttingDown;
+  string m_name;
+  set<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font> m_spawnedHandles;
+  <font color="blue">void</font> <font color="black">(</font><font color="black">*</font>m_pfn<font color="black">)</font><font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

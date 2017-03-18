@@ -1,0 +1,87 @@
+<HTML>
+<HEAD>
+<TITLE>
+SafeSet.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> SafeSet_h
+<font color="blue">#define</font> SafeSet_h
+
+<font color="blue">#include</font> <font color="maroon">&#60;set&#62;</font>
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename Kind<font color="black">&#62;</font>
+<font color="blue">class</font> DynSetIterator<font color="black">:</font> <font color="blue">public</font> std<font color="black">:</font><font color="black">:</font>set<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator
+<font color="black">{</font>
+  DynSetIterator<font color="black">(</font>std<font color="black">:</font><font color="black">:</font>set<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">&</font> theSet, std<font color="black">:</font><font color="black">:</font>set<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">&</font> toBeDeleted, std<font color="black">:</font><font color="black">:</font>set<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">&</font> toBeAdded<font color="black">)</font><font color="black">:</font>
+  m_theSet<font color="black">(</font>theSet<font color="black">)</font>,
+  m_toBeDeleted<font color="black">(</font>toBeDeleted<font color="black">)</font>,
+  m_toBeAdded<font color="black">(</font>toBeAdded<font color="black">)</font>
+  <font color="black">{</font> <font color="black">}</font>
+    
+  DynSetIterator<font color="black">&</font> <font color="blue">operator</font><font color="black">+</font><font color="black">+</font> <font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    SafeSetIterator<font color="black">&</font> me <font color="black">=</font> <font color="black">*</font><font color="blue">this</font>;
+    <font color="blue">if</font> <font color="black">(</font>me <font color="black">=</font><font color="black">=</font> theSet.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> me;
+    <font color="black">}</font>
+    me<font color="black">+</font><font color="black">+</font>;
+    <font color="blue">while</font> <font color="black">(</font><font color="black">(</font>me <font color="black">!</font><font color="black">=</font> theSet.end<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> <font color="black">(</font>m_toBeDeleted.find<font color="black">(</font><font color="black">*</font>me<font color="black">)</font> <font color="black">!</font><font color="black">=</font> m_toBeDeleted.end<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      me<font color="black">+</font><font color="black">+</font>;
+    <font color="black">}</font>
+    <font color="blue">return</font> me;
+  <font color="black">}</font>
+
+<font color="blue">private</font><font color="black">:</font>
+  std<font color="black">:</font><font color="black">:</font>set<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">&</font> m_theSet;
+  std<font color="black">:</font><font color="black">:</font>set<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">&</font> m_toBeDeleted;
+  std<font color="black">:</font><font color="black">:</font>set<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">&</font> m_toBeAdded;
+<font color="black">}</font>;
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename Kind<font color="black">&#62;</font>
+<font color="blue">class</font> DynSet<font color="black">:</font> <font color="blue">public</font> std<font color="black">:</font><font color="black">:</font>set<font color="black">&#60;</font>Kind<font color="black">&#62;</font>
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> DynSetIterator<font color="black">&#60;</font>Kind<font color="black">&#62;</font> iterator;
+
+  iterator dynBegin<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    dynClean<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> DynSetIterator<font color="black">(</font><font color="black">*</font><font color="blue">this</font>, toBeRemoved, toBeAdded<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> dynClean<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    std<font color="black">:</font><font color="black">:</font>set<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>toBeRemoved.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>toBeRemoved.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      std<font color="black">:</font><font color="black">:</font>set<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>erase<font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>toBeAdded.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>toBeAdded.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      std<font color="black">:</font><font color="black">:</font>set<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>insert<font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  <font color="blue">void</font> erase<font color="black">(</font><font color="blue">const</font> Kind<font color="black">&</font> k<font color="black">)</font>
+  <font color="black">{</font>
+    toBeRemoved.insert<font color="black">(</font>k<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">void</font> insert<font color="black">(</font><font color="blue">const</font> Kind<font color="black">&</font> k<font color="black">)</font>
+  <font color="black">{</font>
+    toBeAdded.insert<font color="black">(</font>k<font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="blue">private</font><font color="black">:</font>
+  std<font color="black">:</font><font color="black">:</font>set<font color="black">&#60;</font>Kind<font color="black">&#62;</font> toBeRemoved;
+  std<font color="black">:</font><font color="black">:</font>set<font color="black">&#60;</font>Kind<font color="black">&#62;</font> toBeAdded;
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,131 @@
+<HTML>
+<HEAD>
+<TITLE>
+OpenGLDisplay.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> OpenGLDisplay_h
+<font color="blue">#define</font> OpenGLDisplay_h
+
+<font color="blue">#include</font> <font color="maroon">"Display.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Misc/GameMath.h"</font>
+<font color="blue">#include</font> <font color="maroon">"SDL.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"ObjectCache.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;windows.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;GL/gl.h&#62;</font>  <font color="green">// Header File For The OpenGL32 Library</font>
+<font color="blue">#include</font> <font color="maroon">&#60;GL/glu.h&#62;</font> <font color="green">// Header File For The GLu32 Library</font>
+
+
+<font color="blue">#include</font> <font color="maroon">&#60;list&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">enum</font> GLPrimitive
+<font color="black">{</font>
+  CLIP_RECT,
+  TEXTURE
+<font color="black">}</font>;
+
+<font color="blue">struct</font> ToBeDrawn
+<font color="black">{</font>
+  GLPrimitive type; <font color="green">// clip, texture</font>
+  <font color="blue">int</font> id;
+  <font color="blue">int</font> x1, y1;
+  <font color="blue">int</font> x2, y2;
+<font color="black">}</font>;
+
+
+<font color="blue">class</font> OpenGLDisplay<font color="black">:</font> <font color="blue">public</font> DisplayPeer
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  OpenGLDisplay<font color="black">(</font><font color="blue">int</font> width, <font color="blue">int</font> height, <font color="blue">int</font> bpp, Uint32 flags<font color="black">)</font>;
+  ~OpenGLDisplay<font color="black">(</font><font color="black">)</font>;
+  virtual <font color="blue">void</font> clear<font color="black">(</font><font color="black">)</font>;
+  virtual <font color="blue">void</font> flip<font color="black">(</font><font color="black">)</font>;
+  virtual <font color="blue">void</font> blit<font color="black">(</font>HTexture textureId, <font color="blue">int</font> destX, <font color="blue">int</font> destY<font color="black">)</font>;
+
+  virtual <font color="blue">void</font> setClipRect<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font>;
+
+  <font color="blue">static</font> <font color="blue">int</font> maxTextureSize;
+
+  <font color="green">// drawing primitives //////</font>
+  virtual <font color="blue">void</font> drawVLine<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> h, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font>;
+  virtual <font color="blue">void</font> drawHLine<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> w, <font color="blue">int</font> y, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font>;
+  virtual <font color="blue">void</font> fillRect<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> w, <font color="blue">int</font> h, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font>;
+  <font color="green">////////////////////////////</font>
+
+  virtual <font color="blue">void</font> drawLine<font color="black">(</font><font color="blue">int</font> x1, <font color="blue">int</font> y1, <font color="blue">int</font> x2, <font color="blue">int</font> y2, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font>;
+
+  FPoint translate<font color="black">(</font><font color="blue">float</font> x, <font color="blue">float</font> y<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">static</font> Display<font color="black">*</font> display<font color="black">=</font><font color="maroon">0</font>;
+    <font color="blue">if</font> <font color="black">(</font>display <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      display <font color="black">=</font> Display<font color="black">:</font><font color="black">:</font>getInstance<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+    FPoint ret;
+    ret.x <font color="black">=</font> <font color="black">(</font><font color="black">(</font><font color="black">(</font>x<font color="black">/</font>m_width<font color="black">)</font><font color="black">*</font><font color="maroon">2</font><font color="black">)</font> <font color="maroon">-1</font><font color="black">)</font>;
+    ret.y <font color="black">=</font> <font color="black">-</font><font color="black">(</font><font color="black">(</font><font color="black">(</font>y<font color="black">/</font>m_height<font color="black">)</font><font color="black">*</font><font color="maroon">1</font>.<font color="maroon">5</font><font color="black">)</font> <font color="black">-</font>.<font color="maroon">75</font><font color="black">)</font>;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+
+<font color="blue">protected</font><font color="black">:</font>
+  virtual HTexture loadTexture<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename<font color="black">)</font>;
+  virtual HTexture loadTexture<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> pixels, <font color="blue">int</font> width, <font color="blue">int</font> height<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> loadTexture<font color="black">(</font>pixels, width, height, width, height<font color="black">)</font>;
+  <font color="black">}</font>
+
+  virtual HTexture loadTexture<font color="black">(</font>SDL_Surface<font color="black">*</font> surface<font color="black">)</font>;
+
+  virtual <font color="blue">void</font> freeTexture<font color="black">(</font>HTexture textureId<font color="black">)</font>;
+
+  HTexture loadTexture<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> pixels, <font color="blue">int</font> width, <font color="blue">int</font> height, <font color="blue">int</font> realW, <font color="blue">int</font> realH<font color="black">)</font>;
+
+  <font color="blue">unsigned</font> <font color="blue">int</font> setTexture<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> pixels, <font color="blue">int</font> width, <font color="blue">int</font> height<font color="black">)</font>;
+
+  Uint8<font color="black">*</font> copyBits<font color="black">(</font><font color="blue">const</font> Uint8<font color="black">*</font> src, <font color="blue">int</font> sWidth, <font color="blue">int</font> sx, <font color="blue">int</font> sy, <font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font>;
+  Uint8<font color="black">*</font> copyBitsWithBorder<font color="black">(</font><font color="blue">const</font> Uint8<font color="black">*</font> src, <font color="blue">int</font> sWidth, <font color="blue">int</font> sx, <font color="blue">int</font> sy, <font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font>;
+
+  <font color="blue">void</font> scissor<font color="black">(</font><font color="blue">int</font> id, <font color="blue">int</font> x1, <font color="blue">int</font> y1, <font color="blue">int</font> x2, <font color="blue">int</font> y2<font color="black">)</font>;
+  <font color="blue">void</font> drawQuad<font color="black">(</font><font color="blue">int</font> id, <font color="blue">int</font> x1, <font color="blue">int</font> y1, <font color="blue">int</font> x2, <font color="blue">int</font> y2<font color="black">)</font>;
+<font color="blue">private</font><font color="black">:</font>
+
+  ToBeDrawn m_toBeDrawn<font color="black">[</font><font color="maroon">2048</font><font color="black">]</font>;
+
+  <font color="blue">int</font> m_numberToDraw;
+
+  SDL_Surface<font color="black">*</font> m_surface;
+  Display<font color="black">*</font> m_display;
+<font color="black">}</font>;
+
+<font color="blue">class</font> GLSubTexture
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">int</font> x;
+  <font color="blue">int</font> y;
+  <font color="blue">int</font> w;
+  <font color="blue">int</font> h;
+  <font color="blue">unsigned</font> <font color="blue">int</font> glId;
+<font color="black">}</font>;
+
+<font color="blue">class</font> GLTexture<font color="black">:</font> <font color="blue">public</font> list<font color="black">&#60;</font>GLSubTexture<font color="black">&#62;</font>
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  GLTexture<font color="black">(</font><font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font><font color="black">:</font> m_width<font color="black">(</font>w<font color="black">)</font>, m_height<font color="black">(</font>h<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+<font color="green">//  list&#60;GLSubTexture&#62; m_glTextureId;</font>
+  <font color="blue">int</font> m_width;
+  <font color="blue">int</font> m_height;
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

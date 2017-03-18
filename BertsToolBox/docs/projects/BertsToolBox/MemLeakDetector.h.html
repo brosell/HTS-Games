@@ -1,0 +1,90 @@
+<HTML>
+<HEAD>
+<TITLE>
+MemLeakDetector.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/** 
+* 
+*   CRTMemManager.h 
+* 
+*   This file contains a class that initilizes 
+*   the built in memory leak manager, and directs 
+*   all the output to a log-file. 
+* 
+*   !!! - Works only when running in DEBUG mode. 
+* 
+*   Author: Johan Öfverstedt 
+* 
+*/</font>
+<font color="blue">#ifndef</font> CRT_MEM_MANAGER_H
+<font color="blue">#define</font> CRT_MEM_MANAGER_H
+
+<font color="blue">#include</font> <font color="maroon">&#60;iostream&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;fstream&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;crtdbg.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;time.h&#62;</font>
+    
+<font color="blue">#if</font> _DEBUG  
+  <font color="blue">class</font> CRTMemManager   
+  <font color="black">{</font> 
+  <font color="blue">public</font><font color="black">:</font>       
+    CRTMemManager<font color="black">(</font><font color="black">)</font>     
+    <font color="black">{</font>       
+      _CrtSetReportHook<font color="black">(</font> CRTMemManager<font color="black">:</font><font color="black">:</font>report <font color="black">)</font>;
+      _CrtSetDbgFlag<font color="black">(</font><font color="black">(</font>_CRTDBG_LEAK_CHECK_DF<font color="black">)</font> <font color="black">|</font> _CrtSetDbgFlag<font color="black">(</font>_CRTDBG_REPORT_FLAG<font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>       
+    
+    <font color="blue">static</font> <font color="blue">int</font> report<font color="black">(</font><font color="blue">int</font> reportType, <font color="blue">char</font> <font color="black">*</font>message, <font color="blue">int</font> <font color="black">*</font>returnValue<font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">static</font> first <font color="black">=</font> <font color="blue">true</font>;
+      <font color="blue">if</font><font color="black">(</font>first<font color="black">)</font>
+      <font color="black">{</font>             
+        FILE <font color="black">*</font>file <font color="black">=</font> fopen<font color="black">(</font><font color="maroon">"./CRTDebug.log"</font>, <font color="maroon">"a+"</font><font color="black">)</font>;
+        <font color="blue">char</font> t<font color="black">[</font><font color="maroon">20</font><font color="black">]</font>;
+        <font color="blue">char</font> d<font color="black">[</font><font color="maroon">20</font><font color="black">]</font>;
+        <font color="blue">char</font> s<font color="black">[</font><font color="maroon">100</font><font color="black">]</font>;
+        _strtime<font color="black">(</font>t<font color="black">)</font>;
+        _strdate<font color="black">(</font>d<font color="black">)</font>;
+        sprintf<font color="black">(</font>s, <font color="maroon">"\n--- Debug session (%s - %s) ---\n\n"</font>, d, t<font color="black">)</font>;
+        fwrite<font color="black">(</font>s, strlen<font color="black">(</font>s<font color="black">)</font>, <font color="blue">sizeof</font><font color="black">(</font><font color="blue">char</font><font color="black">)</font>, file<font color="black">)</font>;
+        <font color="blue">if</font><font color="black">(</font>file<font color="black">)</font>
+        <font color="black">{</font>               
+          fclose<font color="black">(</font>file<font color="black">)</font>;
+          file <font color="black">=</font> <font color="maroon">0</font>;
+        <font color="black">}</font>   
+      <font color="black">}</font>                 
+      first <font color="black">=</font> <font color="blue">false</font>;
+      <font color="black">{</font>             
+        FILE <font color="black">*</font>file <font color="black">=</font> fopen<font color="black">(</font><font color="maroon">"./CRTDebug.log"</font>, <font color="maroon">"a+"</font><font color="black">)</font>;
+        <font color="blue">if</font><font color="black">(</font>file<font color="black">)</font>
+        <font color="black">{</font>   
+          fwrite<font color="black">(</font>message, <font color="maroon">1</font>, strlen<font color="black">(</font>message<font color="black">)</font>, file<font color="black">)</font>;
+          fclose<font color="black">(</font>file<font color="black">)</font>;
+          file <font color="black">=</font> <font color="maroon">0</font>; 
+        <font color="black">}</font>
+        <font color="blue">else</font>
+        <font color="black">{</font>
+          std<font color="black">:</font><font color="black">:</font>cout <font color="black">&#60;</font><font color="black">&#60;</font> message;
+        <font color="black">}</font>
+      <font color="black">}</font>
+      <font color="blue">return</font> <font color="maroon">0</font>;
+    <font color="black">}</font>
+    <font color="black">}</font>;
+<font color="blue">#else</font>
+  <font color="blue">class</font> CRTMemManager   
+  <font color="black">{</font> 
+  <font color="blue">public</font><font color="black">:</font>       
+    CRTMemManager<font color="black">(</font><font color="black">)</font>
+    <font color="black">{</font>
+    <font color="black">}</font>
+  <font color="black">}</font>;
+<font color="blue">#endif</font>
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

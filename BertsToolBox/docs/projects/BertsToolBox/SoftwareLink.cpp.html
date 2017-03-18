@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<TITLE>
+SoftwareLink.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"SoftwareLink.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+
+SoftwareLink<font color="black">:</font><font color="black">:</font>SoftwareLink<font color="black">(</font><font color="black">)</font><font color="black">:</font> Link<font color="black">(</font><font color="maroon">"SoftwareLink"</font><font color="black">)</font>, m_other<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>
+<font color="black">{</font> 
+
+<font color="black">}</font>
+
+<font color="blue">bool</font> SoftwareLink<font color="black">:</font><font color="black">:</font>connect<font color="black">(</font>SoftwareLink<font color="black">*</font> other<font color="black">)</font>
+<font color="black">{</font>
+  other<font color="black">-</font><font color="black">&#62;</font>m_other <font color="black">=</font> <font color="blue">this</font>;
+  <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>m_other <font color="black">=</font> other;
+  <font color="blue">return</font> <font color="black">(</font>m_other <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">void</font> SoftwareLink<font color="black">:</font><font color="black">:</font>doSend<font color="black">(</font>Message<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  lassert<font color="black">(</font>isValid<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  m_other<font color="black">-</font><font color="black">&#62;</font>m_incomingQueue.push_back<font color="black">(</font>msg<font color="black">)</font>;
+<font color="black">}</font>
+
+Message<font color="black">*</font> SoftwareLink<font color="black">:</font><font color="black">:</font>doReceive<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="green">// this is all handled in the Link by Link</font>
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+<font color="green">//void SoftwareLink::deliverMessages()</font>
+<font color="green">//{</font>
+<font color="green">//  if (m_other == 0)</font>
+<font color="green">//  {</font>
+<font color="green">//    return;</font>
+<font color="green">//  }</font>
+<font color="green">//  std::list&#60;Message*&#62;::iterator i;</font>
+<font color="green">//  //copy(m_outgoingQueue.begin(), m_outgoingQueue.end(), back_inserter(m_other-&#62;m_incomingQueue));</font>
+<font color="green">//  for (i = m_outgoingQueue.begin(); i!=m_outgoingQueue.end(); i++)</font>
+<font color="green">//  {</font>
+<font color="green">//    Message* msg = new Message(*(*i));</font>
+<font color="green">//    m_other-&#62;newIncoming(msg);</font>
+<font color="green">//    delete [] msg;</font>
+<font color="green">//  }</font>
+<font color="green">//  m_outgoingQueue.clear();</font>
+<font color="green">//  return;</font>
+<font color="green">//}</font>
+<font color="green">//void SoftwareLink::receiveMessages()</font>
+<font color="green">//{</font>
+<font color="green">//  return;</font>
+<font color="green">//  // when m_other delivers, we get them, so there is no need</font>
+<font color="green">//  // to do it here</font>
+<font color="green">//}</font>
+
+</PRE>
+</BODY>
+</HTML>

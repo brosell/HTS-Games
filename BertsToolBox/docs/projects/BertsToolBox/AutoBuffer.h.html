@@ -1,0 +1,404 @@
+<HTML>
+<HEAD>
+<TITLE>
+AutoBuffer.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/*
+AutoBuffer:
+  a linked list of arrays og typename Kind buffers.  Acts as a FIFO. When data is appended, and if it would 
+  overun the final buffer, a new bufer will be alloc'd and added to the list.
+  When data is read, An offset ptr will move to the next byte to be read.  If it moves
+  past the boundry of the first buffer, that buffer will be removed and added to the end.
+  This buffer will grow but never shrink (unless told to in a controlled manner or at some threshhold), 
+  it will only grow as big as the largest ever unread chuck of data.  If at some point there is 40k of
+  data, even when all is read, there will be 40k alloc'd.
+  */</font>
+
+
+<font color="blue">#ifndef</font> _AutoBuffer_h_
+<font color="blue">#define</font> _AutoBuffer_h_
+
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable<font color="black">:</font><font color="maroon">4786</font><font color="black">)</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;list&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+<font color="blue">#include</font> <font color="maroon">&#60;assert.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;iostream&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;algorithm&#62;</font>
+
+<font color="blue">#define</font> MIN<font color="black">(</font>x, y<font color="black">)</font> <font color="black">(</font><font color="black">(</font>x<font color="black">&#60;</font>y<font color="black">)</font>?x<font color="black">:</font>y<font color="black">)</font>
+<font color="blue">#define</font> MAX<font color="black">(</font>x, y<font color="black">)</font> <font color="black">(</font><font color="black">(</font>x<font color="black">&#62;</font>y<font color="black">)</font>?x<font color="black">:</font>y<font color="black">)</font>
+<font color="green">//#define assert(x) </font>
+<font color="blue">template</font> <font color="black">&#60;</font>typename Kind<font color="black">&#62;</font>
+<font color="blue">class</font> AutoBuffer
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> Kind kind;
+  <font color="green">/* Input:
+        blockSize - the size of the arrays of Kind's to use.  
+          large values mean less calls to "new" but more memory allocated (faster)
+          small values will use less memory but will spend more time calling "new" (smaller)
+        hardLimit - the maximum number of blocks allowed.  When this value is exceded, calls 
+          to write will sstart to fail (gracefully)
+  */</font>
+  AutoBuffer<font color="black">(</font>size_t blockSize<font color="black">=</font><font color="maroon">256</font>, size_t hardLimit<font color="black">=</font><font color="maroon">-1</font><font color="black">)</font>;
+  ~AutoBuffer<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">bool</font> hasDataAvailable<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">!</font><font color="black">(</font>m_readBlock <font color="black">=</font><font color="black">=</font> m_writeBlock <font color="black">&</font><font color="black">&</font> m_readOffset <font color="black">&#62;</font><font color="black">=</font> m_writeOffset<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">/*
+  write(Kind* aBuffer, size_t aCount)
+    Writes up to aCount Kind's to the buffer.
+  
+    Input:
+      aBuffer - a pointer to an array of Kind.
+      aCount - the maximum number of Kind's to write
+
+    Returns the number of Kind's written
+  */</font>
+  <font color="blue">int</font> write<font color="black">(</font><font color="blue">const</font> Kind<font color="black">*</font> aBuffer, size_t aCount<font color="black">)</font>;
+  
+  <font color="green">/*
+    read(Kind* aBuffer, size_t aCount)
+      Reads from buffer up to aCount to an array poited to by aBuffer.
+      Once data if read, it is gone and the memory will to be reused
+      when appropriate.
+
+    Input:
+      aBuffer - a pointer to an array of Kind.  If NULL, then buffer is
+                read, but thrown away.
+      aCount - the maximum number of Kind's to read
+
+    Returns the number of Kind's read
+  */</font>
+  <font color="blue">int</font> read<font color="black">(</font>Kind<font color="black">*</font> aBuffer, size_t aCount<font color="black">)</font>;
+  
+  <font color="blue">void</font> push_back<font color="black">(</font><font color="blue">const</font> Kind<font color="black">&</font> aKind<font color="black">)</font>
+  <font color="black">{</font>
+<font color="green">/*    if (m_writeOffset &#62;= m_blockSize)
+    {
+      if(!newWriteBlock())
+      {
+        return;
+      }
+    }
+    (*m_writeBlock)[m_writeOffset]=aKind;
+    m_count++;
+    m_writeOffset++;
+*/</font>
+    write<font color="black">(</font><font color="black">&</font>aKind, <font color="maroon">1</font><font color="black">)</font>;
+  <font color="black">}</font>
+  
+  <font color="blue">void</font> pop_front<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    read<font color="black">(</font><font color="black">(</font>Kind<font color="black">*</font><font color="black">)</font><font color="maroon">0</font>, <font color="maroon">1</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  Kind<font color="black">&</font> front<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    Kind<font color="black">*</font> pK <font color="black">=</font> <font color="black">(</font><font color="black">*</font>m_readBlock<font color="black">)</font>;
+    <font color="blue">return</font> pK<font color="black">[</font>m_readOffset<font color="black">]</font>;
+  <font color="black">}</font>
+
+  Kind<font color="black">&</font> back<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    Kind<font color="black">*</font> pK <font color="black">=</font> <font color="black">(</font><font color="black">*</font>m_writeBlock<font color="black">)</font>;
+    <font color="blue">return</font> pK<font color="black">[</font>m_writeOffset<font color="maroon">-1</font><font color="black">]</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> setShrinkTo<font color="black">(</font>size_t sz<font color="black">)</font> <font color="black">{</font>m_shrinkTo <font color="black">=</font> sz; <font color="black">}</font>  
+  <font color="blue">void</font> shrink<font color="black">(</font><font color="black">)</font>;
+  
+  <font color="blue">void</font> report<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> title<font color="black">)</font>;
+  <font color="blue">int</font> size<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_count; <font color="black">}</font> <font color="green">/* returns the the number of Kind's currently stored */</font>
+  <font color="blue">int</font> capacity<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_list.size<font color="black">(</font><font color="black">)</font><font color="black">*</font>m_blockSize;<font color="black">}</font><font color="green">/* returns the current capacity */</font>
+
+  size_t getAverage<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>m_averageCounter <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> <font color="blue">return</font> <font color="maroon">0</font>;
+    <font color="blue">return</font> <font color="black">(</font>m_averageSize<font color="black">/</font>m_averageCounter<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> setAutoShrinkTo<font color="black">(</font><font color="blue">bool</font> s<font color="black">)</font> <font color="black">{</font> m_autoShrinkTo<font color="black">=</font>s;<font color="black">}</font>
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> doStats<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_averageSize<font color="black">+</font><font color="black">=</font>m_list.size<font color="black">(</font><font color="black">)</font>;
+    m_averageCounter<font color="black">+</font><font color="black">+</font>;
+    m_recordSize<font color="black">=</font>MAX<font color="black">(</font>m_recordSize, size<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    m_recordCapacity<font color="black">=</font>MAX<font color="black">(</font>m_recordCapacity, capacity<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    m_recordListSize<font color="black">=</font>MAX<font color="black">(</font>m_recordListSize, m_list.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font>m_autoShrinkTo<font color="black">)</font>
+    <font color="black">{</font>
+      setShrinkTo<font color="black">(</font>getAverage<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+  <font color="black">}</font>
+
+  <font color="blue">void</font> init<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_list.push_back<font color="black">(</font>makeBlock<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    m_writeBlock<font color="black">=</font>m_readBlock<font color="black">=</font>m_list.begin<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> moveFirstToLast<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    assert<font color="black">(</font>m_readBlock <font color="black">!</font><font color="black">=</font> m_writeBlock<font color="black">)</font>; <font color="green">// hmmmm.  we should never have been able to read past this block</font>
+    <font color="blue">if</font> <font color="black">(</font>m_shrinkTo <font color="black">&#62;</font><font color="black">=</font> <font color="maroon">0</font> <font color="black">&</font><font color="black">&</font> m_list.size<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> m_shrinkTo<font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">delete</font> <font color="black">[</font><font color="black">]</font> <font color="black">*</font>m_readBlock;
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+      m_list.push_back<font color="black">(</font> <font color="black">*</font>m_readBlock <font color="black">)</font>;      
+    <font color="black">}</font>
+    m_list.pop_front<font color="black">(</font><font color="black">)</font>;
+    m_readBlock <font color="black">=</font> m_list.begin<font color="black">(</font><font color="black">)</font>;
+    m_readOffset <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  <font color="blue">bool</font> newWriteBlock<font color="black">(</font><font color="black">)</font>;
+  
+  Kind<font color="black">*</font> makeBlock<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font><font color="blue">new</font> Kind<font color="black">[</font>m_blockSize<font color="black">]</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">unsigned</font> <font color="blue">long</font> m_averageSize;
+  <font color="blue">unsigned</font> <font color="blue">long</font> m_averageCounter;
+  size_t m_recordCapacity;
+  size_t m_recordSize;
+  size_t m_recordListSize;
+
+  size_t m_shrinkTo;
+  <font color="blue">bool</font> m_autoShrinkTo;
+  <font color="blue">const</font> size_t m_blockSize;
+  <font color="blue">const</font> size_t m_hardLimit;
+  list<font color="black">&#60;</font>Kind<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator m_readBlock;
+  list<font color="black">&#60;</font>Kind<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator m_writeBlock;
+  size_t m_readOffset;
+  size_t m_writeOffset;
+  size_t m_count;
+  list<font color="black">&#60;</font>Kind<font color="black">*</font><font color="black">&#62;</font> m_list;
+<font color="black">}</font>;
+
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename Kind<font color="black">&#62;</font>
+AutoBuffer<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>AutoBuffer<font color="black">(</font>size_t blockSize, size_t hardLimit<font color="black">)</font><font color="black">:</font> 
+m_blockSize<font color="black">(</font>blockSize<font color="black">)</font>, m_hardLimit<font color="black">(</font>hardLimit<font color="black">)</font>, m_shrinkTo<font color="black">(</font><font color="maroon">-1</font><font color="black">)</font>,
+m_readOffset<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, m_writeOffset<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, m_readBlock<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, m_writeBlock<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_count<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, m_averageSize<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, m_averageCounter<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, m_autoShrinkTo<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+m_recordCapacity<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, m_recordSize<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, m_recordListSize<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>
+<font color="black">{</font>
+  init<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename Kind<font color="black">&#62;</font>
+AutoBuffer<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>~AutoBuffer<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  list<font color="black">&#60;</font>Kind<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator k;
+  <font color="blue">for</font> <font color="black">(</font>k<font color="black">=</font>m_list.begin<font color="black">(</font><font color="black">)</font>; k<font color="black">!</font><font color="black">=</font>m_list.end<font color="black">(</font><font color="black">)</font>; k<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">delete</font> <font color="black">[</font><font color="black">]</font> <font color="black">(</font><font color="black">*</font>k<font color="black">)</font>;
+  <font color="black">}</font>
+  m_list.clear<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font>
+<font color="blue">char</font><font color="black">*</font> copy<font color="black">(</font><font color="blue">char</font><font color="black">*</font> begin, <font color="blue">char</font><font color="black">*</font> end, <font color="blue">char</font><font color="black">*</font> dest<font color="black">)</font>
+<font color="black">{</font>
+  memcpy<font color="black">(</font>dest, begin, <font color="black">(</font>end <font color="black">-</font>begin<font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> <font color="black">(</font>dest<font color="black">+</font><font color="black">(</font>end <font color="black">-</font>begin<font color="black">)</font><font color="black">)</font>; 
+<font color="black">}</font>
+
+
+<font color="green">/* returns number written which may be smaller but never bigger 
+than aCount (unless hardLimit is -1, then alway return aCount
+
+  two scenarios:
+  1) aCount is same size or smaller than ((m_blockSize) - m_writeOffset) - copy buffer and move the m_writeOffset+=aCount
+  2) aCount is larger than ((m_blockSize) - m_writeOffset) - copy what will fit, create new block recurse
+  */</font>
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename Kind<font color="black">&#62;</font>
+<font color="blue">int</font> AutoBuffer<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>write<font color="black">(</font><font color="blue">const</font> Kind<font color="black">*</font> aBuffer, size_t aCount<font color="black">)</font>
+<font color="black">{</font>
+  assert<font color="black">(</font>aCount <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>;
+  assert<font color="black">(</font>aBuffer <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+  
+  size_t added <font color="black">=</font> <font color="maroon">0</font>;
+
+  size_t toBeWritten<font color="black">=</font>aCount;
+  <font color="blue">const</font> Kind<font color="black">*</font> pBuffer<font color="black">=</font>aBuffer;
+
+  <font color="blue">while</font> <font color="black">(</font>toBeWritten <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    Kind<font color="black">*</font> pK<font color="black">=</font> <font color="black">*</font>m_writeBlock;
+    <font color="blue">if</font> <font color="black">(</font>m_writeOffset<font color="black">+</font>toBeWritten <font color="black">&#62;</font> m_blockSize<font color="black">)</font>
+    <font color="black">{</font>
+      size_t maxNum<font color="black">=</font><font color="black">(</font><font color="black">(</font>m_blockSize<font color="black">)</font> <font color="black">-</font>m_writeOffset<font color="black">)</font>;
+      copy<font color="black">(</font>pBuffer, pBuffer<font color="black">+</font>maxNum, <font color="black">&</font><font color="black">(</font>pK<font color="black">[</font>m_writeOffset<font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+      m_writeOffset<font color="black">+</font><font color="black">=</font>maxNum;
+      pBuffer<font color="black">+</font><font color="black">=</font>maxNum;
+      toBeWritten<font color="black">-</font><font color="black">=</font>maxNum;
+      <font color="blue">if</font><font color="black">(</font><font color="black">!</font>newWriteBlock<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        <font color="blue">break</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+      <font color="green">// fits;</font>
+      copy<font color="black">(</font>pBuffer, pBuffer<font color="black">+</font>toBeWritten, <font color="black">&</font><font color="black">(</font>pK<font color="black">[</font>m_writeOffset<font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+      m_writeOffset<font color="black">+</font><font color="black">=</font>toBeWritten;
+      pBuffer<font color="black">+</font><font color="black">=</font>toBeWritten;
+      <font color="blue">break</font>; <font color="green">// quicker</font>
+    <font color="black">}</font> <font color="green">// if</font>
+  <font color="black">}</font> <font color="green">//while</font>
+<font color="green">//  doStats();</font>
+  m_count<font color="black">+</font><font color="black">=</font><font color="black">(</font>pBuffer <font color="black">-</font>aBuffer<font color="black">)</font>;
+  <font color="blue">return</font> <font color="black">(</font>pBuffer <font color="black">-</font>aBuffer<font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename Kind<font color="black">&#62;</font>
+<font color="blue">int</font> AutoBuffer<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>read<font color="black">(</font>Kind<font color="black">*</font> aBuffer, size_t aCount<font color="black">)</font>
+<font color="black">{</font>
+<font color="green">/* returns number actually read which may be smaller but never bigger than aCount
+
+  senarios:
+  1) aCount &#60; ((m_blockSize) - m_readOffset) - copy data to aBuffer
+  2) aCount == ((m_blockSize) - m_readOffset) - copy data and move block to end of list
+  3) aCount &#62; ((m_blockSize) - m_readOffset) - copy available data, move block to end, recurse the remainder
+  4) aCount &#62; amount of available data - copy available.
+  5) there is no data
+  */</font>
+  <font color="blue">if</font> <font color="black">(</font>m_readBlock <font color="black">=</font><font color="black">=</font> m_writeBlock <font color="black">&</font><font color="black">&</font> m_readOffset <font color="black">&#62;</font><font color="black">=</font> m_writeOffset<font color="black">)</font> <font color="green">// this takes care of (5)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  doStats<font color="black">(</font><font color="black">)</font>;
+  
+  size_t wanted<font color="black">=</font>aCount;
+  size_t bufferOffset<font color="black">=</font><font color="maroon">0</font>;
+  size_t numRead<font color="black">=</font><font color="maroon">0</font>;
+  
+  <font color="blue">bool</font> dataAvailable <font color="black">=</font> <font color="black">!</font><font color="black">(</font>m_readBlock <font color="black">=</font><font color="black">=</font> m_writeBlock <font color="black">&</font><font color="black">&</font> m_readOffset <font color="black">&#62;</font><font color="black">=</font> m_writeOffset<font color="black">)</font>;
+  <font color="blue">while</font> <font color="black">(</font>dataAvailable <font color="black">&</font><font color="black">&</font> wanted<font color="black">&#62;</font><font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>m_readOffset <font color="black">=</font><font color="black">=</font> m_blockSize<font color="black">)</font>
+    <font color="black">{</font>
+      moveFirstToLast<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+    
+    size_t dataInCurrentBlock;
+    <font color="blue">if</font> <font color="black">(</font>m_readBlock <font color="black">=</font><font color="black">=</font> m_writeBlock<font color="black">)</font>
+    <font color="black">{</font>
+      dataInCurrentBlock <font color="black">=</font> m_writeOffset <font color="black">-</font>m_readOffset;
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+      dataInCurrentBlock <font color="black">=</font> m_blockSize <font color="black">-</font>m_readOffset;
+    <font color="black">}</font>
+    size_t toRead <font color="black">=</font> MIN<font color="black">(</font>dataInCurrentBlock, wanted<font color="black">)</font>;
+    
+    Kind<font color="black">*</font> pK <font color="black">=</font> <font color="black">(</font><font color="black">*</font>m_readBlock<font color="black">)</font>;
+    
+    <font color="blue">if</font> <font color="black">(</font>aBuffer <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      copy<font color="black">(</font><font color="black">&</font><font color="black">(</font>pK<font color="black">[</font>m_readOffset<font color="black">]</font><font color="black">)</font>, <font color="black">&</font><font color="black">(</font>pK<font color="black">[</font>m_readOffset<font color="black">+</font>toRead<font color="black">]</font><font color="black">)</font>, <font color="black">&</font><font color="black">(</font>aBuffer<font color="black">[</font>bufferOffset<font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+    
+    wanted<font color="black">-</font><font color="black">=</font>toRead;
+    <font color="green">//m_count-=toRead;</font>
+    m_readOffset<font color="black">+</font><font color="black">=</font>toRead;
+    numRead<font color="black">+</font><font color="black">=</font>toRead;
+    bufferOffset<font color="black">+</font><font color="black">=</font>toRead;
+    
+    dataAvailable <font color="black">=</font> <font color="black">!</font><font color="black">(</font>m_readBlock <font color="black">=</font><font color="black">=</font> m_writeBlock <font color="black">&</font><font color="black">&</font> m_readOffset <font color="black">&#62;</font><font color="black">=</font> m_writeOffset<font color="black">)</font>;
+  <font color="black">}</font> <font color="green">// while</font>
+  m_count<font color="black">-</font><font color="black">=</font>numRead;
+  <font color="blue">return</font> numRead;
+<font color="black">}</font>
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename Kind<font color="black">&#62;</font>
+<font color="blue">bool</font> AutoBuffer<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>newWriteBlock<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_hardLimit <font color="black">!</font><font color="black">=</font> <font color="maroon">-1</font> <font color="black">&</font><font color="black">&</font> m_list.size<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font><font color="black">=</font> m_hardLimit<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  list<font color="black">&#60;</font>Kind<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator tmp<font color="black">=</font>m_writeBlock;
+  tmp<font color="black">+</font><font color="black">+</font>;
+  <font color="blue">if</font> <font color="black">(</font> <font color="black">(</font>tmp<font color="black">)</font> <font color="black">=</font><font color="black">=</font> m_list.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">//need a block</font>
+    Kind<font color="black">*</font> pK<font color="black">=</font>makeBlock<font color="black">(</font><font color="black">)</font>;
+    m_list.push_back<font color="black">(</font>pK<font color="black">)</font>;
+    m_writeBlock<font color="black">+</font><font color="black">+</font>;
+    m_writeOffset<font color="black">=</font><font color="maroon">0</font>;
+    
+    <font color="green">/* the following assert makes sure that the current iterator 
+    equals the just new'd block.  If it doesn't then m_list was
+    changed out from under us.  perhaps another thread?
+    */</font>
+    assert<font color="black">(</font> <font color="black">(</font><font color="black">*</font>m_writeBlock<font color="black">)</font> <font color="black">=</font><font color="black">=</font> pK<font color="black">)</font>; 
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    <font color="green">// we have an unused block</font>
+    m_writeBlock<font color="black">+</font><font color="black">+</font>;
+    m_writeOffset<font color="black">=</font><font color="maroon">0</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename Kind<font color="black">&#62;</font>
+<font color="blue">void</font> AutoBuffer<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>shrink<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">while</font><font color="black">(</font><font color="blue">true</font><font color="black">)</font>
+  <font color="black">{</font>
+    list<font color="black">&#60;</font>Kind<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator tmp<font color="black">=</font>m_writeBlock;
+    tmp<font color="black">+</font><font color="black">+</font>;
+    <font color="blue">if</font> <font color="black">(</font>tmp <font color="black">!</font><font color="black">=</font> m_list.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">delete</font> <font color="black">[</font><font color="black">]</font> <font color="black">(</font>m_list.back<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      m_list.pop_back<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+      <font color="blue">break</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  
+<font color="black">}</font>
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename Kind<font color="black">&#62;</font>
+<font color="blue">void</font> AutoBuffer<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>report<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> title<font color="black">)</font>
+<font color="black">{</font>
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> endl <font color="black">&#60;</font><font color="black">&#60;</font> title <font color="black">&#60;</font><font color="black">&#60;</font> endl <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"--------------------"</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"m_blockSize    : "</font> <font color="black">&#60;</font><font color="black">&#60;</font> m_blockSize <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"m_hardLimit    : "</font> <font color="black">&#60;</font><font color="black">&#60;</font> <font color="black">(</font><font color="blue">long</font><font color="black">)</font>m_hardLimit <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"m_list.size()/record/average : "</font> <font color="black">&#60;</font><font color="black">&#60;</font> m_list.size<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"/"</font> <font color="black">&#60;</font><font color="black">&#60;</font> m_recordListSize <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"/"</font> <font color="black">&#60;</font><font color="black">&#60;</font> getAverage<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"size/record    : "</font> <font color="black">&#60;</font><font color="black">&#60;</font> size<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"/"</font> <font color="black">&#60;</font><font color="black">&#60;</font> m_recordSize <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"ShrinkToValue   : "</font> <font color="black">&#60;</font><font color="black">&#60;</font> <font color="black">(</font><font color="blue">long</font><font color="black">)</font>m_shrinkTo <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"capacity/record: "</font> <font color="black">&#60;</font><font color="black">&#60;</font> capacity<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"/"</font> <font color="black">&#60;</font><font color="black">&#60;</font> m_recordCapacity <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+  cout  <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"--------------------"</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+<font color="black">}</font>
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

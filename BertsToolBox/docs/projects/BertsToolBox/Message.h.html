@@ -1,0 +1,206 @@
+<HTML>
+<HEAD>
+<TITLE>
+Message.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> Message_h
+<font color="blue">#define</font> Message_h
+
+<font color="blue">#include</font> <font color="maroon">"ipc.h"</font>
+<font color="blue">#include</font> <font color="maroon">"packFunctions.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;map&#62;</font>
+<font color="blue">using</font> std<font color="black">:</font><font color="black">:</font>string;
+<font color="blue">using</font> std<font color="black">:</font><font color="black">:</font>map;
+
+<font color="blue">class</font> Link;
+<font color="blue">class</font> Message;
+
+<font color="blue">typedef</font> Message<font color="black">*</font> UnpackFuncType<font color="black">(</font><font color="blue">const</font> UBYTE<font color="black">*</font><font color="black">)</font>;
+
+<font color="blue">const</font> UDBLBYTE MAX_MSG_TAG <font color="black">=</font> <font color="maroon">0xffff</font>;
+
+<font color="blue">enum</font>
+<font color="black">{</font>
+  ACK_ACK,
+  ACK_NACK,
+  ACK_TIMEOUT,
+  ACK_INTERNAL_ERROR,
+  ACK_UNEXPECTED,
+  ACK_USER
+<font color="black">}</font>;
+
+<font color="blue">class</font> Message
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Message<font color="black">(</font>UDBLBYTE type, UDBLBYTE dataSize<font color="black">)</font>;
+  Message<font color="black">(</font><font color="blue">const</font> Message<font color="black">&</font> other<font color="black">)</font>;
+
+
+  virtual ~Message<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> send<font color="black">(</font>Link<font color="black">*</font> link<font color="black">)</font>;
+
+  virtual UDBLBYTE getType<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">:</font><font color="black">:</font>getType<font color="black">(</font>m_data<font color="black">)</font>; <font color="black">}</font>
+  virtual UDBLBYTE getDataSize<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">:</font><font color="black">:</font>getDataSize<font color="black">(</font>m_data<font color="black">)</font>; <font color="black">}</font>
+
+  <font color="blue">unsigned</font> <font color="blue">int</font> getSeqNum<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">:</font><font color="black">:</font>getSeqNum<font color="black">(</font>m_data<font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">void</font> setSeqNum<font color="black">(</font><font color="blue">unsigned</font> <font color="blue">int</font> s<font color="black">)</font> <font color="black">{</font> <font color="black">:</font><font color="black">:</font>setSeqNum<font color="black">(</font>m_data, s<font color="black">)</font>; <font color="black">}</font>
+  
+  <font color="blue">bool</font> is<font color="black">(</font><font color="blue">int</font> type<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="black">:</font><font color="black">:</font>getType<font color="black">(</font>m_data<font color="black">)</font><font color="black">)</font>; <font color="black">}</font>
+
+  <font color="blue">bool</font> isAck<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">:</font><font color="black">:</font>isAck<font color="black">(</font>m_data<font color="black">)</font>; <font color="black">}</font>
+
+  virtual <font color="blue">bool</font> hasAck<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">true</font>; <font color="black">}</font>
+
+  UBYTE<font color="black">*</font> getPackage<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> m_data;<font color="black">}</font>
+  <font color="blue">operator</font> UBYTE<font color="black">*</font> <font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> getPackage<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+
+  string getHexString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+  virtual string getName<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> <font color="maroon">"Message"</font>; <font color="black">}</font>
+
+
+  <font color="blue">static</font> map<font color="black">&#60;</font><font color="blue">int</font>, <font color="blue">void</font><font color="black">*</font><font color="black">&#62;</font> s_unpackArray;
+  <font color="blue">static</font> Message<font color="black">*</font> unpack<font color="black">(</font><font color="blue">const</font> UBYTE<font color="black">*</font> package<font color="black">)</font>;
+
+  Link<font color="black">*</font> link;
+  Message<font color="black">*</font> original;
+  
+<font color="blue">protected</font><font color="black">:</font>
+  UBYTE<font color="black">*</font> m_data;
+
+  Message<font color="black">(</font><font color="blue">const</font> UBYTE<font color="black">*</font> package<font color="black">)</font><font color="black">:</font>original<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, link<font color="black">(</font><font color="maroon">0</font><font color="black">)</font> <font color="black">{</font> m_data <font color="black">=</font> <font color="black">:</font><font color="black">:</font>copyMsg<font color="black">(</font><font color="black">(</font>UBYTE<font color="black">*</font><font color="black">)</font>package<font color="black">)</font>; <font color="black">}</font>
+<font color="blue">private</font><font color="black">:</font>
+  <font color="green">//string m_name;</font>
+
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">static</font> <font color="blue">int</font> s_numMessagesCreated;
+  <font color="blue">static</font> <font color="blue">int</font> s_numMessagesCreatedFromCopy;
+  <font color="blue">static</font> <font color="blue">int</font> s_numMessagesDeleted;
+<font color="black">}</font>;
+
+<font color="blue">class</font> Ack<font color="black">:</font> <font color="blue">public</font> Message
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Ack<font color="black">(</font>UDBLBYTE type, UDBLBYTE dataSize<font color="black">)</font>;
+  Ack<font color="black">(</font><font color="blue">const</font> UBYTE<font color="black">*</font> package<font color="black">)</font><font color="black">:</font> Message<font color="black">(</font>package<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  
+  virtual ~Ack<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> from<font color="black">(</font>Message<font color="black">*</font> msg<font color="black">)</font> <font color="black">{</font> setSeqNum<font color="black">(</font>msg<font color="black">-</font><font color="black">&#62;</font>getSeqNum<font color="black">(</font><font color="black">)</font><font color="black">)</font>; <font color="black">}</font>
+
+  virtual <font color="blue">bool</font> hasAck<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+  virtual string getName<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> <font color="maroon">"Ack"</font>; <font color="black">}</font>
+
+  UDBLBYTE getStatus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">:</font><font color="black">:</font>getStatus<font color="black">(</font>m_data<font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">void</font> setStatus<font color="black">(</font>UDBLBYTE status<font color="black">)</font> <font color="black">{</font> <font color="black">:</font><font color="black">:</font>setStatus<font color="black">(</font>m_data, status<font color="black">)</font>; <font color="black">}</font>
+
+  virtual UDBLBYTE getDataSize<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">:</font><font color="black">:</font>getAckDataSize<font color="black">(</font>m_data<font color="black">)</font>; <font color="black">}</font>
+
+<font color="blue">protected</font><font color="black">:</font>
+<font color="blue">private</font><font color="black">:</font>
+<font color="black">}</font>;
+
+
+<font color="blue">inline</font> <font color="blue">bool</font> <font color="blue">operator</font> <font color="black">=</font><font color="black">=</font> <font color="black">(</font><font color="blue">const</font> Message<font color="black">&</font> m1, <font color="blue">const</font> Message<font color="black">&</font> m2<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> <font color="black">(</font>memcmp<font color="black">(</font>m1.getPackage<font color="black">(</font><font color="black">)</font>, m2.getPackage<font color="black">(</font><font color="black">)</font>, <font color="black">:</font><font color="black">:</font>getSize<font color="black">(</font>m1.getPackage<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+
+<font color="blue">#define</font> DEF_MSG<font color="black">(</font><font color="blue">name</font>, size<font color="black">)</font>  \
+<font color="blue">class</font> MSG_##<font color="blue">name</font> <font color="black">:</font> <font color="blue">public</font> Message \
+<font color="black">{</font>\
+<font color="blue">public</font><font color="black">:</font>\
+  MSG_##<font color="blue">name</font><font color="black">(</font><font color="black">)</font><font color="black">:</font> Message<font color="black">(</font><font color="blue">name</font>, size<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>\
+  MSG_##<font color="blue">name</font><font color="black">(</font><font color="blue">const</font> UBYTE<font color="black">*</font> package<font color="black">)</font><font color="black">:</font> Message<font color="black">(</font>package<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>\
+  virtual string getName<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">#name</font>; <font color="black">}</font>\
+  <font color="blue">static</font> Message<font color="black">*</font> unpackFn<font color="black">(</font><font color="blue">const</font> UBYTE<font color="black">*</font> package<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">new</font> MSG_##<font color="blue">name</font><font color="black">(</font>package<font color="black">)</font>; <font color="black">}</font>
+
+<font color="blue">#define</font> DEF_MSG_NO_ACK<font color="black">(</font><font color="blue">name</font>, size<font color="black">)</font> \
+DEF_MSG<font color="black">(</font><font color="blue">name</font>, size<font color="black">)</font>\
+virtual <font color="blue">bool</font> hasAck<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+
+<font color="blue">#define</font> DEF_ACK<font color="black">(</font><font color="blue">name</font>, size<font color="black">)</font>\
+  <font color="blue">const</font> UDBLBYTE AckOf##<font color="blue">name</font> <font color="black">=</font> <font color="blue">name</font> <font color="black">|</font> ACK_BIT; \
+<font color="blue">class</font> ACK_##<font color="blue">name</font> <font color="black">:</font> <font color="blue">public</font> Ack \
+<font color="black">{</font>\
+<font color="blue">public</font><font color="black">:</font>\
+  ACK_##<font color="blue">name</font><font color="black">(</font><font color="black">)</font><font color="black">:</font> Ack<font color="black">(</font>AckOf##<font color="blue">name</font>, size<font color="black">)</font> <font color="black">{</font> <font color="black">}</font> \
+  ACK_##<font color="blue">name</font><font color="black">(</font><font color="blue">const</font> UBYTE<font color="black">*</font> package<font color="black">)</font><font color="black">:</font> Ack<font color="black">(</font>package<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>\
+  virtual string getName<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">#name</font>; <font color="black">}</font>\
+  <font color="blue">static</font> Message<font color="black">*</font> unpackFn<font color="black">(</font><font color="blue">const</font> UBYTE<font color="black">*</font> package<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">new</font> MSG_##<font color="blue">name</font><font color="black">(</font>package<font color="black">)</font>; <font color="black">}</font>
+
+
+<font color="blue">#define</font> NAMED_BYTE<font color="black">(</font><font color="blue">name</font>, offset<font color="black">)</font>\
+<font color="blue">public</font><font color="black">:</font>\
+UBYTE get##<font color="blue">name</font><font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_data<font color="black">[</font>DATA_OFFSET<font color="black">+</font>offset<font color="black">]</font>; <font color="black">}</font> \
+<font color="blue">void</font> set##<font color="blue">name</font><font color="black">(</font>UBYTE x<font color="black">)</font> <font color="black">{</font> m_data<font color="black">[</font>DATA_OFFSET<font color="black">+</font>offset<font color="black">]</font> <font color="black">=</font> x; <font color="black">}</font>
+
+
+<font color="blue">#define</font> NAMED_DBLBYTE<font color="black">(</font><font color="blue">name</font>, offset<font color="black">)</font>\
+<font color="blue">public</font><font color="black">:</font>\
+UDBLBYTE get##<font color="blue">name</font><font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> unpackDblByte<font color="black">(</font><font color="black">&</font><font color="black">(</font>m_data<font color="black">[</font>DATA_OFFSET<font color="black">+</font>offset<font color="black">]</font><font color="black">)</font><font color="black">)</font>; <font color="black">}</font> \
+<font color="blue">void</font> set##<font color="blue">name</font><font color="black">(</font>UDBLBYTE x<font color="black">)</font> <font color="black">{</font> packDblByte<font color="black">(</font>x, <font color="black">&</font><font color="black">(</font>m_data<font color="black">[</font>DATA_OFFSET<font color="black">+</font>offset<font color="black">]</font><font color="black">)</font><font color="black">)</font>; <font color="black">}</font>
+
+
+<font color="blue">#define</font> NAMED_QUADBYTE<font color="black">(</font><font color="blue">name</font>, offset<font color="black">)</font>\
+<font color="blue">public</font><font color="black">:</font>\
+UQUADBYTE get##<font color="blue">name</font><font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> unpackQuadByte<font color="black">(</font><font color="black">&</font><font color="black">(</font>m_data<font color="black">[</font>DATA_OFFSET<font color="black">+</font>offset<font color="black">]</font><font color="black">)</font><font color="black">)</font>; <font color="black">}</font> \
+<font color="blue">void</font> set##<font color="blue">name</font><font color="black">(</font>UQUADBYTE x<font color="black">)</font> <font color="black">{</font> packQuadByte<font color="black">(</font>x, <font color="black">&</font><font color="black">(</font>m_data<font color="black">[</font>DATA_OFFSET<font color="black">+</font>offset<font color="black">]</font><font color="black">)</font><font color="black">)</font>; <font color="black">}</font>
+
+
+<font color="blue">#define</font> NAMED_BYTEARRAY<font color="black">(</font><font color="blue">name</font>, size, offset<font color="black">)</font>\
+<font color="blue">public</font><font color="black">:</font>\
+<font color="blue">void</font> get##<font color="blue">name</font><font color="black">(</font>UBYTE<font color="black">*</font> ret<font color="black">)</font> <font color="black">{</font> memcpy<font color="black">(</font>ret, <font color="black">&</font><font color="black">(</font>m_data<font color="black">[</font>DATA_OFFSET<font color="black">+</font>offset<font color="black">]</font><font color="black">)</font>, size<font color="black">)</font>; <font color="black">}</font>\
+<font color="blue">void</font> set##<font color="blue">name</font><font color="black">(</font><font color="blue">const</font> UBYTE<font color="black">*</font> data<font color="black">)</font> <font color="black">{</font> memcpy<font color="black">(</font><font color="black">&</font><font color="black">(</font>m_data<font color="black">[</font>DATA_OFFSET<font color="black">+</font>offset<font color="black">]</font><font color="black">)</font>, data, size<font color="black">)</font>; <font color="black">}</font>\
+<font color="blue">const</font> UBYTE<font color="black">*</font> getPtrTo##<font color="blue">name</font><font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">&</font><font color="black">(</font>m_data<font color="black">[</font>DATA_OFFSET<font color="black">+</font>offset<font color="black">]</font><font color="black">)</font>; <font color="black">}</font>
+
+<font color="blue">#define</font> NAMED_STRING<font color="black">(</font><font color="blue">name</font>, size, offset<font color="black">)</font>\
+<font color="blue">public</font><font color="black">:</font>\
+<font color="blue">void</font> get##<font color="blue">name</font><font color="black">(</font><font color="blue">char</font><font color="black">*</font> ret<font color="black">)</font> <font color="black">{</font> strncpy<font color="black">(</font><font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font>ret, <font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font><font color="black">)</font><font color="black">&</font><font color="black">(</font>m_data<font color="black">[</font>DATA_OFFSET<font color="black">+</font>offset<font color="black">]</font><font color="black">)</font>, size<font color="black">)</font>;  <font color="black">}</font>\
+<font color="blue">void</font> set##<font color="blue">name</font><font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> data<font color="black">)</font> <font color="black">{</font> strncpy<font color="black">(</font><font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font><font color="black">&</font><font color="black">(</font>m_data<font color="black">[</font>DATA_OFFSET<font color="black">+</font>offset<font color="black">]</font><font color="black">)</font>, <font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font><font color="black">)</font>data, size<font color="black">)</font>; m_data<font color="black">[</font>DATA_OFFSET<font color="black">+</font>offset<font color="black">+</font><font color="black">(</font>size<font color="maroon">-1</font><font color="black">)</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">'\0'</font>; <font color="black">}</font>\
+<font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> getPtrTo##<font color="blue">name</font><font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font><font color="black">&</font><font color="black">(</font>m_data<font color="black">[</font>DATA_OFFSET<font color="black">+</font>offset<font color="black">]</font><font color="black">)</font>; <font color="black">}</font>
+
+
+<font color="blue">#define</font> END_MSG <font color="black">}</font>;
+
+<font color="blue">#define</font> END_ACK <font color="black">}</font>;
+
+<font color="blue">#define</font> SET_UNPACK<font color="black">(</font><font color="blue">name</font><font color="black">)</font> \
+Message<font color="black">:</font><font color="black">:</font>s_unpackArray<font color="black">[</font><font color="blue">name</font><font color="black">]</font> <font color="black">=</font> MSG_##<font color="blue">name</font><font color="black">:</font><font color="black">:</font>unpackFn; \
+Message<font color="black">:</font><font color="black">:</font>s_unpackArray<font color="black">[</font><font color="blue">name</font> <font color="black">|</font> ACK_BIT<font color="black">]</font> <font color="black">=</font> ACK_##<font color="blue">name</font><font color="black">:</font><font color="black">:</font>unpackFn;
+
+<font color="blue">#define</font> SET_UNPACK_NO_ACK<font color="black">(</font><font color="blue">name</font><font color="black">)</font> \
+Message<font color="black">:</font><font color="black">:</font>s_unpackArray<font color="black">[</font><font color="blue">name</font><font color="black">]</font> <font color="black">=</font> MSG_##<font color="blue">name</font><font color="black">:</font><font color="black">:</font>unpackFn;
+
+<font color="green">//////////////////////////////</font>
+<font color="green">// Lib Messages</font>
+<font color="green">//////////////////////////////</font>
+<font color="blue">enum</font>
+<font color="black">{</font>
+  Timeout <font color="black">=</font> <font color="maroon">1</font>,
+  FIRST_FREE_MESSAGE_ID
+<font color="black">}</font>;
+
+DEF_MSG_NO_ACK<font color="black">(</font>Timeout, <font color="maroon">6</font><font color="black">)</font>
+NAMED_DBLBYTE<font color="black">(</font>Id, <font color="maroon">0</font><font color="black">)</font>
+NAMED_QUADBYTE<font color="black">(</font>Param, <font color="maroon">2</font><font color="black">)</font>
+END_MSG
+
+DEF_ACK<font color="black">(</font>Timeout, <font color="maroon">0</font><font color="black">)</font>
+END_ACK;
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

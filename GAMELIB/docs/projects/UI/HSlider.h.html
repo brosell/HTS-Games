@@ -1,0 +1,75 @@
+<HTML>
+<HEAD>
+<TITLE>
+HSlider.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> HSlider_h
+<font color="blue">#define</font> HSlider_h
+
+<font color="blue">#include</font> <font color="maroon">"UIThing.h"</font>
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+
+<font color="blue">class</font> HSlider<font color="black">:</font> <font color="blue">public</font> UIThing, <font color="blue">public</font> TimerListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  HSlider<font color="black">(</font><font color="black">)</font>;
+  ~HSlider<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> setUnitsPerTick<font color="black">(</font><font color="blue">int</font> unitsPerTick<font color="black">)</font> <font color="black">{</font> m_unitsPerTick <font color="black">=</font> unitsPerTick; <font color="black">}</font>
+  <font color="blue">void</font> setBounds<font color="black">(</font><font color="blue">int</font> low, <font color="blue">int</font> high<font color="black">)</font> <font color="black">{</font> lassert<font color="black">(</font>low <font color="black">&#60;</font><font color="black">=</font> high<font color="black">)</font>; m_lowBound <font color="black">=</font> low; m_highBound <font color="black">=</font> high; <font color="green">/*m_position = low;*/</font> <font color="black">}</font>
+  <font color="blue">void</font> setScrollPosition<font color="black">(</font><font color="blue">int</font> p<font color="black">)</font> <font color="black">{</font> lassert<font color="black">(</font>p <font color="black">&#62;</font><font color="black">=</font> m_lowBound<font color="black">)</font>; lassert<font color="black">(</font>p <font color="black">&#60;</font><font color="black">=</font> m_highBound<font color="black">)</font>; m_position <font color="black">=</font> p; <font color="black">}</font>
+  <font color="blue">int</font> getScrollPosition<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_position; <font color="black">}</font>
+  <font color="blue">bool</font> acceptsFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">true</font>; <font color="black">}</font>
+
+  <font color="blue">void</font> tickUp<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> tickDown<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> setSliderSkin<font color="black">(</font>string assetName<font color="black">)</font>;
+  <font color="blue">void</font> setHotSliderSkin<font color="black">(</font>string assetName<font color="black">)</font>;
+
+  <font color="blue">void</font> setUseMouse<font color="black">(</font><font color="blue">bool</font> m<font color="black">)</font> <font color="black">{</font> m_useMouse <font color="black">=</font> m; <font color="black">}</font>
+
+  <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>;
+
+  <font color="blue">void</font> addAdjustmentListener<font color="black">(</font>AdjustmentListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_adjustmentListeners.insert<font color="black">(</font>listener<font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">void</font> removeAdjustmentListener<font color="black">(</font>AdjustmentListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_adjustmentListeners.erase<font color="black">(</font>listener<font color="black">)</font>; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> onMouseClick<font color="black">(</font>MouseClickEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onMouseMove<font color="black">(</font>MouseMoveEvent<font color="black">*</font> event<font color="black">)</font>;
+
+  virtual <font color="blue">void</font> timeout<font color="black">(</font>TimerEvent<font color="black">*</font> event<font color="black">)</font>;
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> adjust<font color="black">(</font><font color="blue">int</font> x<font color="black">)</font>;
+  <font color="blue">void</font> updateListeners<font color="black">(</font><font color="black">)</font>;
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> m_useMouse;
+  <font color="blue">int</font> m_lowBound;
+  <font color="blue">int</font> m_highBound;
+  <font color="blue">int</font> m_position;
+  <font color="blue">int</font> m_unitsPerTick;
+
+  <font color="blue">int</font> m_width;
+  <font color="blue">int</font> m_buttonHeight;
+  <font color="blue">int</font> m_height;
+
+  <font color="blue">bool</font> m_pressed;
+
+  Skin<font color="black">*</font> m_slider;
+  <font color="green">// hotSlider is a slider that is being or has just moved</font>
+  Skin<font color="black">*</font> m_hotSlider;
+
+  HTimer m_adjustTimer;
+
+  AdjustmentEvent ae;
+  set<font color="black">&#60;</font>AdjustmentListener<font color="black">*</font><font color="black">&#62;</font> m_adjustmentListeners;
+
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

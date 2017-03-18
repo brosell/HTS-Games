@@ -1,0 +1,27 @@
+/* ****************************************************************************
+ *
+ *  DownFacingSwitch.icc
+ *  Created by Bert Rosell, on Tue Oct 28 2003, 16:08:43 Eastern Standard Time
+ *
+ *  Copyright (c) 2003, Bert Rosell
+ *
+ *
+ *
+ *  File Contents: Inline definitions for the DownFacingSwitch component.
+ *  Please see DownFacingSwitch.h for full documentation of this class.
+ *
+ *************************************************************************** */
+ 
+
+inline void DownFacingSwitch::setState(int state)
+{
+  if (state == 0)
+  {
+    setSkin(m_off);
+  }
+  else
+  {
+    setSkin(m_on);
+  }
+  Entity::setState(state);
+}

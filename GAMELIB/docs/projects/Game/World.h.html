@@ -1,0 +1,197 @@
+<HTML>
+<HEAD>
+<TITLE>
+World.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _World_h
+<font color="blue">#define</font> _World_h
+
+<font color="blue">#include</font> <font color="maroon">"Thing.h"</font>
+<font color="blue">#include</font> <font color="maroon">"ThingCollection.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Misc/GameMath.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"UI/Canvas.h"</font>
+
+<font color="blue">class</font> World
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  World<font color="black">(</font><font color="blue">int</font> w, <font color="blue">int</font> h, <font color="blue">int</font> physX, <font color="blue">int</font> physY, <font color="blue">int</font> vw, <font color="blue">int</font> vh<font color="black">)</font>;
+
+
+  <font color="green">/** 
+    Adds a static thing to the world.
+    */</font>
+  <font color="blue">void</font> addThing<font color="black">(</font>Thing<font color="black">&</font> thing<font color="black">)</font>;
+  <font color="green">/**
+    Adds a moving thing to the world
+    */</font>
+  <font color="blue">void</font> addMovingThing<font color="black">(</font>Thing<font color="black">&</font> thing<font color="black">)</font>;
+  <font color="green">/** 
+    removes a thing
+    */</font>
+  <font color="blue">void</font> removeThing<font color="black">(</font>Thing<font color="black">&</font> thing<font color="black">)</font>;
+  <font color="green">/**
+    organizes the data structures to allow searching
+    for things by location quicker
+    */</font>
+  <font color="blue">void</font> optimize<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">/** 
+  finds the Thing in the Moving collection lacated at a point. The point passed
+  in is reletive to the world canvas this worls live in.
+  @param x the screen location
+  @param y the screen location
+  @return a thing from that location or 0 if non found
+  */</font>
+  Thing<font color="black">*</font> movingThingAt<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font>;
+
+  Thing<font color="black">*</font> getThingAt<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> z<font color="black">)</font>; <font color="green">// check z - zorder</font>
+
+  <font color="green">/**
+    Draws the world
+    */</font>
+  <font color="blue">void</font> draw<font color="black">(</font>Display<font color="black">*</font> surface <font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+
+  <font color="green">/**
+    Sets the top left corner of the viewable world.
+    relative to world
+    */</font>
+  <font color="blue">void</font> setViewportPos<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font> 
+  <font color="black">{</font> 
+    m_viewportX <font color="black">=</font> x;
+    m_viewportY <font color="black">=</font> y;
+  <font color="black">}</font>
+
+  <font color="green">/**
+  relative to screen
+  */</font>
+  <font color="blue">void</font> setViewportPhysical<font color="black">(</font><font color="blue">int</font> physX, <font color="blue">int</font> physY, <font color="blue">int</font> physW, <font color="blue">int</font> physH<font color="black">)</font>
+  <font color="black">{</font>
+    m_viewportPhysicalX<font color="black">=</font>physX;
+    m_viewportPhysicalY<font color="black">=</font>physY;
+    m_viewportWidth <font color="black">=</font> physW;
+    m_viewportHeight <font color="black">=</font> physH;
+  <font color="black">}</font>
+
+  Rect getWorldDimensions<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> Rect<font color="black">(</font><font color="maroon">0</font>, <font color="maroon">0</font>, m_width, m_height<font color="black">)</font>;
+  <font color="black">}</font>
+
+  Rect getViewportDimensions<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> Rect<font color="black">(</font>m_viewportX, m_viewportY, m_viewportWidth, m_viewportHeight<font color="black">)</font>;
+  <font color="black">}</font>
+
+  Rect getPhysicleViewport<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> Rect<font color="black">(</font>m_viewportPhysicalX, m_viewportPhysicalY, m_viewportWidth, m_viewportHeight<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">/**
+    finds all the Things in the world bounded by a rectangle
+    @param r the Rect
+    @param array a pointer to a previously allocated array of Thing*
+    @param max the maximun number of things to return
+    @param ignoreZ0 true to ignore things at Z order zero (the background)
+    @return number of Things returned in array
+    */</font>
+  <font color="blue">int</font> getByRect<font color="black">(</font>Rect r, Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> max, <font color="blue">bool</font> ignoreZ0 <font color="black">=</font> <font color="blue">false</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> getByRect<font color="black">(</font>r, array, max, <font color="black">(</font><font color="blue">int</font><font color="black">)</font><font color="black">(</font>ignoreZ0?<font color="maroon">1</font><font color="black">:</font><font color="maroon">0</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">/**
+    finds all the Things in the world bounded by a rectangle
+    @param r the Rect
+    @param array a pointer to a previously allocated array of Thing*
+    @param max the maximun number of things to return
+    @param minZ the base Z order to start search
+    @param maxZ the maximum Z to search
+    @return number of THings in the rect. This number may be more than
+    max, in which case the array doesn't contain all the things
+    */</font>
+  <font color="blue">int</font> getByRect<font color="black">(</font>Rect r, Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> max, <font color="blue">int</font> minZ<font color="black">=</font><font color="maroon">0</font>, <font color="blue">int</font> maxZ<font color="black">=</font><font color="maroon">15</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> things.getByRect<font color="black">(</font><font color="black">&</font>r, array, max, minZ, maxZ<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">/**
+    determins whether something can fit in the world 
+    without hitting anything else. Seems to check only Z's 5-9?
+    @return true if there is nothing in the way
+    */</font>
+  <font color="blue">bool</font> canThingFit<font color="black">(</font>Rect<font color="black">*</font> r, <font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font>
+  <font color="black">{</font>
+    Rect hole<font color="black">(</font>x, y, r<font color="black">-</font><font color="black">&#62;</font>w<font color="maroon">-1</font>, r<font color="black">-</font><font color="black">&#62;</font>h<font color="maroon">-1</font><font color="black">)</font>;
+    <font color="blue">int</font> c <font color="black">=</font> getByRect<font color="black">(</font>hole, <font color="maroon">0</font>, <font color="maroon">0</font>, <font color="maroon">5</font>, <font color="maroon">9</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">(</font>c<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+  <font color="black">}</font>
+  
+  <font color="green">/**
+    adjusts a Rect so that it is completely in the world.
+    */</font>
+  <font color="blue">void</font> constrainToWorld<font color="black">(</font>Rect<font color="black">&</font> r<font color="black">)</font>
+  <font color="black">{</font>
+    Rect worldDim<font color="black">=</font>getWorldDimensions<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>r.x <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font> r.x<font color="black">=</font><font color="maroon">0</font>;
+    <font color="blue">if</font> <font color="black">(</font>r.x<font color="black">+</font>r.w <font color="black">&#62;</font> worldDim.w<font color="black">)</font> r.x <font color="black">=</font> worldDim.w <font color="black">-</font>r.w;
+    <font color="blue">if</font> <font color="black">(</font>r.y <font color="black">&#60;</font> <font color="maroon">-100</font><font color="black">)</font> 
+      r.y<font color="black">=</font><font color="maroon">-100</font>;
+    <font color="blue">if</font> <font color="black">(</font>r.y<font color="black">+</font>r.h <font color="black">&#62;</font> worldDim.h<font color="black">)</font> 
+      r.y <font color="black">=</font> worldDim.h <font color="black">-</font>r.h;
+  <font color="black">}</font>
+
+  <font color="blue">bool</font> computeMovement<font color="black">(</font>Rect<font color="black">*</font> thingRect, <font color="blue">int</font> startX, <font color="blue">int</font> startY, <font color="blue">int</font> destX, <font color="blue">int</font> destY, <font color="blue">int</font><font color="black">&</font> endX, <font color="blue">int</font><font color="black">&</font> endY<font color="black">)</font>;
+
+  <font color="green">/**
+    Translates a point reletive to the WorldCanvas to World coords
+    */</font>
+  Point translateScreenPoint<font color="black">(</font>Point p<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> Point<font color="black">(</font>p.x<font color="black">+</font>m_viewportX<font color="black">-</font>m_viewportPhysicalX, p.y<font color="black">+</font>m_viewportY<font color="black">-</font>m_viewportPhysicalY<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">/**
+    translates a World coord to a screen coord
+    */</font>
+  Point translateToScreen<font color="black">(</font>Point p<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> viewportRelativeX<font color="black">=</font>p.x <font color="black">-</font>m_viewportX;
+    <font color="blue">int</font> viewportRelativeY<font color="black">=</font>p.y <font color="black">-</font>m_viewportY;
+
+    <font color="blue">int</font> screenRelativeX<font color="black">=</font>viewportRelativeX <font color="black">+</font> m_viewportPhysicalX;
+    <font color="blue">int</font> screenRelativeY<font color="black">=</font>viewportRelativeY <font color="black">+</font> m_viewportPhysicalY;
+    <font color="blue">return</font> Point<font color="black">(</font>screenRelativeX, screenRelativeY<font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="green">// world</font>
+  <font color="blue">int</font> m_width;
+  <font color="blue">int</font> m_height;
+
+  
+  <font color="green">// top left corner relative to world</font>
+  <font color="blue">int</font> m_viewportX;
+  <font color="blue">int</font> m_viewportY;
+  
+  <font color="green">// relative to screen</font>
+  <font color="blue">int</font> m_viewportPhysicalX;
+  <font color="blue">int</font> m_viewportPhysicalY;
+  <font color="blue">int</font> m_viewportWidth;
+  <font color="blue">int</font> m_viewportHeight;
+
+
+  ThingCollection things;
+  ThingCollection movingThings;
+
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

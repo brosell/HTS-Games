@@ -1,0 +1,205 @@
+<HTML>
+<HEAD>
+<TITLE>
+NewEventModel.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> NewEventModel_h
+<font color="blue">#define</font> NewEventModel_h
+
+<font color="blue">#include</font> <font color="maroon">"Event.h"</font>
+
+<font color="blue">class</font> UIThing;
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;list&#62;</font>
+<font color="blue">using</font> std<font color="black">:</font><font color="black">:</font>string;
+<font color="blue">using</font> std<font color="black">:</font><font color="black">:</font>list;
+
+<font color="blue">class</font> UIEvent<font color="black">:</font> <font color="blue">public</font> Event
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  UIThing<font color="black">*</font> thing;
+  <font color="blue">int</font> commandId; <font color="green">// some components will set this.</font>
+  <font color="blue">unsigned</font> <font color="blue">short</font> metaKeyState; <font color="green">// alt, ctrl, shift</font>
+<font color="black">}</font>;
+
+<font color="blue">class</font> AppListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">void</font> appGainedFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> appLostFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> appQuitRequest<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">//////////////////////////</font>
+<font color="green">//// MOUSE ///////////////</font>
+<font color="green">//////////////////////////</font>
+<font color="blue">class</font> MouseEvent<font color="black">:</font> <font color="blue">public</font> UIEvent
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">int</font> x;
+  <font color="blue">int</font> y;
+<font color="black">}</font>;
+
+<font color="blue">class</font> MouseMoveEvent<font color="black">:</font> <font color="blue">public</font> MouseEvent
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">int</font> relx;
+  <font color="blue">int</font> rely;
+<font color="black">}</font>;
+
+<font color="blue">class</font> MouseButtonEvent<font color="black">:</font> <font color="blue">public</font> MouseEvent
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">int</font> button;
+<font color="black">}</font>;
+
+<font color="blue">class</font> MouseClickEvent<font color="black">:</font> <font color="blue">public</font> MouseButtonEvent
+<font color="black">{</font> <font color="green">/* empty */</font> <font color="black">}</font>;
+
+<font color="blue">class</font> MouseDblClickEvent<font color="black">:</font> <font color="blue">public</font> MouseButtonEvent
+<font color="black">{</font> <font color="green">/* empty */</font> <font color="black">}</font>;
+
+<font color="blue">class</font> MousePressEvent<font color="black">:</font> <font color="blue">public</font> MouseButtonEvent
+<font color="black">{</font> <font color="green">/* empty */</font> <font color="black">}</font>;
+
+<font color="blue">class</font> MouseReleaseEvent<font color="black">:</font> <font color="blue">public</font> MouseButtonEvent
+<font color="black">{</font> <font color="green">/* empty */</font> <font color="black">}</font>;
+
+<font color="blue">class</font> MouseEnterEvent<font color="black">:</font> <font color="blue">public</font> MouseEvent
+<font color="black">{</font> <font color="green">/* empty */</font> <font color="black">}</font>;
+
+<font color="blue">class</font> MouseExitEvent<font color="black">:</font> <font color="blue">public</font> MouseEvent
+<font color="black">{</font> <font color="green">/* empty */</font> <font color="black">}</font>;
+
+<font color="blue">class</font> MouseDragEvent<font color="black">:</font> <font color="blue">public</font> MouseEvent
+<font color="black">{</font> <font color="green">/* empty */</font> <font color="black">}</font>;
+
+<font color="blue">class</font> MouseListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">void</font> mouseMoved<font color="black">(</font>MouseMoveEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> mouseClicked<font color="black">(</font>MouseClickEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> mouseDblClicked<font color="black">(</font>MouseDblClickEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> mousePressed<font color="black">(</font>MousePressEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> mouseReleased<font color="black">(</font>MouseReleaseEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> mouseEntered<font color="black">(</font>MouseEnterEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> mouseExited<font color="black">(</font>MouseExitEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> mouseDragged<font color="black">(</font>MouseDragEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+<font color="black">}</font>;
+
+
+<font color="green">//////////////////////////</font>
+<font color="green">//// KEY /////////////////</font>
+<font color="green">//////////////////////////</font>
+
+<font color="blue">class</font> KeyEvent<font color="black">:</font> <font color="blue">public</font> UIEvent
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">unsigned</font> <font color="blue">short</font> keySym;
+<font color="black">}</font>;
+
+<font color="blue">class</font> KeyPressEvent<font color="black">:</font> <font color="blue">public</font> KeyEvent
+<font color="black">{</font> <font color="green">/* empty */</font> <font color="black">}</font>;
+
+<font color="blue">class</font> KeyReleaseEvent<font color="black">:</font> <font color="blue">public</font> KeyEvent
+<font color="black">{</font> <font color="green">/* empty */</font> <font color="black">}</font>;
+
+<font color="blue">class</font> KeyRepeatEvent<font color="black">:</font> <font color="blue">public</font> KeyEvent
+<font color="black">{</font> <font color="green">/* empty */</font> <font color="black">}</font>;
+
+
+<font color="blue">class</font> KeyListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">void</font> keyPressed<font color="black">(</font>KeyPressEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> keyReleased<font color="black">(</font>KeyReleaseEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> keyRepeated<font color="black">(</font>KeyRepeatEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+<font color="black">}</font>;
+
+
+<font color="green">//////////////////////////</font>
+<font color="green">//// COMPONENT ///////////</font>
+<font color="green">//////////////////////////</font>
+
+<font color="green">// TextBox, TextArea</font>
+<font color="blue">class</font> TextChangeEvent<font color="black">:</font> <font color="blue">public</font> UIEvent
+<font color="black">{</font>  <font color="green">/* empty */</font> <font color="black">}</font>;
+
+<font color="blue">class</font> TextListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">void</font> textChanged<font color="black">(</font>TextChangeEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">// List(s)</font>
+<font color="blue">class</font> ItemStateChangeEvent<font color="black">:</font> <font color="blue">public</font> UIEvent
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">int</font> item;
+ <font color="green">/* something more needs to happen */</font>
+<font color="black">}</font>;
+
+<font color="blue">class</font> ItemListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">void</font> itemStateChanged<font color="black">(</font>ItemStateChangeEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">// Buttons</font>
+<font color="blue">class</font> ActionEvent<font color="black">:</font> <font color="blue">public</font> UIEvent
+<font color="black">{</font> <font color="green">/* empty */</font> <font color="black">}</font>;
+
+<font color="blue">class</font> ActionListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">void</font> actionPerformed<font color="black">(</font>ActionEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">// Console</font>
+<font color="blue">class</font> ConsoleEvent<font color="black">:</font> <font color="blue">public</font> UIEvent
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  string command;
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font> args;
+<font color="black">}</font>;
+
+<font color="blue">class</font> ConsoleListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">void</font> consoleCommand<font color="black">(</font>ConsoleEvent<font color="black">*</font> event<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">// Scrollbar</font>
+<font color="blue">class</font> AdjustmentEvent<font color="black">:</font> <font color="blue">public</font> UIEvent
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">enum</font> AdjustmentType
+  <font color="black">{</font>
+    ADJUSTMENT_FIRST,
+    ADJUSTMENT_LAST,
+    ADJUSTMENT_VALUE_CHANGED,
+    BLOCK_DECREMENT,
+    BLOCK_INCREMENT,
+    TRACK,
+    UNIT_DECRIMENT,
+    UNIT_INCREMENT
+  <font color="black">}</font>;
+
+  AdjustmentType adjustmentType;
+  <font color="blue">int</font> value;
+<font color="black">}</font>;
+
+<font color="blue">class</font> AdjustmentListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">void</font> adjustmentValueChanged<font color="black">(</font>AdjustmentEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

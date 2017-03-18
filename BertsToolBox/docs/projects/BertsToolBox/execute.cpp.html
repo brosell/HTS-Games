@@ -1,0 +1,400 @@
+<HTML>
+<HEAD>
+<TITLE>
+execute.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+
+<font color="green">// Execute.cpp: implementation of the CExecute class.</font>
+<font color="green">//</font>
+<font color="green">//////////////////////////////////////////////////////////////////////</font>
+
+<font color="blue">#include</font> <font color="maroon">"stdafx.h"</font>
+<font color="green">//#include "gurueditor.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Execute.h"</font>
+
+<font color="blue">#ifdef</font> _DEBUG
+<font color="blue">#undef</font> THIS_FILE
+<font color="blue">static</font> <font color="blue">char</font> THIS_FILE<font color="black">[</font><font color="black">]</font><font color="black">=</font>__FILE__;
+<font color="blue">#define</font> <font color="blue">new</font> DEBUG_NEW
+<font color="blue">#endif</font>
+
+<font color="green">//////////////////////////////////////////////////////////////////////</font>
+<font color="green">// Construction/Destruction</font>
+<font color="green">//////////////////////////////////////////////////////////////////////</font>
+
+DWORD GetApplicationInfo<font color="black">(</font> LPCTSTR lpFullPath <font color="black">)</font>
+<font color="black">{</font>
+    SHFILEINFO sfi;
+
+    <font color="blue">return</font> SHGetFileInfo<font color="black">(</font> lpFullPath, <font color="maroon">0</font>, <font color="black">&</font>sfi, <font color="blue">sizeof</font><font color="black">(</font>sfi<font color="black">)</font>, SHGFI_EXETYPE <font color="black">)</font>;
+<font color="black">}</font>
+
+CString ExtractFilePath<font color="black">(</font> LPCTSTR lpFullPath <font color="black">)</font>
+<font color="black">{</font>
+    TCHAR drive<font color="black">[</font>_MAX_DRIVE<font color="black">]</font>;
+    TCHAR dir<font color="black">[</font>_MAX_DIR<font color="black">]</font>;
+    TCHAR fname<font color="black">[</font>_MAX_FNAME<font color="black">]</font>;
+    TCHAR ext<font color="black">[</font>_MAX_EXT<font color="black">]</font>;
+
+    _tsplitpath<font color="black">(</font> lpFullPath, drive, dir, fname, ext <font color="black">)</font>;
+    <font color="blue">if</font><font color="black">(</font> dir<font color="black">[</font>_tcslen<font color="black">(</font>dir<font color="black">)</font><font color="maroon">-1</font><font color="black">]</font><font color="black">=</font><font color="black">=</font>_T<font color="black">(</font><font color="maroon">'\\'</font><font color="black">)</font> <font color="black">)</font>
+        dir<font color="black">[</font>_tcslen<font color="black">(</font>dir<font color="black">)</font><font color="maroon">-1</font><font color="black">]</font> <font color="black">=</font> _T<font color="black">(</font><font color="maroon">'\0'</font><font color="black">)</font>;
+
+    CString lpPath <font color="black">=</font> drive;
+    lpPath <font color="black">+</font><font color="black">=</font> dir;
+    <font color="blue">return</font> lpPath;
+<font color="black">}</font>
+
+CExecute<font color="black">:</font><font color="black">:</font>CExecute<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    hChildStdinRd <font color="black">=</font> INVALID_HANDLE_VALUE;
+    hChildStdinWrDup <font color="black">=</font> INVALID_HANDLE_VALUE;
+    hChildStdoutWr <font color="black">=</font> INVALID_HANDLE_VALUE;
+    hChildStdoutRdDup <font color="black">=</font> INVALID_HANDLE_VALUE;
+    
+    hWaitEvent <font color="black">=</font> NULL;
+
+    dwProcessId <font color="black">=</font> DWORD<font color="black">(</font><font color="maroon">-1</font><font color="black">)</font>;
+    m_pReadThread <font color="black">=</font> NULL;
+    exitCode<font color="black">=</font>NULL;
+<font color="black">}</font>
+
+CExecute<font color="black">:</font><font color="black">:</font>~CExecute<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    CloseAllRedirecthandles<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+BOOL CExecute<font color="black">:</font><font color="black">:</font>Execute<font color="black">(</font> LPCTSTR szApplication, LPCTSTR szParameter,
+            LPCTSTR szWorkDir, <font color="blue">int</font> nShow, BOOL bCapture  <font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">if</font><font color="black">(</font> hWaitEvent <font color="black">)</font>
+        <font color="blue">return</font> FALSE;
+
+    DWORD dwAttr;
+    <font color="blue">if</font><font color="black">(</font> szApplication<font color="black">!</font><font color="black">=</font>NULL <font color="black">)</font>
+        dwAttr <font color="black">=</font> GetApplicationInfo<font color="black">(</font> szApplication <font color="black">)</font>;
+    <font color="blue">else</font>
+        dwAttr <font color="black">=</font> GetApplicationInfo<font color="black">(</font> szParameter <font color="black">)</font>;
+
+<font color="green">//  if( !ISVALIDAPP(dwAttr) )</font>
+<font color="green">//      return FALSE;</font>
+
+    <font color="blue">if</font><font color="black">(</font> bCapture <font color="black">&</font><font color="black">&</font> ISCONSOLE<font color="black">(</font>dwAttr<font color="black">)</font> <font color="black">)</font>
+    <font color="black">{</font>
+        <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>PrepareRedirect<font color="black">(</font>szApplication,szParameter,szWorkDir<font color="black">)</font> <font color="black">)</font>
+        <font color="black">{</font>
+            <font color="blue">if</font><font color="black">(</font> m_pReadThread <font color="black">)</font>
+            <font color="black">{</font>
+                TerminateThread<font color="black">(</font> m_pReadThread<font color="black">-</font><font color="black">&#62;</font>m_hThread,<font color="maroon">0</font> <font color="black">)</font>;
+                <font color="blue">delete</font> m_pReadThread;
+                m_pReadThread <font color="black">=</font> NULL;
+            <font color="black">}</font>
+            CloseAllRedirecthandles<font color="black">(</font><font color="black">)</font>;
+            TRACE0<font color="black">(</font> _T<font color="black">(</font><font color="maroon">"PrepareRedirect return FALSE\n"</font><font color="black">)</font> <font color="black">)</font>;
+            <font color="blue">return</font> FALSE;
+        <font color="black">}</font>
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+        <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>CreateChildProcess<font color="black">(</font>dwProcessId, szApplication, 
+                szParameter, szWorkDir, nShow <font color="black">)</font> <font color="black">)</font>
+            <font color="blue">return</font> FALSE;
+    <font color="black">}</font>
+    <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>CreateMoniterThread<font color="black">(</font><font color="black">)</font> <font color="black">)</font>
+    <font color="black">{</font>
+        CloseAllRedirecthandles<font color="black">(</font><font color="black">)</font>;
+        <font color="blue">return</font> FALSE;
+    <font color="black">}</font>
+    <font color="blue">return</font> TRUE;
+<font color="black">}</font>
+
+BOOL CExecute<font color="black">:</font><font color="black">:</font>PrepareRedirect<font color="black">(</font>LPCTSTR szApplication, LPCTSTR szParameter,
+            LPCTSTR szWorkDir<font color="black">)</font>
+<font color="black">{</font>
+    SECURITY_ATTRIBUTES saAttr;
+    BOOL fSuccess;
+    HANDLE hChildStdinWr, hChildStdoutRd;
+    HANDLE hSaveStdin, hSaveStdout;  
+
+    <font color="green">// Set the bInheritHandle flag so pipe handles are inherited.</font>
+    saAttr.nLength <font color="black">=</font> <font color="blue">sizeof</font><font color="black">(</font>SECURITY_ATTRIBUTES<font color="black">)</font>;
+    saAttr.bInheritHandle <font color="black">=</font> TRUE;
+    saAttr.lpSecurityDescriptor <font color="black">=</font> NULL;
+
+    <font color="green">// The steps for redirecting child process's STDOUT: </font>
+    <font color="green">//     1. Save current STDOUT, to be restored later. </font>
+    <font color="green">//     2. Create anonymous pipe to be STDOUT for child process. </font>
+    <font color="green">//     3. Set STDOUT of the parent process to be write handle to </font>
+    <font color="green">//    the pipe, so it is inherited by the child process. </font>
+    <font color="green">//     4. Create a noninheritable duplicate of the read handle and</font>
+    <font color="green">//    close the inheritable read handle.  </font>
+    
+    <font color="green">// Save the handle to the current STDOUT.  </font>
+    hSaveStdout <font color="black">=</font> GetStdHandle<font color="black">(</font>STD_OUTPUT_HANDLE<font color="black">)</font>;  
+    
+    <font color="green">// Create a pipe for the child process's STDOUT.  </font>
+    <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>CreatePipe<font color="black">(</font> <font color="black">&</font>hChildStdoutRd, <font color="black">&</font>hChildStdoutWr, <font color="black">&</font>saAttr, <font color="maroon">0</font><font color="black">)</font> <font color="black">)</font>
+    <font color="black">{</font>
+        TRACE0<font color="black">(</font> _T<font color="black">(</font><font color="maroon">"Stdout pipe creation failed\n"</font><font color="black">)</font> <font color="black">)</font>;
+        <font color="blue">return</font> FALSE;
+    <font color="black">}</font>
+
+    <font color="green">// Set a write handle to the pipe to be STDOUT.  </font>
+    <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>SetStdHandle<font color="black">(</font>STD_OUTPUT_HANDLE, hChildStdoutWr<font color="black">)</font> <font color="black">)</font>
+    <font color="black">{</font>
+        TRACE0<font color="black">(</font> _T<font color="black">(</font><font color="maroon">"Redirecting STDOUT failed\n"</font><font color="black">)</font> <font color="black">)</font>;
+        <font color="blue">return</font> FALSE;
+    <font color="black">}</font>
+   
+    <font color="green">// Create noninheritable read handle and close the inheritable read handle. </font>
+    fSuccess <font color="black">=</font> DuplicateHandle<font color="black">(</font> GetCurrentProcess<font color="black">(</font><font color="black">)</font>, hChildStdoutRd,
+        GetCurrentProcess<font color="black">(</font><font color="black">)</font>,  <font color="black">&</font>hChildStdoutRdDup , 
+        <font color="maroon">0</font>,  FALSE,
+        DUPLICATE_SAME_ACCESS <font color="black">)</font>;
+    <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>fSuccess <font color="black">)</font>
+    <font color="black">{</font>
+        TRACE0<font color="black">(</font> _T<font color="black">(</font><font color="maroon">"DuplicateHandle failed\n"</font><font color="black">)</font> <font color="black">)</font>;
+        <font color="blue">return</font> FALSE;
+    <font color="black">}</font>
+    CloseHandle<font color="black">(</font> hChildStdoutRd <font color="black">)</font>;
+    
+    <font color="green">// The steps for redirecting child process's STDIN: </font>
+    <font color="green">//     1.  Save current STDIN, to be restored later. </font>
+    <font color="green">//     2.  Create anonymous pipe to be STDIN for child process. </font>
+    <font color="green">//     3.  Set STDIN of the parent to be the read handle to the </font>
+    <font color="green">//     pipe, so it is inherited by the child process. </font>
+    <font color="green">//     4.  Create a noninheritable duplicate of the write handle, </font>
+    <font color="green">//     and close the inheritable write handle.  </font>
+
+    <font color="green">// Save the handle to the current STDIN. </font>
+    hSaveStdin <font color="black">=</font> GetStdHandle<font color="black">(</font>STD_INPUT_HANDLE<font color="black">)</font>;  
+
+    <font color="green">// Create a pipe for the child process's STDIN.  </font>
+    <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>CreatePipe<font color="black">(</font><font color="black">&</font>hChildStdinRd, <font color="black">&</font>hChildStdinWr, <font color="black">&</font>saAttr, <font color="maroon">0</font><font color="black">)</font> <font color="black">)</font>
+    <font color="black">{</font>
+        TRACE0<font color="black">(</font> _T<font color="black">(</font><font color="maroon">"Stdin pipe creation failed\n"</font><font color="black">)</font> <font color="black">)</font>;
+        <font color="blue">return</font> FALSE;
+    <font color="black">}</font>
+    <font color="green">// Set a read handle to the pipe to be STDIN.  </font>
+    <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>SetStdHandle<font color="black">(</font>STD_INPUT_HANDLE, hChildStdinRd<font color="black">)</font> <font color="black">)</font> 
+    <font color="black">{</font>
+        TRACE0<font color="black">(</font> _T<font color="black">(</font><font color="maroon">"Redirecting Stdin failed\n"</font><font color="black">)</font> <font color="black">)</font>;
+        <font color="blue">return</font> FALSE;
+    <font color="black">}</font>
+    <font color="green">// Duplicate the write handle to the pipe so it is not inherited.  </font>
+    fSuccess <font color="black">=</font> DuplicateHandle<font color="black">(</font>GetCurrentProcess<font color="black">(</font><font color="black">)</font>, hChildStdinWr, 
+        GetCurrentProcess<font color="black">(</font><font color="black">)</font>, <font color="black">&</font>hChildStdinWrDup, 
+        <font color="maroon">0</font>, FALSE,          <font color="green">// not inherited   </font>
+        DUPLICATE_SAME_ACCESS <font color="black">)</font>; 
+    <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>fSuccess <font color="black">)</font> 
+    <font color="black">{</font>
+        TRACE0<font color="black">(</font> _T<font color="black">(</font><font color="maroon">"DuplicateHandle failed\n"</font><font color="black">)</font> <font color="black">)</font>;
+        <font color="blue">return</font> FALSE;
+    <font color="black">}</font>
+    CloseHandle<font color="black">(</font>hChildStdinWr<font color="black">)</font>;  
+    
+    m_pReadThread <font color="black">=</font> AfxBeginThread<font color="black">(</font> <font color="black">(</font>AFX_THREADPROC<font color="black">)</font>ReadPipeThreadProc,<font color="black">(</font>LPVOID<font color="black">)</font><font color="blue">this</font> <font color="black">)</font>;
+    <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>m_pReadThread <font color="black">)</font>
+    <font color="black">{</font>
+        TRACE0<font color="black">(</font> _T<font color="black">(</font><font color="maroon">"Cannot start read-redirect thread!\n"</font><font color="black">)</font> <font color="black">)</font>;
+        <font color="blue">return</font> FALSE;
+    <font color="black">}</font>
+    <font color="green">// Now create the child process. </font>
+    <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>CreateConsoleProcess<font color="black">(</font>dwProcessId,szApplication,szParameter, szWorkDir<font color="black">)</font> <font color="black">)</font>
+    <font color="black">{</font>
+        TRACE0<font color="black">(</font> _T<font color="black">(</font><font color="maroon">"CreateChildProcess failed\n"</font><font color="black">)</font> <font color="black">)</font>;
+        <font color="blue">return</font> FALSE;
+    <font color="black">}</font>
+    <font color="green">// After process creation, restore the saved STDIN and STDOUT.  </font>
+    <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>SetStdHandle<font color="black">(</font>STD_INPUT_HANDLE, hSaveStdin<font color="black">)</font> <font color="black">)</font>
+    <font color="black">{</font>
+        TRACE0<font color="black">(</font> _T<font color="black">(</font><font color="maroon">"Re-redirecting Stdin failed\n"</font><font color="black">)</font> <font color="black">)</font>;
+        <font color="blue">return</font> FALSE;
+    <font color="black">}</font>
+    <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>SetStdHandle<font color="black">(</font>STD_OUTPUT_HANDLE, hSaveStdout<font color="black">)</font> <font color="black">)</font>
+    <font color="black">{</font>
+        TRACE0<font color="black">(</font> _T<font color="black">(</font><font color="maroon">"Re-redirecting Stdout failed\n"</font><font color="black">)</font> <font color="black">)</font>;
+        <font color="blue">return</font> FALSE;
+    <font color="black">}</font>
+    <font color="blue">return</font> TRUE;
+<font color="black">}</font>
+
+<font color="blue">#define</font> BUFSIZE <font color="maroon">2048</font>
+
+UINT CExecute<font color="black">:</font><font color="black">:</font>ReadPipeThreadProc<font color="black">(</font> LPVOID pParam <font color="black">)</font>
+<font color="black">{</font>
+    DWORD dwRead;
+    BYTE chBuf<font color="black">[</font>BUFSIZE<font color="black">]</font>; 
+    CExecute<font color="black">*</font> pOwner <font color="black">=</font> <font color="black">(</font>CExecute<font color="black">*</font><font color="black">)</font>pParam;
+
+    TRACE0<font color="black">(</font> _T<font color="black">(</font><font color="maroon">"ReadPipe Thread begin run\n"</font><font color="black">)</font> <font color="black">)</font>;
+    <font color="blue">for</font><font color="black">(</font> ;; <font color="black">)</font>    
+    <font color="black">{</font> 
+        <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>ReadFile<font color="black">(</font> pOwner<font color="black">-</font><font color="black">&#62;</font>hChildStdoutRdDup, chBuf, 
+            BUFSIZE, <font color="black">&</font>dwRead, NULL<font color="black">)</font> <font color="black">|</font><font color="black">|</font> dwRead <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> 
+            <font color="blue">break</font>; 
+        chBuf<font color="black">[</font>dwRead<font color="black">]</font> <font color="black">=</font> <font color="maroon">'\0'</font>;
+        <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>pOwner<font color="black">-</font><font color="black">&#62;</font>RedirectedStream<font color="black">(</font>chBuf,dwRead<font color="black">)</font> <font color="black">)</font>
+            <font color="blue">break</font>;
+    <font color="black">}</font> 
+    pOwner<font color="black">-</font><font color="black">&#62;</font>CloseAllRedirecthandles<font color="black">(</font><font color="black">)</font>;
+    pOwner<font color="black">-</font><font color="black">&#62;</font>m_pReadThread <font color="black">=</font> NULL;
+    <font color="blue">return</font> <font color="maroon">1</font>;
+<font color="black">}</font>
+
+
+BOOL CExecute<font color="black">:</font><font color="black">:</font>CreateConsoleProcess<font color="black">(</font>DWORD <font color="black">&</font>dwProcessId, LPCTSTR szApplication,
+                                    LPCTSTR szParameter, LPCTSTR szDir <font color="black">)</font>
+<font color="black">{</font>
+    PROCESS_INFORMATION piProcInfo;
+    STARTUPINFO siStartInfo;  
+
+    <font color="green">// Set up members of STARTUPINFO structure.  </font>
+    ZeroMemory<font color="black">(</font> <font color="black">&</font>siStartInfo, <font color="blue">sizeof</font><font color="black">(</font>STARTUPINFO<font color="black">)</font> <font color="black">)</font>;
+    siStartInfo.cb <font color="black">=</font> <font color="blue">sizeof</font><font color="black">(</font>STARTUPINFO<font color="black">)</font>;  
+    
+    siStartInfo.dwFlags <font color="black">=</font> STARTF_USESTDHANDLES<font color="black">|</font>STARTF_USESHOWWINDOW;
+    siStartInfo.wShowWindow <font color="black">=</font> SW_HIDE;
+    siStartInfo.hStdInput <font color="black">=</font> hChildStdinRd;
+    siStartInfo.hStdOutput <font color="black">=</font> hChildStdoutWr;
+    siStartInfo.hStdError <font color="black">=</font> hChildStdoutWr;
+
+    <font color="green">// Create the child process.  </font>
+    BOOL ret <font color="black">=</font> CreateProcess<font color="black">(</font> szApplication,
+            <font color="black">(</font>LPTSTR<font color="black">)</font>szParameter,       <font color="green">// applicatin name</font>
+            NULL,          <font color="green">// process security attributes </font>
+            NULL,          <font color="green">// primary thread security attributes </font>
+            TRUE,          <font color="green">// handles are inherited </font>
+            <font color="maroon">0</font>,  <font color="green">//DETACHED_PROCESS, // creation flags </font>
+            NULL,          <font color="green">// use parent's environment </font>
+            szDir,      <font color="green">// use parent's current directory </font>
+            <font color="black">&</font>siStartInfo,  <font color="green">// STARTUPINFO pointer </font>
+            <font color="black">&</font>piProcInfo<font color="black">)</font>;  <font color="green">// receives PROCESS_INFORMATION </font>
+    <font color="blue">if</font><font color="black">(</font> ret <font color="black">)</font>
+        dwProcessId <font color="black">=</font> piProcInfo.dwProcessId;
+    <font color="blue">else</font>
+        dwProcessId <font color="black">=</font> <font color="black">(</font>DWORD<font color="black">)</font><font color="black">(</font><font color="maroon">-1</font><font color="black">)</font>;
+    <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+BOOL CExecute<font color="black">:</font><font color="black">:</font>CreateChildProcess<font color="black">(</font>DWORD <font color="black">&</font>dwProcessId, LPCTSTR szApplication,
+        LPCTSTR szParameter, LPCTSTR szDir, <font color="blue">int</font> nShow <font color="black">)</font>
+<font color="black">{</font>
+    PROCESS_INFORMATION piProcInfo;
+    STARTUPINFO siStartInfo;  
+
+    <font color="green">// Set up members of STARTUPINFO structure.  </font>
+    ZeroMemory<font color="black">(</font> <font color="black">&</font>siStartInfo, <font color="blue">sizeof</font><font color="black">(</font>STARTUPINFO<font color="black">)</font> <font color="black">)</font>;
+    siStartInfo.cb <font color="black">=</font> <font color="blue">sizeof</font><font color="black">(</font>STARTUPINFO<font color="black">)</font>;  
+    
+    siStartInfo.dwFlags <font color="black">=</font> STARTF_USESHOWWINDOW;
+    siStartInfo.wShowWindow <font color="black">=</font> nShow;
+
+    <font color="green">// Create the child process.  </font>
+    BOOL ret <font color="black">=</font> CreateProcess<font color="black">(</font> szApplication,
+            <font color="black">(</font>LPTSTR<font color="black">)</font>szParameter,       <font color="green">// applicatin name</font>
+            NULL,          <font color="green">// process security attributes </font>
+            NULL,          <font color="green">// primary thread security attributes </font>
+            TRUE,          <font color="green">// handles are inherited </font>
+            <font color="maroon">0</font>,  <font color="green">//DETACHED_PROCESS, // creation flags </font>
+            NULL,          <font color="green">// use parent's environment </font>
+            szDir,      <font color="green">// use parent's current directory </font>
+            <font color="black">&</font>siStartInfo,  <font color="green">// STARTUPINFO pointer </font>
+            <font color="black">&</font>piProcInfo<font color="black">)</font>;  <font color="green">// receives PROCESS_INFORMATION </font>
+    <font color="blue">if</font><font color="black">(</font> ret <font color="black">)</font>
+    <font color="black">{</font>
+        dwProcessId <font color="black">=</font> piProcInfo.dwProcessId;
+        hProcessId <font color="black">=</font> piProcInfo.hProcess;
+    <font color="black">}</font>
+        
+    <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+BOOL CExecute<font color="black">:</font><font color="black">:</font>CreateMoniterThread<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    hWaitEvent <font color="black">=</font> CreateEvent<font color="black">(</font> NULL,FALSE,FALSE,NULL <font color="black">)</font>;
+    <font color="blue">if</font><font color="black">(</font> <font color="black">!</font>hWaitEvent <font color="black">)</font>
+    <font color="black">{</font>
+        TRACE0<font color="black">(</font> _T<font color="black">(</font><font color="maroon">"CreateEvent() failed!\n"</font><font color="black">)</font> <font color="black">)</font>;
+        <font color="blue">return</font> FALSE;
+    <font color="black">}</font>
+    <font color="blue">if</font><font color="black">(</font> AfxBeginThread<font color="black">(</font> <font color="black">(</font>AFX_THREADPROC<font color="black">)</font>WaitProcessThreadProc,<font color="black">(</font>LPVOID<font color="black">)</font><font color="blue">this</font> <font color="black">)</font> <font color="black">)</font>
+        <font color="blue">return</font> TRUE;
+    <font color="blue">return</font> FALSE;
+<font color="black">}</font>
+
+UINT CExecute<font color="black">:</font><font color="black">:</font>WaitProcessThreadProc<font color="black">(</font> LPVOID pParam <font color="black">)</font>
+<font color="black">{</font>
+    CExecute<font color="black">*</font> pOwner <font color="black">=</font> <font color="black">(</font>CExecute<font color="black">*</font><font color="black">)</font>pParam;
+    <font color="blue">if</font><font color="black">(</font> pOwner<font color="black">-</font><font color="black">&#62;</font>dwProcessId<font color="black">=</font><font color="black">=</font>DWORD<font color="black">(</font><font color="maroon">-1</font><font color="black">)</font> <font color="black">)</font>
+        <font color="blue">return</font> <font color="maroon">1</font>;
+
+    HANDLE hProcess <font color="black">=</font> OpenProcess<font color="black">(</font> PROCESS_ALL_ACCESS, FALSE, pOwner<font color="black">-</font><font color="black">&#62;</font>dwProcessId <font color="black">)</font>;
+    <font color="blue">if</font><font color="black">(</font> hProcess <font color="black">)</font>
+    <font color="black">{</font>   <font color="green">// maybe the process has been already termianted</font>
+        HANDLE handles<font color="black">[</font><font color="maroon">2</font><font color="black">]</font>;
+        handles<font color="black">[</font><font color="maroon">0</font><font color="black">]</font> <font color="black">=</font> hProcess;
+        handles<font color="black">[</font><font color="maroon">1</font><font color="black">]</font> <font color="black">=</font> pOwner<font color="black">-</font><font color="black">&#62;</font>hWaitEvent;
+
+        <font color="blue">if</font><font color="black">(</font> <font color="maroon">0</font><font color="black">=</font><font color="black">=</font><font color="black">(</font>WaitForMultipleObjects<font color="black">(</font><font color="maroon">2</font>,handles,FALSE,INFINITE<font color="black">)</font><font color="black">-</font>WAIT_OBJECT_0<font color="black">)</font>  <font color="black">)</font>
+        <font color="black">{</font>   <font color="green">// the process terminated</font>
+            CloseHandle<font color="black">(</font> hProcess <font color="black">)</font>;
+        <font color="black">}</font>
+        <font color="blue">else</font>    <font color="green">// user termination</font>
+        <font color="black">{</font>
+            TerminateProcess<font color="black">(</font> hProcess,<font color="maroon">0</font> <font color="black">)</font>; <font color="green">// terminate the process</font>
+            CloseHandle<font color="black">(</font> hProcess <font color="black">)</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+        TRACE0<font color="black">(</font> _T<font color="black">(</font><font color="maroon">"OpenProcess() failed, process maybe already terminated!\n"</font><font color="black">)</font> <font color="black">)</font>;
+        Sleep<font color="black">(</font> <font color="maroon">2000</font> <font color="black">)</font>; <font color="green">// maybe I should sleep for a while...</font>
+    <font color="black">}</font>
+    <font color="blue">if</font><font color="black">(</font> pOwner<font color="black">-</font><font color="black">&#62;</font>m_pReadThread <font color="black">)</font>
+    <font color="black">{</font>
+        TerminateThread<font color="black">(</font> pOwner<font color="black">-</font><font color="black">&#62;</font>m_pReadThread<font color="black">-</font><font color="black">&#62;</font>m_hThread,<font color="maroon">0</font> <font color="black">)</font>;
+        <font color="blue">delete</font> pOwner<font color="black">-</font><font color="black">&#62;</font>m_pReadThread;
+        pOwner<font color="black">-</font><font color="black">&#62;</font>m_pReadThread <font color="black">=</font> NULL;
+    <font color="black">}</font>
+    GetExitCodeProcess<font color="black">(</font><font color="black">(</font>pOwner<font color="black">-</font><font color="black">&#62;</font>hProcessId<font color="black">)</font>, <font color="black">&</font><font color="black">(</font>pOwner<font color="black">-</font><font color="black">&#62;</font>exitCode<font color="black">)</font> <font color="black">)</font>;
+    pOwner<font color="black">-</font><font color="black">&#62;</font>dwProcessId <font color="black">=</font> DWORD<font color="black">(</font><font color="maroon">-1</font><font color="black">)</font>;
+    CloseHandle<font color="black">(</font> pOwner<font color="black">-</font><font color="black">&#62;</font>hWaitEvent <font color="black">)</font>;
+    pOwner<font color="black">-</font><font color="black">&#62;</font>hWaitEvent <font color="black">=</font> NULL;
+    pOwner<font color="black">-</font><font color="black">&#62;</font>CloseAllRedirecthandles<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> CExecute<font color="black">:</font><font color="black">:</font>CloseAllRedirecthandles<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">if</font><font color="black">(</font> hChildStdinRd<font color="black">!</font><font color="black">=</font>INVALID_HANDLE_VALUE <font color="black">)</font>
+        CloseHandle<font color="black">(</font> hChildStdinRd <font color="black">)</font>;
+    <font color="blue">if</font><font color="black">(</font> hChildStdinWrDup<font color="black">!</font><font color="black">=</font>INVALID_HANDLE_VALUE <font color="black">)</font>
+        CloseHandle<font color="black">(</font> hChildStdinWrDup <font color="black">)</font>;
+    <font color="blue">if</font><font color="black">(</font> hChildStdoutWr<font color="black">!</font><font color="black">=</font>INVALID_HANDLE_VALUE <font color="black">)</font>
+        CloseHandle<font color="black">(</font> hChildStdoutWr <font color="black">)</font>;
+    <font color="blue">if</font><font color="black">(</font> hChildStdoutRdDup<font color="black">!</font><font color="black">=</font>INVALID_HANDLE_VALUE <font color="black">)</font>
+        CloseHandle<font color="black">(</font> hChildStdoutRdDup <font color="black">)</font>;
+
+    hChildStdinRd <font color="black">=</font> INVALID_HANDLE_VALUE;
+    hChildStdinWrDup <font color="black">=</font> INVALID_HANDLE_VALUE;
+    hChildStdoutWr <font color="black">=</font> INVALID_HANDLE_VALUE;
+    hChildStdoutRdDup <font color="black">=</font> INVALID_HANDLE_VALUE;
+<font color="black">}</font>
+
+BOOL CExecute<font color="black">:</font><font color="black">:</font>StopExec<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">return</font> SetEvent<font color="black">(</font> hWaitEvent <font color="black">)</font>;
+<font color="black">}</font>
+
+BOOL CExecute<font color="black">:</font><font color="black">:</font>RedirectedStream<font color="black">(</font>BYTE <font color="black">*</font>stream, <font color="blue">int</font> nLen<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">return</font> TRUE;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

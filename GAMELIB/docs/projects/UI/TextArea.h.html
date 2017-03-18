@@ -1,0 +1,62 @@
+<HTML>
+<HEAD>
+<TITLE>
+TextArea.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _TextArea_h
+<font color="blue">#define</font> _TextArea_h
+
+<font color="blue">#include</font> <font color="maroon">"UIThing.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Font.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;list&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">class</font> Surface;
+
+<font color="blue">class</font> TextArea<font color="black">:</font> <font color="blue">public</font> UIThing
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  TextArea<font color="black">(</font><font color="black">)</font>;
+  virtual string getName<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="maroon">"TextArea"</font>; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>;
+
+  virtual <font color="blue">bool</font> acceptsFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> setPosition<font color="black">(</font>Rect<font color="black">&</font> pos<font color="black">)</font> <font color="black">{</font> m_dirty <font color="black">=</font> <font color="blue">true</font>; UIThing<font color="black">:</font><font color="black">:</font>setPosition<font color="black">(</font>pos<font color="black">)</font>; <font color="black">}</font>
+  virtual <font color="blue">void</font> setText<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> s<font color="black">)</font> <font color="black">{</font> m_dirty <font color="black">=</font> <font color="blue">true</font>; UIThing<font color="black">:</font><font color="black">:</font>setText<font color="black">(</font>s<font color="black">)</font>; updateTextListeners<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+
+  <font color="blue">void</font> appendText<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> s<font color="black">)</font> <font color="black">{</font> m_dirty <font color="black">=</font> <font color="blue">true</font>; m_text<font color="black">+</font><font color="black">=</font><font color="maroon">"\n"</font>; m_text<font color="black">+</font><font color="black">=</font>s; updateTextListeners<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+
+  <font color="blue">void</font> addTextListener<font color="black">(</font>TextListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_textListeners.insert<font color="black">(</font>listener<font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">void</font> removeTextListener<font color="black">(</font>TextListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_textListeners.erase<font color="black">(</font>listener<font color="black">)</font>; <font color="black">}</font>
+
+  <font color="blue">int</font> getVisibleLines<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    Font<font color="black">*</font> font<font color="black">=</font>Font<font color="black">:</font><font color="black">:</font>getDefault<font color="black">(</font><font color="black">)</font>;
+    Rect r<font color="black">=</font>getPosition<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">(</font><font color="black">(</font>r.h <font color="black">-</font><font color="black">(</font>m_margin <font color="black">+</font> m_margin<font color="black">)</font><font color="black">)</font><font color="black">/</font>font<font color="black">-</font><font color="black">&#62;</font>getFontHeight<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> updateTextListeners<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> drawLines<font color="black">(</font>Display<font color="black">*</font> surface, list<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">&</font> lines<font color="black">)</font>;
+  <font color="blue">void</font> formatText<font color="black">(</font><font color="black">)</font>;
+<font color="blue">private</font><font color="black">:</font>
+  set<font color="black">&#60;</font>TextListener<font color="black">*</font><font color="black">&#62;</font> m_textListeners;
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font> m_formattedLines;
+  <font color="blue">int</font> m_margin;
+  <font color="blue">bool</font> m_dirty;
+  <font color="blue">int</font> m_topIndex;
+
+  TextChangeEvent m_textEvent;
+
+<font color="black">}</font>;
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

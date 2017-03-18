@@ -1,0 +1,132 @@
+<HTML>
+<HEAD>
+<TITLE>
+Button.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4503</font> <font color="maroon">4530</font><font color="black">)</font>
+
+<font color="blue">#include</font> <font color="maroon">"Button.h"</font>
+<font color="blue">#include</font> <font color="maroon">"SDL_gfxPrimitives.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Font.h"</font>
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Misc/AssetManager.h"</font>
+
+
+Button<font color="black">:</font><font color="black">:</font>Button<font color="black">(</font><font color="black">)</font><font color="black">:</font> 
+UIThing<font color="black">(</font><font color="black">)</font>, 
+m_isDown<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+m_buttonUp<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_buttonDown<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_buttonFocus<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_buttonOver<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>
+<font color="black">{</font>
+  m_actionEvent.thing <font color="black">=</font> <font color="blue">this</font>;
+<font color="black">}</font>
+
+Button<font color="black">:</font><font color="black">:</font>~Button<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_buttonUp <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>releaseSkin<font color="black">(</font>m_buttonUp<font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>m_buttonDown <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>releaseSkin<font color="black">(</font>m_buttonDown<font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>m_buttonFocus <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>releaseSkin<font color="black">(</font>m_buttonFocus<font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>m_buttonOver <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>releaseSkin<font color="black">(</font>m_buttonOver<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> Button<font color="black">:</font><font color="black">:</font>onMousePress<font color="black">(</font>MousePressEvent<font color="black">*</font> event<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button <font color="black">=</font><font color="black">=</font> <font color="maroon">1</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_isDown<font color="black">=</font><font color="blue">true</font>;
+  <font color="black">}</font>
+  UIThing<font color="black">:</font><font color="black">:</font>onMousePress<font color="black">(</font>event<font color="black">)</font>;
+<font color="black">}</font>
+<font color="blue">void</font> Button<font color="black">:</font><font color="black">:</font>onMouseRelease<font color="black">(</font>MouseReleaseEvent<font color="black">*</font> event<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button <font color="black">=</font><font color="black">=</font> <font color="maroon">1</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_isDown<font color="black">=</font><font color="blue">false</font>;
+  <font color="black">}</font>
+  UIThing<font color="black">:</font><font color="black">:</font>onMouseRelease<font color="black">(</font>event<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> Button<font color="black">:</font><font color="black">:</font>onMouseClick<font color="black">(</font>MouseClickEvent<font color="black">*</font> event<font color="black">)</font>
+<font color="black">{</font>
+  m_actionEvent.commandId <font color="black">=</font> getId<font color="black">(</font><font color="black">)</font>;
+
+  set<font color="black">&#60;</font>ActionListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_actionListeners<font color="black">)</font>;
+  set<font color="black">&#60;</font>ActionListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>actionPerformed<font color="black">(</font><font color="black">&</font>m_actionEvent<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> Button<font color="black">:</font><font color="black">:</font>paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>
+<font color="black">{</font>
+  Rect r<font color="black">=</font>getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+  r.x<font color="black">+</font><font color="black">=</font> <font color="black">(</font>r.w<font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+  r.y<font color="black">+</font><font color="black">=</font> <font color="black">(</font>r.h<font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>m_isDown<font color="black">)</font>
+  <font color="black">{</font>
+    m_buttonDown<font color="black">-</font><font color="black">&#62;</font>blit<font color="black">(</font>surface, r.x, r.y<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font> <font color="black">=</font><font color="black">=</font> s_mouseOver<font color="black">)</font>
+    <font color="black">{</font>
+      m_buttonOver<font color="black">-</font><font color="black">&#62;</font>blit<font color="black">(</font>surface, r.x, r.y<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>hasFocus<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      m_buttonFocus<font color="black">-</font><font color="black">&#62;</font>blit<font color="black">(</font>surface, r.x, r.y<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+      m_buttonUp<font color="black">-</font><font color="black">&#62;</font>blit<font color="black">(</font>surface, r.x, r.y<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  string text <font color="black">=</font> getText<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>text <font color="black">!</font><font color="black">=</font> <font color="maroon">""</font><font color="black">)</font>
+  <font color="black">{</font>
+    Font<font color="black">*</font> font <font color="black">=</font> getFont<font color="black">(</font><font color="black">)</font>;
+    r <font color="black">=</font> getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">int</font> tx <font color="black">=</font> r.x <font color="black">+</font> <font color="black">(</font><font color="black">(</font>r.w<font color="black">/</font><font color="maroon">2</font><font color="black">)</font> <font color="black">-</font><font color="black">(</font>font<font color="black">-</font><font color="black">&#62;</font>getTextWidth<font color="black">(</font>text<font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">int</font> ty <font color="black">=</font> r.y <font color="black">+</font> <font color="black">(</font><font color="black">(</font>r.h<font color="black">/</font><font color="maroon">2</font><font color="black">)</font> <font color="black">-</font><font color="black">(</font>font<font color="black">-</font><font color="black">&#62;</font>getFontHeight<font color="black">(</font><font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font><font color="black">)</font>;
+    font<font color="black">-</font><font color="black">&#62;</font>drawLine<font color="black">(</font>surface, text, tx, ty<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> Button<font color="black">:</font><font color="black">:</font>setUpTexture<font color="black">(</font>string assetName<font color="black">)</font> 
+<font color="black">{</font> 
+  m_buttonUp <font color="black">=</font> theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>getSkin<font color="black">(</font>assetName<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> Button<font color="black">:</font><font color="black">:</font>setDownTexture<font color="black">(</font>string assetName<font color="black">)</font> 
+<font color="black">{</font> 
+  m_buttonDown <font color="black">=</font> theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>getSkin<font color="black">(</font>assetName<font color="black">)</font>;
+<font color="black">}</font>
+<font color="blue">void</font> Button<font color="black">:</font><font color="black">:</font>setFocusTexture<font color="black">(</font>string assetName<font color="black">)</font> 
+<font color="black">{</font> 
+  m_buttonFocus <font color="black">=</font> theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>getSkin<font color="black">(</font>assetName<font color="black">)</font>;
+<font color="black">}</font>
+<font color="blue">void</font> Button<font color="black">:</font><font color="black">:</font>setOverTexture<font color="black">(</font>string assetName<font color="black">)</font> 
+<font color="black">{</font> 
+  m_buttonOver <font color="black">=</font> theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>getSkin<font color="black">(</font>assetName<font color="black">)</font>;
+<font color="black">}</font>
+
+
+</PRE>
+</BODY>
+</HTML>

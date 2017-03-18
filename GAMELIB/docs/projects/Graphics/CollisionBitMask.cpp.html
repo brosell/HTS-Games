@@ -1,0 +1,154 @@
+<HTML>
+<HEAD>
+<TITLE>
+CollisionBitMask.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4503</font> <font color="maroon">4530</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"CollisionBitMask.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;memory.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">"malloc.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Misc/GameMath.h"</font>
+
+CollisionBitMask<font color="black">:</font><font color="black">:</font>CollisionBitMask<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> sourcePixels, <font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font><font color="black">:</font>
+m_width<font color="black">(</font>w<font color="black">)</font>,
+m_height<font color="black">(</font>h<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> pixels <font color="black">=</font> <font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font><font color="black">)</font>sourcePixels;
+  m_bits <font color="black">=</font> <font color="blue">new</font> <font color="blue">char</font><font color="black">[</font>m_width<font color="black">*</font>m_height<font color="black">]</font>;
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> y<font color="black">=</font><font color="maroon">0</font>; y<font color="black">&#60;</font>m_height; y<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+<font color="green">//    printf("\n");</font>
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> x<font color="black">=</font><font color="maroon">0</font>; x<font color="black">&#60;</font>m_width; x<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">int</font> pixelOffset <font color="black">=</font> x<font color="black">*</font><font color="maroon">4</font><font color="black">+</font><font color="maroon">3</font>; <font color="green">// we only want the alpha val from the 32 bit ARGB value</font>
+      m_bits<font color="black">[</font>y<font color="black">*</font>m_width <font color="black">+</font> x<font color="black">]</font> <font color="black">=</font> <font color="black">(</font>pixels<font color="black">[</font>y<font color="black">*</font>m_width<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> pixelOffset<font color="black">]</font><font color="black">=</font><font color="black">=</font><font color="maroon">0</font>?<font color="maroon">0</font><font color="black">:</font><font color="maroon">0xff</font><font color="black">)</font>;
+<font color="green">//      char t = m_bits[y*m_width + x]==0?' ':'X';</font>
+<font color="green">//      printf("%c", t);</font>
+    <font color="black">}</font>
+  <font color="black">}</font>
+<font color="black">}</font>
+
+
+CollisionBitMask<font color="black">:</font><font color="black">:</font>~CollisionBitMask<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">delete</font> <font color="black">[</font><font color="black">]</font> m_bits;
+<font color="black">}</font>
+
+ 
+<font color="blue">bool</font> testCollision<font color="black">(</font><font color="blue">const</font> CollisionBitMask<font color="black">*</font> ent1, <font color="blue">int</font> ent1x, <font color="blue">int</font> ent1y, <font color="blue">const</font> CollisionBitMask<font color="black">*</font> ent2, <font color="blue">int</font> ent2x, <font color="blue">int</font> ent2y, Point<font color="black">&</font> loc1, Point<font color="black">&</font> loc2<font color="black">)</font>
+<font color="black">{</font>
+  <font color="green">/* 
+    this can be optimized. it should only need to work with the 
+    overlapped portion instead of the whole thing
+    */</font>
+
+  Rect r1<font color="black">(</font>ent1x, ent1y, ent1<font color="black">-</font><font color="black">&#62;</font>getWidth<font color="black">(</font><font color="black">)</font>, ent1<font color="black">-</font><font color="black">&#62;</font>getHeight<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  Rect r2<font color="black">(</font>ent2x, ent2y, ent2<font color="black">-</font><font color="black">&#62;</font>getWidth<font color="black">(</font><font color="black">)</font>, ent2<font color="black">-</font><font color="black">&#62;</font>getHeight<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>r1, <font color="black">&</font>r2<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">false</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+
+  <font color="green">// ok the rects overlap, now we have to see if the bits overlap</font>
+
+
+
+  <font color="green">// first the bounding box and offset coords</font>
+  Rect boundingBox;
+  <font color="blue">int</font> ent1XOffset, ent1YOffset;
+  <font color="blue">int</font> ent2XOffset, ent2YOffset;
+
+  <font color="blue">if</font> <font color="black">(</font>r1.x <font color="black">&#60;</font><font color="black">=</font> r2.x<font color="black">)</font>
+  <font color="black">{</font>
+    boundingBox.x <font color="black">=</font> r1.x;
+    boundingBox.w <font color="black">=</font> r1.w <font color="black">+</font> r2.w; <font color="green">//(r2.x - r1.x) + r2.w;</font>
+
+    ent1XOffset <font color="black">=</font> <font color="maroon">0</font>;
+    ent2XOffset <font color="black">=</font> r2.x <font color="black">-</font>r1.x;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    boundingBox.x <font color="black">=</font> r2.x;
+    boundingBox.w <font color="black">=</font> r1.w <font color="black">+</font> r2.w; <font color="green">// (r1.x - r2.x) + r1.w;</font>
+    
+    ent1XOffset <font color="black">=</font> r1.x <font color="black">-</font>r2.x;
+    ent2XOffset <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  <font color="blue">if</font> <font color="black">(</font>r1.y <font color="black">&#60;</font><font color="black">=</font> r2.y<font color="black">)</font>
+  <font color="black">{</font>
+    boundingBox.y <font color="black">=</font> r1.y;
+    boundingBox.h <font color="black">=</font> r1.h <font color="black">+</font> r2.h; <font color="green">// (r2.y - r1.y) + r2.h;</font>
+
+    ent1YOffset <font color="black">=</font> <font color="maroon">0</font>;
+    ent2YOffset <font color="black">=</font> r2.y <font color="black">-</font>r1.y;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    boundingBox.y <font color="black">=</font> r2.y;
+    boundingBox.h <font color="black">=</font> r1.h <font color="black">+</font> r2.h; <font color="green">// (r1.y - r2.y) + r1.h;</font>
+
+    ent1YOffset <font color="black">=</font> r1.y <font color="black">-</font>r2.y;
+    ent2YOffset <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  <font color="green">// now create a scrath area</font>
+  <font color="blue">char</font><font color="black">*</font> dest <font color="black">=</font> <font color="blue">new</font> <font color="blue">char</font><font color="black">[</font>boundingBox.w <font color="black">*</font> boundingBox.h<font color="black">]</font>;
+  memset<font color="black">(</font>dest, <font color="maroon">0</font>, boundingBox.w<font color="black">*</font>boundingBox.h<font color="black">)</font>;
+
+  <font color="blue">int</font> sx, sy;
+  <font color="blue">int</font> dx, dy;
+  <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> bits;
+  <font color="blue">bool</font> collision <font color="black">=</font> <font color="blue">false</font>;
+  
+  <font color="green">// "draw" first</font>
+  bits <font color="black">=</font> ent1<font color="black">-</font><font color="black">&#62;</font>getBits<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">for</font> <font color="black">(</font>dy<font color="black">=</font>ent1YOffset, sy<font color="black">=</font><font color="maroon">0</font>; dy<font color="black">&#60;</font>ent1YOffset<font color="black">+</font>r1.h; dy<font color="black">+</font><font color="black">+</font>, sy<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">for</font> <font color="black">(</font>dx<font color="black">=</font>ent1XOffset, sx<font color="black">=</font><font color="maroon">0</font>; dx<font color="black">&#60;</font>ent1XOffset<font color="black">+</font>r1.w; dx<font color="black">+</font><font color="black">+</font>, sx<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      dest<font color="black">[</font>dy<font color="black">*</font>boundingBox.w <font color="black">+</font> dx<font color="black">]</font> <font color="black">=</font> bits<font color="black">[</font>sy<font color="black">*</font>r1.w <font color="black">+</font> sx<font color="black">]</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+    <font color="green">// "draw" second</font>
+  bits <font color="black">=</font> ent2<font color="black">-</font><font color="black">&#62;</font>getBits<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">for</font> <font color="black">(</font>dy<font color="black">=</font>ent2YOffset, sy<font color="black">=</font><font color="maroon">0</font>; dy<font color="black">&#60;</font>ent2YOffset<font color="black">+</font>r2.h <font color="black">&</font><font color="black">&</font> collision <font color="black">=</font><font color="black">=</font> <font color="blue">false</font>; dy<font color="black">+</font><font color="black">+</font>, sy<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">for</font> <font color="black">(</font>dx<font color="black">=</font>ent2XOffset, sx<font color="black">=</font><font color="maroon">0</font>; dx<font color="black">&#60;</font>ent2XOffset<font color="black">+</font>r2.w <font color="black">&</font><font color="black">&</font> collision <font color="black">=</font><font color="black">=</font> <font color="blue">false</font>; dx<font color="black">+</font><font color="black">+</font>, sx<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">int</font> v<font color="black">=</font>dest<font color="black">[</font>dy<font color="black">*</font>boundingBox.w <font color="black">+</font> dx<font color="black">]</font> ;
+      <font color="blue">if</font> <font color="black">(</font>v <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font> <font color="black">&</font><font color="black">&</font> bits<font color="black">[</font>sy<font color="black">*</font>r2.w <font color="black">+</font> sx<font color="black">]</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+      <font color="black">{</font>
+        loc1.x <font color="black">=</font> dx<font color="black">-</font>ent1XOffset;
+        loc1.y <font color="black">=</font> dy<font color="black">-</font>ent1YOffset;
+
+        loc2.x <font color="black">=</font> sx;
+        loc2.y <font color="black">=</font> sy;
+
+        collision <font color="black">=</font> <font color="blue">true</font>;
+      <font color="black">}</font>
+      <font color="blue">else</font>
+      <font color="black">{</font>
+        dest<font color="black">[</font>dy<font color="black">*</font>boundingBox.w <font color="black">+</font> dx<font color="black">]</font> <font color="black">=</font> bits<font color="black">[</font>sy<font color="black">*</font>r2.w <font color="black">+</font> sx<font color="black">]</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+
+
+  <font color="blue">delete</font> <font color="black">[</font><font color="black">]</font> dest;
+  <font color="blue">return</font> collision;
+<font color="black">}</font>
+
+<font color="blue">bool</font> CollisionBitMask<font color="black">:</font><font color="black">:</font>isPointCollision<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font> <font color="blue">const</font>
+<font color="black">{</font>
+  <font color="blue">return</font> <font color="black">(</font>m_bits<font color="black">[</font>y<font color="black">*</font>m_width <font color="black">+</font> x<font color="black">]</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

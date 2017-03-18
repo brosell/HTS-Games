@@ -1,0 +1,64 @@
+<HTML>
+<HEAD>
+<TITLE>
+ErrorCode.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// ErrorCodes.cpp</font>
+<font color="blue">#include</font> <font color="maroon">"ErrorCode.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;iostream.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">"stdString.h"</font>
+
+
+ErrorCode<font color="black">:</font><font color="black">:</font>ErrorCode<font color="black">(</font><font color="black">)</font> <font color="black">:</font> enValue_<font color="black">(</font>SUCCESS<font color="black">)</font>,
+    PboResp_<font color="black">(</font><font color="blue">new</font> <font color="blue">bool</font><font color="black">(</font><font color="blue">false</font><font color="black">)</font><font color="black">)</font>
+<font color="black">{</font>
+<font color="black">}</font>
+
+ErrorCode<font color="black">:</font><font color="black">:</font>ErrorCode<font color="black">(</font><font color="blue">const</font> ErrorCode<font color="black">&</font> _ref<font color="black">)</font> <font color="black">:</font>
+    enValue_<font color="black">(</font>_ref.enValue_<font color="black">)</font>, PboResp_<font color="black">(</font><font color="blue">new</font> <font color="blue">bool</font><font color="black">(</font><font color="blue">true</font><font color="black">)</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="black">*</font>_ref.PboResp_ <font color="black">=</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+ErrorCode<font color="black">:</font><font color="black">:</font>ErrorCode<font color="black">(</font>ErrorCodeValue _val<font color="black">)</font> <font color="black">:</font>
+    enValue_<font color="black">(</font>_val<font color="black">)</font>, PboResp_<font color="black">(</font><font color="blue">new</font> <font color="blue">bool</font><font color="black">(</font><font color="blue">true</font><font color="black">)</font><font color="black">)</font>
+<font color="black">{</font>
+<font color="black">}</font>
+
+ErrorCode<font color="black">:</font><font color="black">:</font>~ErrorCode<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">*</font>PboResp_<font color="black">)</font>
+    cerr <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Destruction of untested error code: value "</font>
+      <font color="black">&#60;</font><font color="black">&#60;</font> enValue_ <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+
+  <font color="blue">delete</font> PboResp_;
+<font color="black">}</font>
+
+ErrorCode<font color="black">&</font> ErrorCode<font color="black">:</font><font color="black">:</font><font color="blue">operator</font> <font color="black">=</font> <font color="black">(</font><font color="blue">const</font> ErrorCode<font color="black">&</font> _ref<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">*</font>PboResp_<font color="black">)</font>
+    cerr <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Untested error code (value "</font> <font color="black">&#60;</font><font color="black">&#60;</font> enValue_
+      <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">") erased by new value "</font> <font color="black">&#60;</font><font color="black">&#60;</font> _ref.enValue_ <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+
+  enValue_ <font color="black">=</font> _ref.enValue_;
+  <font color="black">*</font>PboResp_ <font color="black">=</font> <font color="black">*</font>_ref.PboResp_;
+  <font color="black">*</font>_ref.PboResp_ <font color="black">=</font> <font color="blue">false</font>;
+  
+  <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> ErrorCode<font color="black">:</font><font color="black">:</font><font color="blue">operator</font> <font color="black">!</font><font color="black">=</font> <font color="black">(</font><font color="blue">const</font> ErrorCode<font color="black">&</font> _ref<font color="black">)</font> <font color="blue">const</font>
+<font color="black">{</font>
+  <font color="black">*</font>PboResp_ <font color="black">=</font> <font color="blue">false</font>;
+  <font color="black">*</font>_ref.PboResp_ <font color="black">=</font> <font color="blue">false</font>;
+
+  <font color="blue">return</font> <font color="black">(</font>enValue_ <font color="black">!</font><font color="black">=</font> _ref.enValue_<font color="black">)</font>;
+<font color="black">}</font>
+
+
+</PRE>
+</BODY>
+</HTML>

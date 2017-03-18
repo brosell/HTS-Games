@@ -1,0 +1,327 @@
+<HTML>
+<HEAD>
+<TITLE>
+IniBasedDialog.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable<font color="black">:</font><font color="maroon">4786</font> <font color="maroon">4503</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"IniBasedDialog.h"</font>
+<font color="blue">#include</font> <font color="maroon">"IniFile.h"</font>
+<font color="blue">#include</font> <font color="maroon">"StringTokenizer.h"</font>
+<font color="blue">#include</font> <font color="maroon">"UI.h"</font>
+<font color="blue">#include</font> <font color="maroon">"UI/List.h"</font>
+<font color="blue">#include</font> <font color="maroon">"UI/HSlider.h"</font>
+<font color="blue">#include</font> <font color="maroon">"UI/HighlightButton.h"</font>
+<font color="blue">#include</font> <font color="maroon">"UI/ToggleButton.h"</font>
+<font color="blue">#include</font> <font color="maroon">"UI/DropDownList.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Misc/AssetManager.h"</font>
+
+
+IniBasedDialog<font color="black">:</font><font color="black">:</font>IniBasedDialog<font color="black">(</font>IniFile<font color="black">&</font> ini, string dialogName<font color="black">)</font><font color="black">:</font>
+m_ini<font color="black">(</font>ini<font color="black">)</font>,
+m_dialogName<font color="black">(</font>dialogName<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>ini.isRead<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    ini.read<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  setBackground<font color="black">(</font>m_ini<font color="black">[</font>dialogName<font color="black">]</font><font color="black">[</font><font color="maroon">"Background"</font><font color="black">]</font><font color="black">)</font>;
+  setText<font color="black">(</font>m_ini<font color="black">[</font>dialogName<font color="black">]</font><font color="black">[</font><font color="maroon">"Title"</font><font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  setPosition<font color="black">(</font>Rect<font color="black">:</font><font color="black">:</font>parseRect<font color="black">(</font>m_ini<font color="black">[</font>dialogName<font color="black">]</font><font color="black">[</font><font color="maroon">"Position"</font><font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+
+  m_defaultFontName <font color="black">=</font> m_ini<font color="black">[</font>dialogName<font color="black">]</font><font color="black">[</font><font color="maroon">"Font"</font><font color="black">]</font>;
+  
+  StringTokenizer st<font color="black">(</font>m_ini<font color="black">[</font>dialogName<font color="black">]</font><font color="black">[</font><font color="maroon">"Controls"</font><font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font>, <font color="maroon">" ,"</font><font color="black">)</font>;
+  <font color="blue">while</font> <font color="black">(</font>st.hasMoreTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    createControl<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+IniBasedDialog<font color="black">:</font><font color="black">:</font>~IniBasedDialog<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  list<font color="black">&#60;</font>UIThing<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font><font color="black">(</font>i<font color="black">=</font>m_createdUIThings.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>m_createdUIThings.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">delete</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+
+  <font color="green">// returns the id of the button that was pressed</font>
+<font color="blue">int</font> IniBasedDialog<font color="black">:</font><font color="black">:</font>getPressedId<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+UIThing<font color="black">*</font> IniBasedDialog<font color="black">:</font><font color="black">:</font>getControlByName<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font> 
+<font color="black">{</font> 
+  UIThing<font color="black">*</font> ret <font color="black">=</font> m_stringControl<font color="black">[</font><font color="blue">name</font><font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font>ret <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"IniBasedDialog %s: No Such Control: %s"</font>, m_dialogName.c_str<font color="black">(</font><font color="black">)</font>, <font color="blue">name</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> ret; 
+<font color="black">}</font>
+
+<font color="blue">void</font> IniBasedDialog<font color="black">:</font><font color="black">:</font>createControl<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>
+<font color="black">{</font>
+  string type <font color="black">=</font> m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Type"</font><font color="black">]</font>;
+  UIThing<font color="black">*</font> thing <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"Button"</font> <font color="black">|</font><font color="black">|</font> type <font color="black">=</font><font color="black">=</font> <font color="maroon">"DefaultButton"</font> <font color="black">|</font><font color="black">|</font> type <font color="black">=</font><font color="black">=</font> <font color="maroon">"CancelButton"</font><font color="black">)</font>
+  <font color="black">{</font>
+    thing <font color="black">=</font> addButton<font color="black">(</font><font color="blue">name</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"HighlightButton"</font><font color="black">)</font>
+  <font color="black">{</font>
+    HighlightButton<font color="black">*</font> b<font color="black">=</font><font color="blue">new</font> HighlightButton;
+    thing <font color="black">=</font> b;
+    b<font color="black">-</font><font color="black">&#62;</font>setHighlight<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Highlight"</font><font color="black">]</font><font color="black">)</font>;
+    <font color="blue">int</font> isDefault <font color="black">=</font> atoi<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Default"</font><font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>isDefault <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      setDefault<font color="black">(</font>b<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">int</font> isCancel <font color="black">=</font> atoi<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Cancel"</font><font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>isCancel <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      setCancel<font color="black">(</font>b<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"ToggleButton"</font><font color="black">)</font>
+  <font color="black">{</font>
+    thing <font color="black">=</font> <font color="blue">new</font> ToggleButton;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"SkinCanvas"</font><font color="black">)</font>
+  <font color="black">{</font>
+    SkinCanvas<font color="black">*</font> sc <font color="black">=</font> <font color="blue">new</font> SkinCanvas;
+    sc<font color="black">-</font><font color="black">&#62;</font>setSkin<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Skin"</font><font color="black">]</font><font color="black">)</font>;
+    thing <font color="black">=</font> sc;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"TextBox"</font><font color="black">)</font>
+  <font color="black">{</font>
+    thing <font color="black">=</font> <font color="blue">new</font> TextBox;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"TextArea"</font><font color="black">)</font>
+  <font color="black">{</font>
+    thing <font color="black">=</font> <font color="blue">new</font> TextArea;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"List"</font><font color="black">)</font>
+  <font color="black">{</font>
+    List<font color="black">*</font> l <font color="black">=</font> <font color="blue">new</font> List;
+    thing <font color="black">=</font> l;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"DropDownList"</font><font color="black">)</font>
+  <font color="black">{</font>
+    DropDownList<font color="black">*</font> l <font color="black">=</font> <font color="blue">new</font> DropDownList;
+    thing <font color="black">=</font> l;
+  <font color="black">}</font>
+
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"HSlider"</font><font color="black">)</font>
+  <font color="black">{</font>
+    thing <font color="black">=</font> addHSlider<font color="black">(</font><font color="blue">name</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"Label"</font><font color="black">)</font>
+  <font color="black">{</font>
+    thing <font color="black">=</font> addLabel<font color="black">(</font><font color="blue">name</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"Canvas"</font><font color="black">)</font>
+  <font color="black">{</font>
+    thing <font color="black">=</font> <font color="blue">new</font> Canvas;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"WorldCanvas"</font><font color="black">)</font>
+  <font color="black">{</font>
+    thing <font color="black">=</font> <font color="blue">new</font> WorldCanvas<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"VScrollBar"</font><font color="black">)</font>
+  <font color="black">{</font>
+    thing <font color="black">=</font> addVScrollBar<font color="black">(</font><font color="blue">name</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"ProgressBar"</font><font color="black">)</font>
+  <font color="black">{</font>
+    thing <font color="black">=</font> addProgressBar<font color="black">(</font><font color="blue">name</font><font color="black">)</font>;
+  <font color="black">}</font>
+  
+  <font color="blue">if</font> <font color="black">(</font>thing <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    thing<font color="black">-</font><font color="black">&#62;</font>setControlName<font color="black">(</font><font color="blue">name</font><font color="black">)</font>;
+    string font <font color="black">=</font> m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Font"</font><font color="black">]</font>;
+    <font color="blue">if</font> <font color="black">(</font>font <font color="black">!</font><font color="black">=</font> <font color="maroon">""</font><font color="black">)</font>
+    <font color="black">{</font>
+      thing<font color="black">-</font><font color="black">&#62;</font>setFont<font color="black">(</font>theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>getFont<font color="black">(</font>font<font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>m_defaultFontName <font color="black">!</font><font color="black">=</font> <font color="maroon">""</font><font color="black">)</font>
+    <font color="black">{</font>
+      thing<font color="black">-</font><font color="black">&#62;</font>setFont<font color="black">(</font>theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>getFont<font color="black">(</font>m_defaultFontName<font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">if</font><font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"BackgroundColor"</font><font color="black">]</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">""</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">int</font> r, g, b, a;
+      parseColor<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"BackgroundColor"</font><font color="black">]</font>, r, g, b, a<font color="black">)</font>;
+      thing<font color="black">-</font><font color="black">&#62;</font>setBackgroundColor<font color="black">(</font>r, g, b, a<font color="black">)</font>;
+    <font color="black">}</font>
+    thing<font color="black">-</font><font color="black">&#62;</font>setPosition<font color="black">(</font>Rect<font color="black">:</font><font color="black">:</font>parseRect<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Position"</font><font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+    thing<font color="black">-</font><font color="black">&#62;</font>setId<font color="black">(</font>atoi<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Id"</font><font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+    string text <font color="black">=</font> m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Text"</font><font color="black">]</font>;
+    <font color="blue">if</font> <font color="black">(</font>text <font color="black">!</font><font color="black">=</font> <font color="maroon">""</font><font color="black">)</font>
+    <font color="black">{</font>
+      thing<font color="black">-</font><font color="black">&#62;</font>setText<font color="black">(</font>text.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+    string assetName <font color="black">=</font> m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"TextAsset"</font><font color="black">]</font>;
+    <font color="blue">if</font> <font color="black">(</font>assetName <font color="black">!</font><font color="black">=</font> <font color="maroon">""</font><font color="black">)</font>
+    <font color="black">{</font>
+      thing<font color="black">-</font><font color="black">&#62;</font>setText<font color="black">(</font>theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>getText<font color="black">(</font>assetName<font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+    addUIThing<font color="black">(</font>thing<font color="black">)</font>;
+    m_stringControl<font color="black">[</font><font color="blue">name</font><font color="black">]</font> <font color="black">=</font> thing;
+    m_createdUIThings.push_back<font color="black">(</font>thing<font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="black">}</font>
+
+UIThing<font color="black">*</font> IniBasedDialog<font color="black">:</font><font color="black">:</font>addProgressBar<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> vertical <font color="black">=</font> atoi<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Vertical"</font><font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">int</font> red, green, blue, alpha;
+  parseColor<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Color"</font><font color="black">]</font>, red, green, blue, alpha<font color="black">)</font>;
+  ProgressBar<font color="black">*</font> prg <font color="black">=</font> <font color="blue">new</font> ProgressBar<font color="black">(</font>vertical, red, green, blue, alpha<font color="black">)</font>;
+  prg<font color="black">-</font><font color="black">&#62;</font>setUpperBound<font color="black">(</font>m_ini.getInt<font color="black">(</font><font color="blue">name</font>, <font color="maroon">"HighBound"</font><font color="black">)</font><font color="black">)</font>;
+  prg<font color="black">-</font><font color="black">&#62;</font>setMargin<font color="black">(</font>m_ini.getInt<font color="black">(</font><font color="blue">name</font>, <font color="maroon">"Margin"</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> prg;
+<font color="black">}</font>
+
+<font color="blue">void</font> IniBasedDialog<font color="black">:</font><font color="black">:</font>parseColor<font color="black">(</font>string color, <font color="blue">int</font><font color="black">&</font> red, <font color="blue">int</font><font color="black">&</font> green, <font color="blue">int</font><font color="black">&</font> blue, <font color="blue">int</font> <font color="black">&</font>alpha<font color="black">)</font>
+<font color="black">{</font>
+  red <font color="black">=</font> green <font color="black">=</font> blue <font color="black">=</font> alpha <font color="black">=</font> <font color="maroon">0</font>;
+  StringTokenizer st<font color="black">(</font>color.c_str<font color="black">(</font><font color="black">)</font>, <font color="maroon">", "</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>st.countTokens<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    red <font color="black">=</font> atoi<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">if</font> <font color="black">(</font>st.countTokens<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    green <font color="black">=</font> atoi<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">if</font> <font color="black">(</font>st.countTokens<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    blue <font color="black">=</font> atoi<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">if</font> <font color="black">(</font>st.countTokens<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    alpha <font color="black">=</font> atoi<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    alpha <font color="black">=</font> <font color="maroon">255</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+UIThing<font color="black">*</font> IniBasedDialog<font color="black">:</font><font color="black">:</font>addVScrollBar<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>
+<font color="black">{</font>
+  VScrollBar<font color="black">*</font> sb <font color="black">=</font> <font color="blue">new</font> VScrollBar;
+  <font color="blue">int</font> low <font color="black">=</font> atoi<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"LowBound"</font><font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">int</font> high <font color="black">=</font> atoi<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"HighBound"</font><font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  sb<font color="black">-</font><font color="black">&#62;</font>setBounds<font color="black">(</font>low, high<font color="black">)</font>;
+  <font color="blue">return</font> sb;
+<font color="black">}</font>
+
+UIThing<font color="black">*</font> IniBasedDialog<font color="black">:</font><font color="black">:</font>addHSlider<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>
+<font color="black">{</font>
+  HSlider<font color="black">*</font> sb <font color="black">=</font> <font color="blue">new</font> HSlider;
+  <font color="blue">int</font> low <font color="black">=</font> atoi<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"LowBound"</font><font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">int</font> high <font color="black">=</font> atoi<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"HighBound"</font><font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  sb<font color="black">-</font><font color="black">&#62;</font>setBounds<font color="black">(</font>low, high<font color="black">)</font>;
+  string slider <font color="black">=</font> m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"SliderSkin"</font><font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font>slider <font color="black">!</font><font color="black">=</font> <font color="maroon">""</font><font color="black">)</font>
+  <font color="black">{</font>
+    sb<font color="black">-</font><font color="black">&#62;</font>setSliderSkin<font color="black">(</font>slider<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">int</font> unitsPerTick <font color="black">=</font> m_ini.getInt<font color="black">(</font><font color="blue">name</font>, <font color="maroon">"UnitsPerTick"</font><font color="black">)</font>;
+  <font color="blue">if</font><font color="black">(</font>unitsPerTick <font color="black">&#60;</font> <font color="maroon">1</font><font color="black">)</font>
+  <font color="black">{</font>
+    unitsPerTick <font color="black">=</font> <font color="maroon">1</font>;
+  <font color="black">}</font>
+  sb<font color="black">-</font><font color="black">&#62;</font>setUnitsPerTick<font color="black">(</font>unitsPerTick<font color="black">)</font>;
+
+  <font color="blue">return</font> sb;
+<font color="black">}</font>
+
+
+UIThing<font color="black">*</font> IniBasedDialog<font color="black">:</font><font color="black">:</font>addButton<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>
+<font color="black">{</font>
+  Button<font color="black">*</font> button <font color="black">=</font> <font color="blue">new</font> Button;
+  button<font color="black">-</font><font color="black">&#62;</font>setDownTexture<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"DownTexture"</font><font color="black">]</font><font color="black">)</font>;
+  button<font color="black">-</font><font color="black">&#62;</font>setUpTexture<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"UpTexture"</font><font color="black">]</font><font color="black">)</font>;
+  button<font color="black">-</font><font color="black">&#62;</font>setFocusTexture<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"FocusTexture"</font><font color="black">]</font><font color="black">)</font>;
+  button<font color="black">-</font><font color="black">&#62;</font>setOverTexture<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"OverTexture"</font><font color="black">]</font><font color="black">)</font>;
+  string type <font color="black">=</font> m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Type"</font><font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"DefaultButton"</font><font color="black">)</font>
+  <font color="black">{</font>
+    setDefault<font color="black">(</font>button<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"CancelButton"</font><font color="black">)</font>
+  <font color="black">{</font>
+    setCancel<font color="black">(</font>button<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> isDefault <font color="black">=</font> atoi<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Default"</font><font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>isDefault <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      setDefault<font color="black">(</font>button<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">int</font> isCancel <font color="black">=</font> atoi<font color="black">(</font>m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Cancel"</font><font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>isCancel <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      setCancel<font color="black">(</font>button<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  <font color="blue">return</font> button;
+<font color="black">}</font>
+
+UIThing<font color="black">*</font> IniBasedDialog<font color="black">:</font><font color="black">:</font>addLabel<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="green">// justified states</font>
+  Label<font color="black">*</font> label <font color="black">=</font> <font color="blue">new</font> Label;
+  string hjust <font color="black">=</font> m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"HJust"</font><font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font>hjust <font color="black">=</font><font color="black">=</font> <font color="maroon">"Right"</font><font color="black">)</font>
+  <font color="black">{</font>
+    label<font color="black">-</font><font color="black">&#62;</font>setHorizJust<font color="black">(</font>JUST_RIGHT<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>hjust <font color="black">=</font><font color="black">=</font> <font color="maroon">"Center"</font><font color="black">)</font>
+  <font color="black">{</font>
+    label<font color="black">-</font><font color="black">&#62;</font>setHorizJust<font color="black">(</font>JUST_CENTER<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    label<font color="black">-</font><font color="black">&#62;</font>setHorizJust<font color="black">(</font>JUST_LEFT<font color="black">)</font>;
+  <font color="black">}</font>
+
+  string vjust <font color="black">=</font> m_ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"VJust"</font><font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font>vjust <font color="black">=</font><font color="black">=</font> <font color="maroon">"Middle"</font><font color="black">)</font>
+  <font color="black">{</font>
+    label<font color="black">-</font><font color="black">&#62;</font>setVertJust<font color="black">(</font>JUST_MIDDLE<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>vjust <font color="black">=</font><font color="black">=</font> <font color="maroon">"Bottom"</font><font color="black">)</font>
+  <font color="black">{</font>
+    label<font color="black">-</font><font color="black">&#62;</font>setVertJust<font color="black">(</font>JUST_BOTTOM<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    label<font color="black">-</font><font color="black">&#62;</font>setVertJust<font color="black">(</font>JUST_TOP<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> label;
+<font color="black">}</font>
+
+
+</PRE>
+</BODY>
+</HTML>

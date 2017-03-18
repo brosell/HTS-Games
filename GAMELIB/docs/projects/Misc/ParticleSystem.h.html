@@ -1,0 +1,176 @@
+<HTML>
+<HEAD>
+<TITLE>
+ParticleSystem.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> ParticleSystem_h
+<font color="blue">#define</font> ParticleSystem_h
+
+<font color="blue">#include</font> <font color="maroon">"Misc/2dVector.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Timer.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Tasking/GameScheduler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;list&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">class</font> Particle;
+<font color="blue">class</font> ParticleGroup;
+
+<font color="blue">class</font> ParticleTraits
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">void</font> init<font color="black">(</font>Particle<font color="black">*</font> particle<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> deinit<font color="black">(</font>Particle<font color="black">*</font> particle<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> decay<font color="black">(</font>Particle<font color="black">*</font> particle<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> draw<font color="black">(</font>Particle<font color="black">*</font> particle, Display<font color="black">*</font> display<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+
+  virtual <font color="blue">int</font> getFps<font color="black">(</font>Particle<font color="black">*</font> particle<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="maroon">30</font>; <font color="black">}</font>
+  virtual <font color="blue">int</font> getLifespan<font color="black">(</font>Particle<font color="black">*</font> particle<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="maroon">30</font>; <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">class</font> Particle<font color="black">:</font>  Noncopyable
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Particle<font color="black">(</font>Point origin, ParticleTraits<font color="black">*</font> traits, ParticleGroup<font color="black">*</font> group<font color="black">)</font>;
+  ~Particle<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> setParam<font color="black">(</font><font color="blue">void</font><font color="black">*</font> p<font color="black">)</font> <font color="black">{</font> m_param <font color="black">=</font> p; <font color="black">}</font>
+  <font color="blue">void</font><font color="black">*</font> getParam<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_param; <font color="black">}</font>
+  
+  <font color="blue">void</font> draw<font color="black">(</font>Display<font color="black">*</font> display<font color="black">)</font> <font color="black">{</font> m_traits<font color="black">-</font><font color="black">&#62;</font>draw<font color="black">(</font><font color="blue">this</font>, display<font color="black">)</font>; <font color="black">}</font>
+
+
+  <font color="blue">void</font> decay<font color="black">(</font><font color="black">)</font>;
+
+
+  <font color="blue">bool</font> isDecayed<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_age <font color="black">&#62;</font> m_traits<font color="black">-</font><font color="black">&#62;</font>getLifespan<font color="black">(</font><font color="blue">this</font><font color="black">)</font>; <font color="black">}</font>
+
+  <font color="blue">void</font> setLocation<font color="black">(</font>FPoint p<font color="black">)</font> <font color="black">{</font> m_location <font color="black">=</font> p; <font color="black">}</font>
+  FPoint getLocation<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_location; <font color="black">}</font>
+
+  <font color="blue">void</font> setVelocity<font color="black">(</font>Vector v<font color="black">)</font> <font color="black">{</font> m_velocity <font color="black">=</font> v; <font color="black">}</font>
+  Vector getVelocity<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_velocity; <font color="black">}</font>
+
+  <font color="blue">int</font> getAge<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_age; <font color="black">}</font>
+
+<font color="blue">private</font><font color="black">:</font>
+
+  FPoint m_location;
+  Vector m_velocity;
+  <font color="blue">int</font> m_age;
+
+  ParticleTraits<font color="black">*</font> m_traits;
+  ParticleGroup<font color="black">*</font> m_group;
+  
+  <font color="blue">void</font><font color="black">*</font> m_param;
+
+<font color="black">}</font>;
+
+<font color="blue">class</font> ParticleEvent
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">int</font> id;
+  list<font color="black">&#60;</font>Point<font color="black">&#62;</font> finalLocations;
+<font color="black">}</font>;
+
+<font color="blue">class</font> ParticleListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">void</font> particlesDone<font color="black">(</font>ParticleEvent<font color="black">*</font> event<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">class</font> ParticleSystem;
+<font color="blue">class</font> ParticleGroup
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  ParticleGroup<font color="black">(</font>ParticleSystem<font color="black">*</font> system<font color="black">)</font><font color="black">:</font> m_system<font color="black">(</font>system<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+
+  <font color="blue">void</font> add<font color="black">(</font>Particle<font color="black">*</font> p<font color="black">)</font>
+  <font color="black">{</font>
+    m_particles.insert<font color="black">(</font>p<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">void</font> remove<font color="black">(</font>Particle<font color="black">*</font> p<font color="black">)</font>;
+
+  list<font color="black">&#60;</font>Point<font color="black">&#62;</font> getFinalLocations<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_finalLocations; <font color="black">}</font>
+
+<font color="blue">private</font><font color="black">:</font>
+  list<font color="black">&#60;</font>Point<font color="black">&#62;</font> m_finalLocations;
+  set<font color="black">&#60;</font>Particle<font color="black">*</font><font color="black">&#62;</font> m_particles;
+  ParticleSystem<font color="black">*</font> m_system;
+<font color="black">}</font>;
+
+
+<font color="blue">class</font> ParticleSystem<font color="black">:</font> Noncopyable
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  ParticleSystem<font color="black">(</font><font color="black">)</font><font color="black">:</font>m_co_runner<font color="black">(</font><font color="black">*</font><font color="blue">this</font>, ParticleSystem<font color="black">:</font><font color="black">:</font>co_runner, <font color="maroon">"ParticleSystemRunner"</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_co_runner.spawn<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">int</font> fire<font color="black">(</font>Point origin, <font color="blue">int</font> count, ParticleTraits<font color="black">*</font> traits, ParticleListener<font color="black">*</font> listener <font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    ParticleGroup<font color="black">*</font> group <font color="black">=</font> <font color="blue">new</font> ParticleGroup<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+    <font color="blue">for</font><font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>count; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      Particle<font color="black">*</font> particle <font color="black">=</font> <font color="blue">new</font> Particle<font color="black">(</font>origin, traits, group<font color="black">)</font>;
+      group<font color="black">-</font><font color="black">&#62;</font>add<font color="black">(</font>particle<font color="black">)</font>;
+      m_particles.insert<font color="black">(</font>particle<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">if</font> <font color="black">(</font>listener <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      m_listeners<font color="black">[</font>group<font color="black">]</font> <font color="black">=</font> listener;
+    <font color="black">}</font>
+    <font color="blue">return</font> <font color="black">(</font><font color="blue">int</font><font color="black">)</font>group;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> draw<font color="black">(</font>Display<font color="black">*</font> display<font color="black">)</font>;
+
+  <font color="blue">void</font> groupDone<font color="black">(</font>ParticleGroup<font color="black">*</font> group<font color="black">)</font>
+  <font color="black">{</font>
+    ParticleEvent event;
+    event.id <font color="black">=</font> <font color="black">(</font><font color="blue">int</font><font color="black">)</font>group;
+    event.finalLocations <font color="black">=</font> group<font color="black">-</font><font color="black">&#62;</font>getFinalLocations<font color="black">(</font><font color="black">)</font>;
+
+    ParticleListener<font color="black">*</font> listener <font color="black">=</font> m_listeners<font color="black">[</font>group<font color="black">]</font>;
+    <font color="blue">if</font> <font color="black">(</font>listener <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      listener<font color="black">-</font><font color="black">&#62;</font>particlesDone<font color="black">(</font><font color="black">&</font>event<font color="black">)</font>;
+    <font color="black">}</font>
+    m_listeners.erase<font color="black">(</font>group<font color="black">)</font>;
+    <font color="blue">delete</font> group;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> tick<font color="black">(</font><font color="black">)</font>;
+  
+  <font color="blue">void</font> remove<font color="black">(</font>Particle<font color="black">*</font> p<font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  set<font color="black">&#60;</font>Particle<font color="black">*</font><font color="black">&#62;</font> m_particles;
+  map<font color="black">&#60;</font>ParticleGroup<font color="black">*</font>, ParticleListener<font color="black">*</font><font color="black">&#62;</font> m_listeners;
+  GameCoroutineTypeDelegate<font color="black">&#60;</font>ParticleSystem<font color="black">&#62;</font> m_co_runner;
+  <font color="blue">void</font> co_runner<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>;
+
+
+<font color="blue">class</font> ParticleSystemWaitable<font color="black">:</font> <font color="blue">public</font> ParticleListener, <font color="blue">public</font> Waitable
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  ParticleSystemWaitable<font color="black">(</font><font color="black">)</font> <font color="black">:</font> m_done<font color="black">(</font><font color="blue">false</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">bool</font> isWaitOver<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_done; <font color="black">}</font>
+  virtual <font color="blue">void</font> particlesDone<font color="black">(</font>ParticleEvent<font color="black">*</font> event<font color="black">)</font> <font color="black">{</font> m_done <font color="black">=</font> <font color="blue">true</font>; finalLocations <font color="black">=</font> event<font color="black">-</font><font color="black">&#62;</font>finalLocations;<font color="black">}</font>
+
+  <font color="blue">void</font> reset<font color="black">(</font><font color="black">)</font> <font color="black">{</font> m_done <font color="black">=</font> <font color="blue">false</font>; <font color="black">}</font>
+  list<font color="black">&#60;</font>Point<font color="black">&#62;</font> finalLocations;
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> m_done;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,246 @@
+<HTML>
+<HEAD>
+<TITLE>
+Thing.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"Thing.h"</font>
+
+set<font color="black">&#60;</font>Thing<font color="black">*</font><font color="black">&#62;</font> Thing<font color="black">:</font><font color="black">:</font>s_things;
+list<font color="black">&#60;</font>Thing<font color="black">*</font><font color="black">&#62;</font> Thing<font color="black">:</font><font color="black">:</font>s_safeDeleteList;
+
+Thing<font color="black">:</font><font color="black">:</font>Thing<font color="black">(</font><font color="blue">int</font> z, <font color="blue">int</font> id, <font color="blue">bool</font> strikable, <font color="blue">bool</font> visible, <font color="blue">int</font> rotations<font color="black">)</font><font color="black">:</font>
+m_z<font color="black">(</font>z<font color="black">)</font>, 
+m_id<font color="black">(</font>id<font color="black">)</font>, 
+m_strikable<font color="black">(</font>strikable<font color="black">)</font>,
+m_visible<font color="black">(</font>visible<font color="black">)</font>,
+m_currentSkin<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_position<font color="black">(</font><font color="maroon">-1</font>, <font color="maroon">-1</font><font color="black">)</font>,
+m_angle<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_rotations<font color="black">(</font>rotations<font color="black">)</font>
+<font color="black">{</font>
+  init<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Thing<font color="black">:</font><font color="black">:</font>Thing<font color="black">(</font><font color="blue">int</font> z<font color="black">)</font><font color="black">:</font>
+m_z<font color="black">(</font>z<font color="black">)</font>, 
+m_id<font color="black">(</font><font color="maroon">-1</font><font color="black">)</font>, 
+m_strikable<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+m_visible<font color="black">(</font><font color="blue">true</font><font color="black">)</font>,
+m_currentSkin<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_position<font color="black">(</font><font color="maroon">-1</font>, <font color="maroon">-1</font><font color="black">)</font>,
+m_angle<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_rotations<font color="black">(</font><font color="maroon">1</font><font color="black">)</font>
+<font color="black">{</font>
+  init<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> Thing<font color="black">:</font><font color="black">:</font>init<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  lassert<font color="black">(</font> <font color="black">(</font>m_z <font color="black">&#62;</font><font color="black">=</font> <font color="maroon">0</font> <font color="black">&</font><font color="black">&</font> m_z<font color="black">&#60;</font><font color="black">=</font><font color="maroon">15</font><font color="black">)</font> <font color="black">)</font>;
+  lassert<font color="black">(</font>m_rotations <font color="black">&#62;</font> <font color="maroon">0</font> <font color="black">&</font><font color="black">&</font> m_rotations <font color="black">&#60;</font><font color="black">=</font><font color="maroon">72</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>m_z <font color="black">&#62;</font> <font color="maroon">1</font><font color="black">)</font>
+  <font color="black">{</font>
+    s_things.insert<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+Thing<font color="black">:</font><font color="black">:</font>~Thing<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  m_skins.clear<font color="black">(</font><font color="black">)</font>;
+  s_things.erase<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="green">//static </font>
+<font color="blue">void</font> Thing<font color="black">:</font><font color="black">:</font>safeDelete<font color="black">(</font>Thing<font color="black">*</font> thing<font color="black">)</font>
+<font color="black">{</font>
+  s_safeDeleteList.push_back<font color="black">(</font>thing<font color="black">)</font>;
+<font color="black">}</font>
+<font color="blue">void</font> Thing<font color="black">:</font><font color="black">:</font>processSafeDeletes<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  list<font color="black">&#60;</font>Thing<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator li;
+  <font color="blue">for</font> <font color="black">(</font>li<font color="black">=</font>s_safeDeleteList.begin<font color="black">(</font><font color="black">)</font>; li<font color="black">!</font><font color="black">=</font>s_safeDeleteList.end<font color="black">(</font><font color="black">)</font>; li<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">delete</font> <font color="black">(</font><font color="black">*</font>li<font color="black">)</font>;
+  <font color="black">}</font>
+  s_safeDeleteList.clear<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> Thing<font color="black">:</font><font color="black">:</font>draw<font color="black">(</font>Display<font color="black">*</font> display, <font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_currentSkin <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font> <font color="black">&</font><font color="black">&</font> m_visible<font color="black">)</font>
+  <font color="black">{</font>
+    m_currentSkin<font color="black">-</font><font color="black">&#62;</font>setAngle<font color="black">(</font>m_angle<font color="black">)</font>;
+    m_currentSkin<font color="black">-</font><font color="black">&#62;</font>blit<font color="black">(</font>display, x, y<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> Thing<font color="black">:</font><font color="black">:</font>showSkin<font color="black">(</font>string skinName<font color="black">)</font>
+<font color="black">{</font>
+  map<font color="black">&#60;</font>string, SharedRotateSkin<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  pair <font color="black">=</font> m_skins.find<font color="black">(</font>skinName<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>pair <font color="black">!</font><font color="black">=</font> m_skins.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_currentSkin <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    m_currentSkin <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+
+<font color="blue">const</font> CollisionBitMask<font color="black">*</font> Thing<font color="black">:</font><font color="black">:</font>getCurrentCollisionBitMask<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_currentSkin <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> m_currentSkin<font color="black">-</font><font color="black">&#62;</font>currentCollisionMask<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> Thing<font color="black">:</font><font color="black">:</font>checkCollision<font color="black">(</font>Thing<font color="black">*</font> thing1, Thing<font color="black">*</font> thing2, Point<font color="black">&</font> p1, Point<font color="black">&</font> p2<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">const</font> CollisionBitMask<font color="black">*</font> thing1BM <font color="black">=</font> thing1<font color="black">-</font><font color="black">&#62;</font>m_currentSkin<font color="black">-</font><font color="black">&#62;</font>currentCollisionMask<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">const</font> CollisionBitMask<font color="black">*</font> thing2BM <font color="black">=</font> thing2<font color="black">-</font><font color="black">&#62;</font>m_currentSkin<font color="black">-</font><font color="black">&#62;</font>currentCollisionMask<font color="black">(</font><font color="black">)</font>;
+
+  Point thing1Pos <font color="black">=</font> thing1<font color="black">-</font><font color="black">&#62;</font>getPositioni<font color="black">(</font><font color="black">)</font>;
+  Point thing2Pos <font color="black">=</font> thing2<font color="black">-</font><font color="black">&#62;</font>getPositioni<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">// compensate for fact that position is the center position not the top left</font>
+  thing1Pos.x<font color="black">-</font><font color="black">=</font><font color="black">(</font>thing1BM<font color="black">-</font><font color="black">&#62;</font>getWidth<font color="black">(</font><font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+  thing1Pos.y<font color="black">-</font><font color="black">=</font><font color="black">(</font>thing1BM<font color="black">-</font><font color="black">&#62;</font>getHeight<font color="black">(</font><font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+
+  thing2Pos.x<font color="black">-</font><font color="black">=</font><font color="black">(</font>thing2BM<font color="black">-</font><font color="black">&#62;</font>getWidth<font color="black">(</font><font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+  thing2Pos.y<font color="black">-</font><font color="black">=</font><font color="black">(</font>thing2BM<font color="black">-</font><font color="black">&#62;</font>getHeight<font color="black">(</font><font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+
+  <font color="blue">return</font> testCollision<font color="black">(</font>thing1BM, thing1Pos.x, thing1Pos.y,
+                       thing2BM, thing2Pos.x, thing2Pos.y,
+                       p1, p2<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> Thing<font color="black">:</font><font color="black">:</font>tickAll<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  set<font color="black">&#60;</font>Thing<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>s_things.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>s_things.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>tick<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  processSafeDeletes<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> Thing<font color="black">:</font><font color="black">:</font>checkCollisions<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  set<font color="black">&#60;</font>Thing<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i1;
+  set<font color="black">&#60;</font>Thing<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i2;
+
+  Thing<font color="black">*</font> thing1 <font color="black">=</font> <font color="maroon">0</font>;
+  Thing<font color="black">*</font> thing2 <font color="black">=</font> <font color="maroon">0</font>;
+
+  Point p1;
+  Point p2;
+  <font color="blue">int</font> end<font color="black">=</font><font color="black">(</font>s_things.size<font color="black">(</font><font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">1</font>;
+  <font color="blue">int</font> t;
+  <font color="blue">for</font> <font color="black">(</font>i1<font color="black">=</font>s_things.begin<font color="black">(</font><font color="black">)</font>, t<font color="black">=</font><font color="maroon">0</font>; t<font color="black">&#60;</font>end; i1<font color="black">+</font><font color="black">+</font>, t<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    thing1 <font color="black">=</font> <font color="black">*</font>i1;
+    <font color="blue">if</font> <font color="black">(</font> thing1<font color="black">-</font><font color="black">&#62;</font>isStrikable<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">false</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">continue</font>;
+    <font color="black">}</font>
+    
+    i2 <font color="black">=</font> i1;
+    i2<font color="black">+</font><font color="black">+</font>;
+    <font color="blue">for</font> <font color="black">(</font>; i2<font color="black">!</font><font color="black">=</font>s_things.end<font color="black">(</font><font color="black">)</font>; i2<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      thing2 <font color="black">=</font> <font color="black">*</font>i2;
+      <font color="blue">if</font> <font color="black">(</font> thing2<font color="black">-</font><font color="black">&#62;</font>isStrikable<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">false</font><font color="black">)</font>
+      <font color="black">{</font>
+        <font color="blue">continue</font>;
+      <font color="black">}</font>
+      
+      <font color="blue">if</font> <font color="black">(</font>Thing<font color="black">:</font><font color="black">:</font>checkCollision<font color="black">(</font>thing1, thing2, p1, p2<font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        thing1<font color="black">-</font><font color="black">&#62;</font>hit<font color="black">(</font><font color="black">*</font>thing2, p1<font color="black">)</font>;
+        thing2<font color="black">-</font><font color="black">&#62;</font>hit<font color="black">(</font><font color="black">*</font>thing1, p2<font color="black">)</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  processSafeDeletes<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">void</font> Thing<font color="black">:</font><font color="black">:</font>getByDistance<font color="black">(</font><font color="blue">int</font> distance, list<font color="black">&#60;</font>Thing<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> aList<font color="black">)</font>
+<font color="black">{</font>
+  set<font color="black">&#60;</font>Thing<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i1;
+  set<font color="black">&#60;</font>Thing<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i2;
+
+  Thing<font color="black">*</font> thing <font color="black">=</font> <font color="maroon">0</font>;
+
+  Point p1;
+  Point p2;
+
+  <font color="blue">int</font> t;
+  <font color="blue">for</font> <font color="black">(</font>i1<font color="black">=</font>s_things.begin<font color="black">(</font><font color="black">)</font>; i1<font color="black">!</font><font color="black">=</font>s_things.end<font color="black">(</font><font color="black">)</font>; i1<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    thing <font color="black">=</font> <font color="black">*</font>i1;
+    <font color="blue">if</font> <font color="black">(</font> thing<font color="black">-</font><font color="black">&#62;</font>isStrikable<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">false</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">continue</font>;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font>isThingClose<font color="black">(</font>thing, distance<font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      aList.push_back<font color="black">(</font>thing<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">bool</font> Thing<font color="black">:</font><font color="black">:</font>isThingClose<font color="black">(</font>Thing<font color="black">*</font> thing, <font color="blue">int</font> radius<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> x, y;
+  <font color="blue">int</font> w, h;
+  <font color="blue">int</font> distToCenter;
+
+  <font color="blue">int</font> m <font color="black">=</font> getX<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">int</font> n <font color="black">=</font> getY<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>m<font color="black">+</font>radius <font color="black">&#60;</font> thing<font color="black">-</font><font color="black">&#62;</font>getTopLeftX<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>m<font color="black">-</font>radius <font color="black">&#62;</font> thing<font color="black">-</font><font color="black">&#62;</font>getTopLeftX<font color="black">(</font><font color="black">)</font><font color="black">+</font>thing<font color="black">-</font><font color="black">&#62;</font>getWidth<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>n<font color="black">+</font>radius <font color="black">&#60;</font> thing<font color="black">-</font><font color="black">&#62;</font>getTopLeftY<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>n<font color="black">-</font>radius <font color="black">&#62;</font> thing<font color="black">-</font><font color="black">&#62;</font>getTopLeftY<font color="black">(</font><font color="black">)</font> <font color="black">+</font> thing<font color="black">-</font><font color="black">&#62;</font>getHeight<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> Thing<font color="black">:</font><font color="black">:</font>doesPointHit<font color="black">(</font>Point p<font color="black">)</font>
+<font color="black">{</font>
+  Rect r<font color="black">(</font>getTopLeftX<font color="black">(</font><font color="black">)</font>, getTopLeftY<font color="black">(</font><font color="black">)</font>, getWidth<font color="black">(</font><font color="black">)</font>, getHeight<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>r.containsPoint<font color="black">(</font>p<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> mx <font color="black">=</font> p.x <font color="black">-</font><font color="black">(</font>getTopLeftX<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">int</font> my <font color="black">=</font> p.y <font color="black">-</font><font color="black">(</font>getTopLeftY<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">(</font>getCurrentCollisionBitMask<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>isPointCollision<font color="black">(</font>mx, my<font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

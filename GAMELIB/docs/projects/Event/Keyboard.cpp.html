@@ -1,0 +1,29 @@
+<HTML>
+<HEAD>
+<TITLE>
+Keyboard.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"Keyboard.h"</font>
+
+KeyMapEntry keyboard<font color="black">[</font><font color="maroon">500</font><font color="black">]</font>;
+
+<font color="blue">inline</font> <font color="blue">void</font> defKeyMapEntry<font color="black">(</font><font color="blue">int</font> c, <font color="blue">int</font> sc, <font color="blue">int</font> ascii, <font color="blue">int</font> sAscii, <font color="blue">int</font> cAscii<font color="black">)</font>
+<font color="black">{</font>
+  keyboard<font color="black">[</font>c<font color="black">]</font>.makeScancode <font color="black">=</font> c;
+  keyboard<font color="black">[</font>c<font color="black">]</font>.breakScancode <font color="black">=</font> c<font color="black">+</font><font color="maroon">0x80</font>;
+  keyboard<font color="black">[</font>c<font color="black">]</font>.defaultAscii <font color="black">=</font> ascii;
+  keyboard<font color="black">[</font>c<font color="black">]</font>.shiftedAscii <font color="black">=</font> sAscii;
+  keyboard<font color="black">[</font>c<font color="black">]</font>.ctrlAscii <font color="black">=</font> cAscii;
+<font color="black">}</font>
+
+<font color="blue">void</font> initKeyboard<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  defKeyMapEntry<font color="black">(</font><font color="maroon">1</font>, <font color="maroon">0</font>, <font color="maroon">0</font>, <font color="maroon">0</font>, <font color="maroon">0</font><font color="black">)</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

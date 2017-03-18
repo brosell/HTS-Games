@@ -1,0 +1,107 @@
+<HTML>
+<HEAD>
+<TITLE>
+ProgressBar.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4503</font> <font color="maroon">4530</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"ProgressBar.h"</font>
+
+ProgressBar<font color="black">:</font><font color="black">:</font>ProgressBar<font color="black">(</font><font color="blue">bool</font> vertical, <font color="blue">int</font> r, <font color="blue">int</font> g, <font color="blue">int</font> b, <font color="blue">int</font> a<font color="black">)</font><font color="black">:</font>
+m_vertical<font color="black">(</font>vertical<font color="black">)</font>, 
+m_red<font color="black">(</font>r<font color="black">)</font>, 
+m_green<font color="black">(</font>g<font color="black">)</font>, 
+m_blue<font color="black">(</font>b<font color="black">)</font>, 
+m_alpha<font color="black">(</font>a<font color="black">)</font>, 
+m_margin<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_value<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, 
+m_currentValue<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, 
+m_upperBound<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>
+<font color="black">{</font>
+  m_timer <font color="black">=</font> Timer<font color="black">:</font><font color="black">:</font>create<font color="black">(</font><font color="maroon">"ProgressBarCreaper"</font>, <font color="maroon">-1</font>, <font color="maroon">25</font>, <font color="blue">this</font>, <font color="maroon">0</font>, <font color="blue">true</font><font color="black">)</font>;
+<font color="black">}</font>
+
+ProgressBar<font color="black">:</font><font color="black">:</font>~ProgressBar<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  Timer<font color="black">:</font><font color="black">:</font>destroy<font color="black">(</font>m_timer<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> ProgressBar<font color="black">:</font><font color="black">:</font>timeout<font color="black">(</font>TimerEvent<font color="black">*</font> ev<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_currentValue <font color="black">&#60;</font> m_value<font color="black">*</font>ticksPerUnit<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_currentValue<font color="black">+</font><font color="black">+</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> ProgressBar<font color="black">:</font><font color="black">:</font>setValue<font color="black">(</font><font color="blue">int</font> v<font color="black">)</font> 
+<font color="black">{</font> 
+  <font color="blue">if</font> <font color="black">(</font>v <font color="black">&#60;</font> m_value<font color="black">)</font>
+  <font color="black">{</font>
+    m_currentValue <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+  m_value <font color="black">=</font> v; 
+<font color="black">}</font>
+
+<font color="blue">void</font> ProgressBar<font color="black">:</font><font color="black">:</font>paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>
+<font color="black">{</font>
+  Rect r <font color="black">=</font> getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+
+  Font<font color="black">*</font> font <font color="black">=</font> getFont<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">255</font><font color="black">]</font>;
+  sprintf<font color="black">(</font>buf, <font color="maroon">"%d/%d"</font>, m_value, m_upperBound<font color="black">)</font>;
+  string v<font color="black">(</font>buf<font color="black">)</font>;
+
+
+  <font color="green">//float percent = (float)m_currentValue/(float)m_upperBound;</font>
+
+  <font color="blue">if</font> <font color="black">(</font>m_vertical<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">// bottom to top</font>
+    <font color="green">//int barHeight = (float)r.h*percent;</font>
+    <font color="blue">int</font> barHeight <font color="black">=</font> m_currentValue;
+    <font color="blue">int</font> bary <font color="black">=</font> <font color="black">(</font>r.y <font color="black">+</font> r.h <font color="black">-</font>m_margin<font color="black">)</font> <font color="black">-</font>barHeight;
+
+    <font color="blue">if</font> <font color="black">(</font>m_value <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      surface<font color="black">-</font><font color="black">&#62;</font>fillRect<font color="black">(</font>r.x<font color="black">+</font>m_margin, bary, r.w<font color="black">-</font><font color="black">(</font><font color="maroon">2</font><font color="black">*</font>m_margin<font color="black">)</font>, barHeight, m_red, m_green, m_blue, m_alpha<font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">int</font> centerY <font color="black">=</font> r.h<font color="black">/</font><font color="maroon">2</font>;
+    <font color="blue">int</font> centerX <font color="black">=</font> r.w<font color="black">/</font><font color="maroon">2</font>;
+
+    <font color="blue">int</font> tfy <font color="black">=</font> centerY<font color="black">-</font><font color="black">(</font>font<font color="black">-</font><font color="black">&#62;</font>getTextWidth<font color="black">(</font>v<font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+    <font color="blue">int</font> tfx <font color="black">=</font> centerX<font color="black">-</font><font color="black">(</font>font<font color="black">-</font><font color="black">&#62;</font>getFontHeight<font color="black">(</font><font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+
+    font<font color="black">-</font><font color="black">&#62;</font>drawLine<font color="black">(</font>surface, v, tfx, tfy<font color="black">)</font>;
+
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    <font color="green">// left to right</font>
+    <font color="green">//int barWidth = (float)r.w*percent;</font>
+    <font color="blue">int</font> barWidth <font color="black">=</font> m_currentValue;
+
+    <font color="blue">int</font> barx <font color="black">=</font> <font color="black">(</font>r.x<font color="black">+</font>r.w<font color="black">)</font><font color="black">-</font>barWidth;
+
+    <font color="blue">if</font> <font color="black">(</font>m_value <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      surface<font color="black">-</font><font color="black">&#62;</font>fillRect<font color="black">(</font>barx, r.y, barWidth, r.h, m_red, m_green, m_blue, m_alpha<font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">int</font> centerY <font color="black">=</font> r.h<font color="black">/</font><font color="maroon">2</font>;
+    <font color="blue">int</font> centerX <font color="black">=</font> r.w<font color="black">/</font><font color="maroon">2</font>;
+
+    <font color="blue">int</font> tfy <font color="black">=</font> centerY<font color="black">-</font><font color="black">(</font>font<font color="black">-</font><font color="black">&#62;</font>getTextWidth<font color="black">(</font>v<font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+    <font color="blue">int</font> tfx <font color="black">=</font> centerX<font color="black">-</font><font color="black">(</font>font<font color="black">-</font><font color="black">&#62;</font>getFontHeight<font color="black">(</font><font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+
+    font<font color="black">-</font><font color="black">&#62;</font>drawLine<font color="black">(</font>surface, v, tfx, tfy<font color="black">)</font>;
+
+  <font color="black">}</font>
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

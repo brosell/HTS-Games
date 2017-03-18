@@ -1,0 +1,91 @@
+<HTML>
+<HEAD>
+<TITLE>
+Console.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _Console_h
+<font color="blue">#define</font> _Console_h
+
+<font color="blue">#include</font> <font color="maroon">"UI.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;time.h&#62;</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;deque&#62;</font>
+<font color="blue">using</font> std<font color="black">:</font><font color="black">:</font>deque;
+
+<font color="blue">class</font> ConsoleLine
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  ConsoleLine<font color="black">(</font>string s<font color="black">)</font><font color="black">:</font> <font color="blue">line</font><font color="black">(</font>s<font color="black">)</font>
+  <font color="black">{</font>
+    time <font color="black">=</font> clock<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  string <font color="blue">line</font>;
+  clock_t time;
+<font color="black">}</font>;
+
+<font color="blue">class</font> Console<font color="black">:</font> <font color="blue">public</font> DialogBox, <font color="blue">public</font> ConsoleListener, <font color="blue">public</font> KeyListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Console<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">/**
+    * when the console is not showing, we still want (in some cases)
+    * to see the contents. This method will draw the last N lines to
+    * the top of the screen
+    */</font>
+  <font color="blue">void</font> drawWhileHidden<font color="black">(</font>Surface<font color="black">*</font> surface<font color="black">)</font>;
+  
+  <font color="green">/**
+    * adds the line to the consoles buffer to be printed
+    */</font>
+  <font color="blue">void</font> println<font color="black">(</font>string s, ...<font color="black">)</font>; 
+
+  <font color="green">/**
+    * the console takes commands from the user. Use addCollback to
+    * create a callback for a particular command
+    */</font>
+  <font color="blue">void</font> addCallback<font color="black">(</font>string cmd, ConsoleListener<font color="black">*</font> d<font color="black">)</font>;
+  
+<font color="green">//  /**</font>
+<font color="green">//    * default callback for the help command.</font>
+<font color="green">//    * It list all the recognized commands</font>
+<font color="green">//    */</font>
+<font color="green">//  bool helpCallback(Message* event);</font>
+<font color="green">//  bool handleEvent(Message* event);</font>
+
+  virtual <font color="blue">void</font> consoleCommand<font color="black">(</font>ConsoleEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onKeyPress<font color="black">(</font>KeyPressEvent<font color="black">*</font> event<font color="black">)</font>;
+
+  virtual <font color="blue">void</font> show<font color="black">(</font><font color="black">)</font>;
+  virtual <font color="blue">void</font> hide<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">bool</font> isShowing<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_showing; <font color="black">}</font>
+
+  <font color="blue">void</font> execute<font color="black">(</font>string s, ...<font color="black">)</font>;
+  
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> doCommand<font color="black">(</font><font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> m_showing;
+
+  <font color="blue">bool</font> m_previousMouseState;
+
+  TextArea m_output;
+  TextBox m_input;
+  deque<font color="black">&#60;</font>ConsoleLine<font color="black">&#62;</font> m_lines;
+  map<font color="black">&#60;</font>string, ConsoleListener<font color="black">*</font><font color="black">&#62;</font> m_listeners;
+
+  <font color="blue">int</font> m_numVisibleLines; <font color="green">// when console is hidden</font>
+  <font color="blue">int</font> m_lineTime; <font color="green">// when console is hidden, how long to show each line. In milliseconds</font>
+
+  <font color="blue">bool</font> m_changed;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

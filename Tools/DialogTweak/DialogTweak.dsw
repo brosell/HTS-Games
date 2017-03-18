@@ -1,0 +1,63 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "BertsToolBoxLib"=..\..\BertsToolBox\BertsToolBoxLib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "DialogTweak"=.\DialogTweak.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name BertsToolBoxLib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GameLib_2
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "GameLib_2"=..\..\GAMELIB_2\GameLib_2.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    GameLib_2
+    ..\..\gamelib_2
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

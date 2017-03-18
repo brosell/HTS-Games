@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>
+Keyboard-utils.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _Keyboard_Utils_h
+<font color="blue">#define</font> _Keyboard_Utils_h
+
+<font color="blue">const</font> <font color="blue">char</font> keymap<font color="black">[</font><font color="black">]</font>  <font color="black">=</font> <font color="maroon">"`1234567890-=qwertyuiop[]\\asdfghjkl;’zxcvbnm,./"</font>;
+<font color="blue">const</font> <font color="blue">char</font> ukeymap<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM&#60;&#62;?"</font>;
+
+<font color="blue">const</font> <font color="blue">char</font> allKeys<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"`1234567890-=qwertyuiop[]\\asdfghjkl;\'zxcvbnm,./ ~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM&#60;&#62;? "</font>;
+
+
+<font color="blue">int</font> theoffsetof<font color="black">(</font><font color="blue">char</font> ch<font color="black">)</font>;
+<font color="blue">char</font> upperof<font color="black">(</font><font color="blue">char</font> ch<font color="black">)</font>;
+
+<font color="blue">inline</font> <font color="blue">char</font> upperof<font color="black">(</font><font color="blue">char</font> ch<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font><font color="blue">sizeof</font><font color="black">(</font>keymap<font color="black">)</font>; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>keymap<font color="black">[</font>c<font color="black">]</font> <font color="black">=</font><font color="black">=</font> ch<font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> ukeymap<font color="black">[</font>c<font color="black">]</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+<font color="blue">inline</font> <font color="blue">int</font> theoffsetof<font color="black">(</font><font color="blue">char</font> ch<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font><font color="blue">sizeof</font><font color="black">(</font>keymap<font color="black">)</font>; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>keymap<font color="black">[</font>c<font color="black">]</font> <font color="black">=</font><font color="black">=</font> ch <font color="black">|</font><font color="black">|</font> ukeymap<font color="black">[</font>c<font color="black">]</font> <font color="black">=</font><font color="black">=</font> ch<font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> c;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

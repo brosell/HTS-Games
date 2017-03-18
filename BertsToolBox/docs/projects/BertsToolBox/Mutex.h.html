@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<TITLE>
+Mutex.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> Mutex_h
+<font color="blue">#define</font> Mutex_h
+
+<font color="blue">#include</font> <font color="maroon">&#60;windows.h&#62;</font>
+
+<font color="blue">class</font> Mutex <font color="black">{</font>
+<font color="blue">private</font><font color="black">:</font>
+  CRITICAL_SECTION m_lock;
+
+<font color="blue">public</font><font color="black">:</font>
+  Mutex<font color="black">(</font><font color="blue">void</font><font color="black">)</font> <font color="black">{</font>
+    InitializeCriticalSection<font color="black">(</font><font color="black">&</font>m_lock<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> lock<font color="black">(</font><font color="blue">void</font><font color="black">)</font> <font color="black">{</font>
+    EnterCriticalSection<font color="black">(</font><font color="black">&</font>m_lock<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> unlock<font color="black">(</font><font color="blue">void</font><font color="black">)</font> <font color="black">{</font>
+    LeaveCriticalSection<font color="black">(</font><font color="black">&</font>m_lock<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">class</font> Thread_Sync
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Thread_Sync<font color="black">(</font>Mutex<font color="black">&</font> theMutex<font color="black">)</font><font color="black">:</font> m_mutex<font color="black">(</font>theMutex<font color="black">)</font>
+  <font color="black">{</font>
+    m_mutex.lock<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  ~Thread_Sync<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_mutex.unlock<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="blue">private</font><font color="black">:</font>
+  Mutex<font color="black">&</font> m_mutex;
+<font color="black">}</font>;
+
+<font color="blue">#define</font> synchronized<font color="black">(</font>x<font color="black">)</font> Thread_Sync mut<font color="black">(</font>x<font color="black">)</font>
+
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,35 @@
+10/25/03 19:36:25 - Inform: Width: 640, Height: 480, Bpp: 32, Type: OPENGL, Flags: 0x80000000
+10/25/03 19:36:25 - Inform: HW Available: 1
+10/25/03 19:36:25 - Inform: Accelerated HW->HW Blits: 1
+10/25/03 19:36:25 - Inform: Accelerated HW->HW Colorkey Blits: 1
+10/25/03 19:36:25 - Inform: Accelerated HW->HW ALPHA Blits: 0
+10/25/03 19:36:25 - Inform: Accelerated SW->HW Blits: 1
+10/25/03 19:36:25 - Inform: Accelerated SW->HW Colorkey Blits: 1
+10/25/03 19:36:25 - Inform: Accelerated SW->HW ALPHA Blits: 0
+10/25/03 19:36:25 - Inform: Accelerated Fills :1
+10/25/03 19:40:55 - *Error: Asset "bg_BlueSky1" was never used
+10/25/03 19:40:55 - *Error: Asset "bg_BlueSky2" was never used
+10/25/03 19:40:55 - *Error: Asset "bg_BlueSky3" was never used
+10/25/03 19:40:55 - *Error: Asset "bg_BlueSky4" was never used
+10/25/03 19:40:55 - *Error: Asset "dlg_Game" was never used
+10/25/03 19:40:55 - *Error: Asset "fnt_Default" was never used
+10/25/03 19:40:55 - *Error: Asset "mouse_Default" was never used
+10/25/03 19:40:55 - *Error: Asset "mouse_Square" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_Club" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_ConsoleBackground" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_Fairway_Flat" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_Fairway_Slope_Left" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_Fairway_Slope_Right" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_Goal" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_GolfBall" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_None" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_OscillatingFan" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_Tee" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_WindMachine" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_World_Background" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_WreckingBall_downswing" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_WreckingBall_idle" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_WreckingBall_power" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_WreckingBall_upswing" was never used
+10/25/03 19:40:55 - *Error: Asset "skn_btn_Barrel" was never used
+10/25/03 19:40:55 - *Error: Asset "txt_GameOver" was never used

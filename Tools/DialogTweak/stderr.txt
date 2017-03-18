@@ -1,0 +1,26 @@
+10/05/03 13:28:04 - Inform: FLAG: test = True
+10/05/03 13:28:04 - Inform: Width: 640, Height: 480, Bpp: 32, Type: SDL, Flags: 0x00000000
+10/05/03 13:28:05 - Inform: HW Available: 1
+10/05/03 13:28:05 - Inform: Accelerated HW->HW Blits: 1
+10/05/03 13:28:05 - Inform: Accelerated HW->HW Colorkey Blits: 1
+10/05/03 13:28:05 - Inform: Accelerated HW->HW ALPHA Blits: 0
+10/05/03 13:28:05 - Inform: Accelerated SW->HW Blits: 1
+10/05/03 13:28:05 - Inform: Accelerated SW->HW Colorkey Blits: 1
+10/05/03 13:28:05 - Inform: Accelerated SW->HW ALPHA Blits: 0
+10/05/03 13:28:05 - Inform: Accelerated Fills :1
+10/05/03 13:28:05 - Inform: Screen is SW surface
+10/05/03 13:28:05 - Inform: Rmask 00ff0000
+10/05/03 13:28:05 - Inform: Gmask 0000ff00
+10/05/03 13:28:05 - Inform: Bmask 000000ff
+10/05/03 13:28:05 - Inform: Amask 00000000
+10/05/03 13:28:05 - Inform: SDLDisplay created.
+10/05/03 13:28:05 - Inform: Starting class TweakableDialogTest1: AddItem (iteration 1 of 1)
+10/05/03 13:28:05 - Inform: Starting class TweakableDialogTest1: RemoveItem (iteration 1 of 1)
+10/05/03 13:28:05 - Inform: Starting class TweakableDialogTest1: MoveItem (iteration 1 of 1)
+10/05/03 13:28:05 - Inform: 
+10/05/03 13:28:05 - Inform: 
+10/05/03 13:28:05 - Inform: TestFixture: class TweakableDialogTest1
+10/05/03 13:28:05 - Inform: ------------
+10/05/03 13:28:05 - Inform: Total: 000 (Pass: 000, Fail 000)
+10/05/03 13:28:05 - Inform: ------------
+10/05/03 13:28:05 - Inform: Suite Total: 000 (Pass: 000, Fail 000)

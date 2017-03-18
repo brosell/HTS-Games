@@ -1,0 +1,109 @@
+<HTML>
+<HEAD>
+<TITLE>
+ThreadSafeList.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> ThreadSafeList_h
+<font color="blue">#define</font> ThreadSafeList_h
+
+<font color="blue">#include</font> <font color="maroon">"Mutex.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;deque&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;algorithm&#62;</font>
+
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename Kind<font color="black">&#62;</font>
+<font color="blue">class</font> ThreadSafeList
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  ThreadSafeList<font color="black">(</font><font color="black">)</font><font color="black">:</font> m_mutex<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  <font color="blue">void</font> push_back<font color="black">(</font>Kind item<font color="black">)</font>
+  <font color="black">{</font>
+    lock<font color="black">(</font><font color="black">)</font>;
+    m_theList.push_back<font color="black">(</font>item<font color="black">)</font>;
+    unlock<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">void</font> push_front<font color="black">(</font>Kind item<font color="black">)</font>
+  <font color="black">{</font>
+    lock<font color="black">(</font><font color="black">)</font>;
+    m_theList.push_front<font color="black">(</font>item<font color="black">)</font>;
+    unlock<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  Kind back<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    Kind ret;
+    lock<font color="black">(</font><font color="black">)</font>;
+    ret <font color="black">=</font> m_theList.back<font color="black">(</font><font color="black">)</font>;
+    unlock<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+  Kind front<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    Kind ret;
+    lock<font color="black">(</font><font color="black">)</font>;
+    ret <font color="black">=</font> m_theList.front<font color="black">(</font><font color="black">)</font>;
+    unlock<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+  <font color="blue">void</font> pop_back<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    lock<font color="black">(</font><font color="black">)</font>;
+    m_theList.pop_back<font color="black">(</font><font color="black">)</font>;
+    unlock<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">void</font> pop_front<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    lock<font color="black">(</font><font color="black">)</font>;
+    m_theList.pop_front<font color="black">(</font><font color="black">)</font>;
+    unlock<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">int</font> size<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> size;
+    lock<font color="black">(</font><font color="black">)</font>;
+    size <font color="black">=</font> m_theList.size<font color="black">(</font><font color="black">)</font>;
+    unlock<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> size;
+  <font color="black">}</font>
+  <font color="blue">void</font> clear<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    lock<font color="black">(</font><font color="black">)</font>;
+    m_theList.clear<font color="black">(</font><font color="black">)</font>;
+    unlock<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> lock<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_mutex.lock<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">void</font> unlock<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_mutex.unlock<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">template</font> <font color="black">&#60;</font>typename ContKind<font color="black">&#62;</font>
+  <font color="blue">void</font> copyTo<font color="black">(</font>ContKind<font color="black">&</font> cont<font color="black">)</font>
+  <font color="black">{</font>
+    lock<font color="black">(</font><font color="black">)</font>;
+    deque<font color="black">&#60;</font>Kind<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>m_theList.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>m_theList.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      cont.push_back<font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+    <font color="black">}</font>
+    unlock<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="blue">protected</font><font color="black">:</font>
+<font color="blue">private</font><font color="black">:</font>
+  deque<font color="black">&#60;</font>Kind<font color="black">&#62;</font> m_theList;
+
+  Mutex m_mutex;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

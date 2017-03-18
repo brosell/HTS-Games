@@ -1,0 +1,1764 @@
+<HTML>
+<HEAD>
+<TITLE>
+mmgr.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">//                                                      </font>
+<font color="green">//                                                      </font>
+<font color="green">//  _ __ ___  _ __ ___   __ _ _ __      ___ _ __  _ __  </font>
+<font color="green">// | '_ ` _ \| '_ ` _ \ / _` | '__|    / __| '_ \| '_ \ </font>
+<font color="green">// | | | | | | | | | | | (_| | |    _ | (__| |_) | |_) |</font>
+<font color="green">// |_| |_| |_|_| |_| |_|\__, |_|   (_) \___| .__/| .__/ </font>
+<font color="green">//                       __/ |             | |   | |    </font>
+<font color="green">//                      |___/              |_|   |_|    </font>
+<font color="green">//</font>
+<font color="green">// Memory manager & tracking software</font>
+<font color="green">//</font>
+<font color="green">// Best viewed with 8-character tabs and (at least) 132 columns</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// Restrictions & freedoms pertaining to usage and redistribution of this software:</font>
+<font color="green">//</font>
+<font color="green">//  * This software is 100% free</font>
+<font color="green">//  * If you use this software (in part or in whole) you must credit the author.</font>
+<font color="green">//  * This software may not be re-distributed (in part or in whole) in a modified</font>
+<font color="green">//    form without clear documentation on how to obtain a copy of the original work.</font>
+<font color="green">//  * You may not use this software to directly or indirectly cause harm to others.</font>
+<font color="green">//  * This software is provided as-is and without warrantee. Use at your own risk.</font>
+<font color="green">//</font>
+<font color="green">// For more information, visit HTTP://www.FluidStudios.com</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Originally created on 12/22/2000 by Paul Nettle</font>
+<font color="green">//</font>
+<font color="green">// Copyright 2000, Fluid Studios, Inc., all rights reserved.</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// !!IMPORTANT!!</font>
+<font color="green">//</font>
+<font color="green">// This software is self-documented with periodic comments. Before you start using this software, perform a search for the string</font>
+<font color="green">// "-DOC-" to locate pertinent information about how to use this software.</font>
+<font color="green">//</font>
+<font color="green">// You are also encouraged to read the comment blocks throughout this source file. They will help you understand how this memory</font>
+<font color="green">// tracking software works, so you can better utilize it within your applications.</font>
+<font color="green">//</font>
+<font color="green">// NOTES:</font>
+<font color="green">//</font>
+<font color="green">// 1. If you get compiler errors having to do with set_new_handler, then go through this source and search/replace</font>
+<font color="green">//    "std::set_new_handler" with "set_new_handler".</font>
+<font color="green">//</font>
+<font color="green">// 2. This code purposely uses no external routines that allocate RAM (other than the raw allocation routines, such as malloc). We</font>
+<font color="green">//    do this because we want this to be as self-contained as possible. As an example, we don't use assert, because when running</font>
+<font color="green">//    under WIN32, the assert brings up a dialog box, which allocates RAM. Doing this in the middle of an allocation would be bad.</font>
+<font color="green">//</font>
+<font color="green">// 3. When trying to override new/delete under MFC (which has its own version of global new/delete) the linker will complain. In</font>
+<font color="green">//    order to fix this error, use the compiler option: /FORCE, which will force it to build an executable even with linker errors.</font>
+<font color="green">//    Be sure to check those errors each time you compile, otherwise, you may miss a valid linker error.</font>
+<font color="green">//</font>
+<font color="green">// 4. If you see something that looks odd to you or seems like a strange way of going about doing something, then consider that this</font>
+<font color="green">//    code was carefully thought out. If something looks odd, then just assume I've got a good reason for doing it that way (an</font>
+<font color="green">//    example is the use of the class MemStaticTimeTracker.)</font>
+<font color="green">//</font>
+<font color="green">// 5. With MFC applications, you will need to comment out any occurance of "#define new DEBUG_NEW" from all source files.</font>
+<font color="green">//</font>
+<font color="green">// 6. Include file dependencies are _very_important_ for getting the MMGR to integrate nicely into your application. Be careful if</font>
+<font color="green">//    you're including standard includes from within your own project inclues; that will break this very specific dependency order. </font>
+<font color="green">//    It should look like this:</font>
+<font color="green">//</font>
+<font color="green">//      #include &#60;stdio.h&#62;   // Standard includes MUST come first</font>
+<font color="green">//      #include &#60;stdlib.h&#62;  //</font>
+<font color="green">//      #include &#60;streamio&#62;  //</font>
+<font color="green">//</font>
+<font color="green">//      #include "mmgr.h"    // mmgr.h MUST come next</font>
+<font color="green">//</font>
+<font color="green">//      #include "myfile1.h" // Project includes MUST come last</font>
+<font color="green">//      #include "myfile2.h" //</font>
+<font color="green">//      #include "myfile3.h" //</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="green">//#include "stdafx.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;iostream&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;stdio.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;stdlib.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;assert.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;string.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;time.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;stdarg.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;new&#62;</font>
+
+<font color="blue">#ifndef</font> WIN32
+<font color="blue">#include</font> <font color="maroon">&#60;unistd.h&#62;</font>
+<font color="blue">#endif</font>
+
+<font color="blue">#include</font> <font color="maroon">"mmgr.h"</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// -DOC- If you're like me, it's hard to gain trust in foreign code. This memory manager will try to INDUCE your code to crash (for</font>
+<font color="green">// very good reasons... like making bugs obvious as early as possible.) Some people may be inclined to remove this memory tracking</font>
+<font color="green">// software if it causes crashes that didn't exist previously. In reality, these new crashes are the BEST reason for using this</font>
+<font color="green">// software!</font>
+<font color="green">//</font>
+<font color="green">// Whether this software causes your application to crash, or if it reports errors, you need to be able to TRUST this software. To</font>
+<font color="green">// this end, you are given some very simple debugging tools.</font>
+<font color="green">// </font>
+<font color="green">// The quickest way to locate problems is to enable the STRESS_TEST macro (below.) This should catch 95% of the crashes before they</font>
+<font color="green">// occur by validating every allocation each time this memory manager performs an allocation function. If that doesn't work, keep</font>
+<font color="green">// reading...</font>
+<font color="green">//</font>
+<font color="green">// If you enable the TEST_MEMORY_MANAGER #define (below), this memory manager will log an entry in the memory.log file each time it</font>
+<font color="green">// enters and exits one of its primary allocation handling routines. Each call that succeeds should place an "ENTER" and an "EXIT"</font>
+<font color="green">// into the log. If the program crashes within the memory manager, it will log an "ENTER", but not an "EXIT". The log will also</font>
+<font color="green">// report the name of the routine.</font>
+<font color="green">//</font>
+<font color="green">// Just because this memory manager crashes does not mean that there is a bug here! First, an application could inadvertantly damage</font>
+<font color="green">// the heap, causing malloc(), realloc() or free() to crash. Also, an application could inadvertantly damage some of the memory used</font>
+<font color="green">// by this memory tracking software, causing it to crash in much the same way that a damaged heap would affect the standard</font>
+<font color="green">// allocation routines.</font>
+<font color="green">//</font>
+<font color="green">// In the event of a crash within this code, the first thing you'll want to do is to locate the actual line of code that is</font>
+<font color="green">// crashing. You can do this by adding log() entries throughout the routine that crashes, repeating this process until you narrow</font>
+<font color="green">// in on the offending line of code. If the crash happens in a standard C allocation routine (i.e. malloc, realloc or free) don't</font>
+<font color="green">// bother contacting me, your application has damaged the heap. You can help find the culprit in your code by enabling the</font>
+<font color="green">// STRESS_TEST macro (below.)</font>
+<font color="green">//</font>
+<font color="green">// If you truely suspect a bug in this memory manager (and you had better be sure about it! :) you can contact me at</font>
+<font color="green">// midnight@FluidStudios.com. Before you do, however, check for a newer version at:</font>
+<font color="green">//</font>
+<font color="green">//  http://www.FluidStudios.com/publications.html</font>
+<font color="green">//</font>
+<font color="green">// When using this debugging aid, make sure that you are NOT setting the alwaysLogAll variable on, otherwise the log could be</font>
+<font color="green">// cluttered and hard to read.</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="green">//#define   TEST_MEMORY_MANAGER</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// -DOC- Enable this sucker if you really want to stress-test your app's memory usage, or to help find hard-to-find bugs</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="green">//#define   STRESS_TEST</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// -DOC- Enable this sucker if you want to stress-test your app's error-handling. Set RANDOM_FAIL to the percentage of failures you</font>
+<font color="green">//       want to test with (0 = none, &#62;100 = all failures).</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="green">//#define   RANDOM_FAILURE 10.0</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// -DOC- Locals -- modify these flags to suit your needs</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">#ifdef</font>  STRESS_TEST
+<font color="blue">static</font>  <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    hashBits               <font color="black">=</font> <font color="maroon">12</font>;
+<font color="blue">static</font>      <font color="blue">bool</font>        randomWipe             <font color="black">=</font> <font color="blue">true</font>;
+<font color="blue">static</font>      <font color="blue">bool</font>        alwaysValidateAll      <font color="black">=</font> <font color="blue">true</font>;
+<font color="blue">static</font>      <font color="blue">bool</font>        alwaysLogAll           <font color="black">=</font> <font color="blue">true</font>;
+<font color="blue">static</font>      <font color="blue">bool</font>        alwaysWipeAll          <font color="black">=</font> <font color="blue">true</font>;
+<font color="blue">static</font>      <font color="blue">bool</font>        cleanupLogOnFirstRun   <font color="black">=</font> <font color="blue">true</font>;
+<font color="blue">static</font>  <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    paddingSize            <font color="black">=</font> <font color="maroon">1024</font>; <font color="green">// An extra 8K per allocation!</font>
+<font color="blue">#else</font>
+<font color="blue">static</font>  <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    hashBits               <font color="black">=</font> <font color="maroon">12</font>;
+<font color="blue">static</font>      <font color="blue">bool</font>        randomWipe             <font color="black">=</font> <font color="blue">false</font>;
+<font color="blue">static</font>      <font color="blue">bool</font>        alwaysValidateAll      <font color="black">=</font> <font color="blue">false</font>;
+<font color="blue">static</font>      <font color="blue">bool</font>        alwaysLogAll           <font color="black">=</font> <font color="blue">false</font>;
+<font color="blue">static</font>      <font color="blue">bool</font>        alwaysWipeAll          <font color="black">=</font> <font color="blue">true</font>;
+<font color="blue">static</font>      <font color="blue">bool</font>        cleanupLogOnFirstRun   <font color="black">=</font> <font color="blue">true</font>;
+<font color="blue">static</font>  <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    paddingSize            <font color="black">=</font> <font color="maroon">4</font>;
+<font color="blue">#endif</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// We define our own assert, because we don't want to bring up an assertion dialog, since that allocates RAM. Our new assert</font>
+<font color="green">// simply declares a forced breakpoint.</font>
+<font color="green">//</font>
+<font color="green">// The BEOS assert added by Arvid Norberg &#60;arvid@iname.com&#62;.</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">#ifdef</font>  WIN32
+    <font color="blue">#ifdef</font>  _DEBUG
+    <font color="blue">#define</font> m_assert<font color="black">(</font>x<font color="black">)</font> <font color="blue">if</font> <font color="black">(</font><font color="black">(</font>x<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">false</font><font color="black">)</font> __asm <font color="black">{</font> <font color="blue">int</font> <font color="maroon">3</font> <font color="black">}</font>
+    <font color="blue">#else</font>
+    <font color="blue">#define</font> m_assert<font color="black">(</font>x<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+    <font color="blue">#endif</font>
+<font color="blue">#elif</font> defined<font color="black">(</font>__BEOS__<font color="black">)</font>
+    <font color="blue">#ifdef</font> DEBUG
+        <font color="blue">extern</font> <font color="blue">void</font> debugger<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>message<font color="black">)</font>;
+        <font color="blue">#define</font> m_assert<font color="black">(</font>x<font color="black">)</font> <font color="blue">if</font> <font color="black">(</font><font color="black">(</font>x<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">false</font><font color="black">)</font> debugger<font color="black">(</font><font color="maroon">"mmgr: assert failed"</font><font color="black">)</font>
+    <font color="blue">#else</font>
+        <font color="blue">#define</font> m_assert<font color="black">(</font>x<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+    <font color="blue">#endif</font>
+<font color="blue">#else</font>   <font color="green">// Linux uses assert, which we can use safely, since it doesn't bring up a dialog within the program.</font>
+    <font color="blue">#define</font> m_assert<font color="black">(</font>cond<font color="black">)</font> assert<font color="black">(</font>cond<font color="black">)</font>
+<font color="blue">#endif</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Here, we turn off our macros because any place in this source file where the word 'new' or the word 'delete' (etc.)</font>
+<font color="green">// appear will be expanded by the macro. So to avoid problems using them within this source file, we'll just #undef them.</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">#undef</font>  <font color="blue">new</font>
+<font color="blue">#undef</font>  <font color="blue">delete</font>
+<font color="blue">#undef</font>  malloc
+<font color="blue">#undef</font>  calloc
+<font color="blue">#undef</font>  realloc
+<font color="blue">#undef</font>  free
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Defaults for the constants & statics in the MemoryManager class</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">const</font>       <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_unknown        <font color="black">=</font> <font color="maroon">0</font>;
+<font color="blue">const</font>       <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_new            <font color="black">=</font> <font color="maroon">1</font>;
+<font color="blue">const</font>       <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_new_array      <font color="black">=</font> <font color="maroon">2</font>;
+<font color="blue">const</font>       <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_malloc         <font color="black">=</font> <font color="maroon">3</font>;
+<font color="blue">const</font>       <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_calloc         <font color="black">=</font> <font color="maroon">4</font>;
+<font color="blue">const</font>       <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_realloc        <font color="black">=</font> <font color="maroon">5</font>;
+<font color="blue">const</font>       <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_delete         <font color="black">=</font> <font color="maroon">6</font>;
+<font color="blue">const</font>       <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_delete_array   <font color="black">=</font> <font color="maroon">7</font>;
+<font color="blue">const</font>       <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_free           <font color="black">=</font> <font color="maroon">8</font>;
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// -DOC- Get to know these values. They represent the values that will be used to fill unused and deallocated RAM.</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>      <font color="blue">unsigned</font> <font color="blue">int</font>    prefixPattern          <font color="black">=</font> <font color="maroon">0xbaadf00d</font>; <font color="green">// Fill pattern for bytes preceeding allocated blocks</font>
+<font color="blue">static</font>      <font color="blue">unsigned</font> <font color="blue">int</font>    postfixPattern         <font color="black">=</font> <font color="maroon">0xdeadc0de</font>; <font color="green">// Fill pattern for bytes following allocated blocks</font>
+<font color="blue">static</font>      <font color="blue">unsigned</font> <font color="blue">int</font>    unusedPattern          <font color="black">=</font> <font color="maroon">0xfeedface</font>; <font color="green">// Fill pattern for freshly allocated blocks</font>
+<font color="blue">static</font>      <font color="blue">unsigned</font> <font color="blue">int</font>    releasedPattern        <font color="black">=</font> <font color="maroon">0xdeadbeef</font>; <font color="green">// Fill pattern for deallocated blocks</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Other locals</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    hashSize               <font color="black">=</font> <font color="maroon">1</font> <font color="black">&#60;</font><font color="black">&#60;</font> hashBits;
+<font color="blue">static</font>  <font color="blue">const</font>   <font color="blue">char</font>        <font color="black">*</font>allocationTypes<font color="black">[</font><font color="black">]</font>     <font color="black">=</font> <font color="black">{</font><font color="maroon">"Unknown"</font>,
+                              <font color="maroon">"new"</font>,     <font color="maroon">"new[]"</font>,  <font color="maroon">"malloc"</font>,   <font color="maroon">"calloc"</font>,
+                              <font color="maroon">"realloc"</font>, <font color="maroon">"delete"</font>, <font color="maroon">"delete[]"</font>, <font color="maroon">"free"</font><font color="black">}</font>;
+<font color="blue">static</font>      sAllocUnit  <font color="black">*</font>hashTable<font color="black">[</font>hashSize<font color="black">]</font>;
+<font color="blue">static</font>      sAllocUnit  <font color="black">*</font>reservoir;
+<font color="blue">static</font>      <font color="blue">unsigned</font> <font color="blue">int</font>    currentAllocationCount <font color="black">=</font> <font color="maroon">0</font>;
+<font color="blue">static</font>      <font color="blue">unsigned</font> <font color="blue">int</font>    breakOnAllocationCount <font color="black">=</font> <font color="maroon">0</font>;
+<font color="blue">static</font>      sMStats     stats;
+<font color="blue">static</font>  <font color="blue">const</font>   <font color="blue">char</font>        <font color="black">*</font>sourceFile            <font color="black">=</font> <font color="maroon">"??"</font>;
+<font color="blue">static</font>  <font color="blue">const</font>   <font color="blue">char</font>        <font color="black">*</font>sourceFunc            <font color="black">=</font> <font color="maroon">"??"</font>;
+<font color="blue">static</font>      <font color="blue">unsigned</font> <font color="blue">int</font>    sourceLine             <font color="black">=</font> <font color="maroon">0</font>;
+<font color="blue">static</font>      <font color="blue">bool</font>        staticDeinitTime       <font color="black">=</font> <font color="blue">false</font>;
+<font color="blue">static</font>      sAllocUnit  <font color="black">*</font><font color="black">*</font>reservoirBuffer      <font color="black">=</font> NULL;
+<font color="blue">static</font>      <font color="blue">unsigned</font> <font color="blue">int</font>    reservoirBufferSize    <font color="black">=</font> <font color="maroon">0</font>;
+<font color="blue">static</font> <font color="blue">const</font>    <font color="blue">char</font>        <font color="black">*</font>memoryLogFile         <font color="black">=</font> <font color="maroon">"memory.log"</font>;
+<font color="blue">static</font> <font color="blue">const</font>    <font color="blue">char</font>        <font color="black">*</font>memoryLeakLogFile     <font color="black">=</font> <font color="maroon">"memleaks.log"</font>;
+<font color="blue">static</font>      <font color="blue">void</font>        doCleanupLogOnFirstRun<font color="black">(</font><font color="black">)</font>;
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Local functions only</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  <font color="blue">void</font>    log<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>format, ...<font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Cleanup the log?</font>
+
+    <font color="blue">if</font> <font color="black">(</font>cleanupLogOnFirstRun<font color="black">)</font> doCleanupLogOnFirstRun<font color="black">(</font><font color="black">)</font>;
+
+    <font color="green">// Build the buffer</font>
+
+    <font color="blue">static</font> <font color="blue">char</font> buffer<font color="black">[</font><font color="maroon">2048</font><font color="black">]</font>;
+    va_list ap;
+    va_start<font color="black">(</font>ap, format<font color="black">)</font>;
+    vsprintf<font color="black">(</font>buffer, format, ap<font color="black">)</font>;
+    va_end<font color="black">(</font>ap<font color="black">)</font>;
+
+    <font color="green">// Open the log file</font>
+
+    FILE    <font color="black">*</font>fp <font color="black">=</font> fopen<font color="black">(</font>memoryLogFile, <font color="maroon">"ab"</font><font color="black">)</font>;
+
+    <font color="green">// If you hit this assert, then the memory logger is unable to log information to a file (can't open the file for some</font>
+    <font color="green">// reason.) You can interrogate the variable 'buffer' to see what was supposed to be logged (but won't be.)</font>
+    m_assert<font color="black">(</font>fp<font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>fp<font color="black">)</font> <font color="blue">return</font>;
+
+    <font color="green">// Spit out the data to the log</font>
+
+    fprintf<font color="black">(</font>fp, <font color="maroon">"%s\r\n"</font>, buffer<font color="black">)</font>;
+    fclose<font color="black">(</font>fp<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  <font color="blue">void</font>    doCleanupLogOnFirstRun<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>cleanupLogOnFirstRun<font color="black">)</font>
+    <font color="black">{</font>
+        unlink<font color="black">(</font>memoryLogFile<font color="black">)</font>;
+        cleanupLogOnFirstRun <font color="black">=</font> <font color="blue">false</font>;
+
+        <font color="green">// Print a header for the log</font>
+
+        time_t  t <font color="black">=</font> time<font color="black">(</font>NULL<font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"--------------------------------------------------------------------------------"</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"      %s - Memory logging file created on %s"</font>, memoryLogFile, asctime<font color="black">(</font>localtime<font color="black">(</font><font color="black">&</font>t<font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"--------------------------------------------------------------------------------"</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"This file contains a log of all memory operations performed during the last run."</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"Interrogate this file to track errors or to help track down memory-related"</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"issues. You can do this by tracing the allocations performed by a specific owner"</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"or by tracking a specific address through a series of allocations and"</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"reallocations."</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"There is a lot of useful information here which, when used creatively, can be"</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"extremely helpful."</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"Note that the following guides are used throughout this file:"</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"   [!] - Error"</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"   [+] - Allocation"</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"   [~] - Reallocation"</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"   [-] - Deallocation"</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"   [I] - Generic information"</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"   [F] - Failure induced for the purpose of stress-testing your application"</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"   [D] - Information used for debugging this memory manager"</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"...so, to find all errors in the file, search for \"[!]\""</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>;
+        log<font color="black">(</font><font color="maroon">"--------------------------------------------------------------------------------"</font><font color="black">)</font>;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  <font color="blue">const</font> <font color="blue">char</font>  <font color="black">*</font>sourceFileStripper<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFile<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">char</font>    <font color="black">*</font>ptr <font color="black">=</font> strrchr<font color="black">(</font>sourceFile, <font color="maroon">'\\'</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>ptr<font color="black">)</font> <font color="blue">return</font> ptr <font color="black">+</font> <font color="maroon">1</font>;
+    ptr <font color="black">=</font> strrchr<font color="black">(</font>sourceFile, <font color="maroon">'/'</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>ptr<font color="black">)</font> <font color="blue">return</font> ptr <font color="black">+</font> <font color="maroon">1</font>;
+    <font color="blue">return</font> sourceFile;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  <font color="blue">const</font> <font color="blue">char</font>  <font color="black">*</font>ownerString<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFile, <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> sourceLine, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFunc<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">static</font>  <font color="blue">char</font>    str<font color="black">[</font><font color="maroon">90</font><font color="black">]</font>;
+    memset<font color="black">(</font>str, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>str<font color="black">)</font><font color="black">)</font>;
+    sprintf<font color="black">(</font>str, <font color="maroon">"%s(%05d)::%s"</font>, sourceFileStripper<font color="black">(</font>sourceFile<font color="black">)</font>, sourceLine, sourceFunc<font color="black">)</font>;
+    <font color="blue">return</font> str;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  <font color="blue">const</font> <font color="blue">char</font>  <font color="black">*</font>insertCommas<font color="black">(</font><font color="blue">unsigned</font> <font color="blue">int</font> value<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">static</font>  <font color="blue">char</font>    str<font color="black">[</font><font color="maroon">30</font><font color="black">]</font>;
+    memset<font color="black">(</font>str, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>str<font color="black">)</font><font color="black">)</font>;
+
+    sprintf<font color="black">(</font>str, <font color="maroon">"%u"</font>, value<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>strlen<font color="black">(</font>str<font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">3</font><font color="black">)</font>
+    <font color="black">{</font>
+        memmove<font color="black">(</font><font color="black">&</font>str<font color="black">[</font>strlen<font color="black">(</font>str<font color="black">)</font><font color="maroon">-3</font><font color="black">]</font>, <font color="black">&</font>str<font color="black">[</font>strlen<font color="black">(</font>str<font color="black">)</font><font color="maroon">-4</font><font color="black">]</font>, <font color="maroon">4</font><font color="black">)</font>;
+        str<font color="black">[</font>strlen<font color="black">(</font>str<font color="black">)</font> <font color="maroon">-4</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">','</font>;
+    <font color="black">}</font>
+    <font color="blue">if</font> <font color="black">(</font>strlen<font color="black">(</font>str<font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">7</font><font color="black">)</font>
+    <font color="black">{</font>
+        memmove<font color="black">(</font><font color="black">&</font>str<font color="black">[</font>strlen<font color="black">(</font>str<font color="black">)</font><font color="maroon">-7</font><font color="black">]</font>, <font color="black">&</font>str<font color="black">[</font>strlen<font color="black">(</font>str<font color="black">)</font><font color="maroon">-8</font><font color="black">]</font>, <font color="maroon">8</font><font color="black">)</font>;
+        str<font color="black">[</font>strlen<font color="black">(</font>str<font color="black">)</font> <font color="maroon">-8</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">','</font>;
+    <font color="black">}</font>
+    <font color="blue">if</font> <font color="black">(</font>strlen<font color="black">(</font>str<font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">11</font><font color="black">)</font>
+    <font color="black">{</font>
+        memmove<font color="black">(</font><font color="black">&</font>str<font color="black">[</font>strlen<font color="black">(</font>str<font color="black">)</font><font color="maroon">-11</font><font color="black">]</font>, <font color="black">&</font>str<font color="black">[</font>strlen<font color="black">(</font>str<font color="black">)</font><font color="maroon">-12</font><font color="black">]</font>, <font color="maroon">12</font><font color="black">)</font>;
+        str<font color="black">[</font>strlen<font color="black">(</font>str<font color="black">)</font> <font color="maroon">-12</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">','</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> str;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  <font color="blue">const</font> <font color="blue">char</font>  <font color="black">*</font>memorySizeString<font color="black">(</font><font color="blue">unsigned</font> <font color="blue">long</font> size<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">static</font>  <font color="blue">char</font>    str<font color="black">[</font><font color="maroon">90</font><font color="black">]</font>;
+         <font color="blue">if</font> <font color="black">(</font>size <font color="black">&#62;</font> <font color="black">(</font><font color="maroon">1024</font><font color="black">*</font><font color="maroon">1024</font><font color="black">)</font><font color="black">)</font>    sprintf<font color="black">(</font>str, <font color="maroon">"%10s (%7.2fM)"</font>, insertCommas<font color="black">(</font>size<font color="black">)</font>, static_cast<font color="black">&#60;</font><font color="blue">float</font><font color="black">&#62;</font><font color="black">(</font>size<font color="black">)</font> <font color="black">/</font> <font color="black">(</font><font color="maroon">1024</font>.0f <font color="black">*</font> <font color="maroon">1024</font>.0f<font color="black">)</font><font color="black">)</font>;
+    <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>size <font color="black">&#62;</font> <font color="maroon">1024</font><font color="black">)</font>       sprintf<font color="black">(</font>str, <font color="maroon">"%10s (%7.2fK)"</font>, insertCommas<font color="black">(</font>size<font color="black">)</font>, static_cast<font color="black">&#60;</font><font color="blue">float</font><font color="black">&#62;</font><font color="black">(</font>size<font color="black">)</font> <font color="black">/</font> <font color="maroon">1024</font>.0f<font color="black">)</font>;
+    <font color="blue">else</font>                sprintf<font color="black">(</font>str, <font color="maroon">"%10s bytes     "</font>, insertCommas<font color="black">(</font>size<font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> str;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  sAllocUnit  <font color="black">*</font>findAllocUnit<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Just in case...</font>
+    m_assert<font color="black">(</font>reportedAddress <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font>;
+
+    <font color="green">// Use the address to locate the hash index. Note that we shift off the lower four bits. This is because most allocated</font>
+    <font color="green">// addresses will be on four-, eight- or even sixteen-byte boundaries. If we didn't do this, the hash index would not have</font>
+    <font color="green">// very good coverage.</font>
+
+    <font color="blue">unsigned</font> <font color="blue">int</font>    hashIndex <font color="black">=</font> <font color="black">(</font>reinterpret_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>const_cast<font color="black">&#60;</font><font color="blue">void</font> <font color="black">*</font><font color="black">&#62;</font><font color="black">(</font>reportedAddress<font color="black">)</font><font color="black">)</font> <font color="black">&#62;</font><font color="black">&#62;</font> <font color="maroon">4</font><font color="black">)</font> <font color="black">&</font> <font color="black">(</font>hashSize <font color="maroon">-1</font><font color="black">)</font>;
+    sAllocUnit  <font color="black">*</font>ptr <font color="black">=</font> hashTable<font color="black">[</font>hashIndex<font color="black">]</font>;
+    <font color="blue">while</font><font color="black">(</font>ptr<font color="black">)</font>
+    <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font>ptr<font color="black">-</font><font color="black">&#62;</font>reportedAddress <font color="black">=</font><font color="black">=</font> reportedAddress<font color="black">)</font> <font color="blue">return</font> ptr;
+        ptr <font color="black">=</font> ptr<font color="black">-</font><font color="black">&#62;</font>next;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> NULL;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  size_t  calculateActualSize<font color="black">(</font><font color="blue">const</font> size_t reportedSize<font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// We use DWORDS as our padding, and a long is guaranteed to be 4 bytes, but an int is not (ANSI defines an int as</font>
+    <font color="green">// being the standard word size for a processor; on a 32-bit machine, that's 4 bytes, but on a 64-bit machine, it's</font>
+    <font color="green">// 8 bytes, which means an int can actually be larger than a long.)</font>
+
+    <font color="blue">return</font> reportedSize <font color="black">+</font> paddingSize <font color="black">*</font> <font color="blue">sizeof</font><font color="black">(</font><font color="blue">long</font><font color="black">)</font> <font color="black">*</font> <font color="maroon">2</font>;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  size_t  calculateReportedSize<font color="black">(</font><font color="blue">const</font> size_t actualSize<font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// We use DWORDS as our padding, and a long is guaranteed to be 4 bytes, but an int is not (ANSI defines an int as</font>
+    <font color="green">// being the standard word size for a processor; on a 32-bit machine, that's 4 bytes, but on a 64-bit machine, it's</font>
+    <font color="green">// 8 bytes, which means an int can actually be larger than a long.)</font>
+
+    <font color="blue">return</font> actualSize <font color="black">-</font>paddingSize <font color="black">*</font> <font color="blue">sizeof</font><font color="black">(</font><font color="blue">long</font><font color="black">)</font> <font color="black">*</font> <font color="maroon">2</font>;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  <font color="blue">void</font>    <font color="black">*</font>calculateReportedAddress<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font> <font color="black">*</font>actualAddress<font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// We allow this...</font>
+
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>actualAddress<font color="black">)</font> <font color="blue">return</font> NULL;
+
+    <font color="green">// JUst account for the padding</font>
+
+    <font color="blue">return</font> reinterpret_cast<font color="black">&#60;</font><font color="blue">void</font> <font color="black">*</font><font color="black">&#62;</font><font color="black">(</font>const_cast<font color="black">&#60;</font><font color="blue">char</font> <font color="black">*</font><font color="black">&#62;</font><font color="black">(</font>reinterpret_cast<font color="black">&#60;</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font><font color="black">&#62;</font><font color="black">(</font>actualAddress<font color="black">)</font> <font color="black">+</font> <font color="blue">sizeof</font><font color="black">(</font><font color="blue">long</font><font color="black">)</font> <font color="black">*</font> paddingSize<font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  <font color="blue">void</font>    wipeWithPattern<font color="black">(</font>sAllocUnit <font color="black">*</font>allocUnit, <font color="blue">unsigned</font> <font color="blue">long</font> pattern, <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> originalReportedSize <font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// For a serious test run, we use wipes of random a random value. However, if this causes a crash, we don't want it to</font>
+    <font color="green">// crash in a differnt place each time, so we specifically DO NOT call srand. If, by chance your program calls srand(),</font>
+    <font color="green">// you may wish to disable that when running with a random wipe test. This will make any crashes more consistent so they</font>
+    <font color="green">// can be tracked down easier.</font>
+
+    <font color="blue">if</font> <font color="black">(</font>randomWipe<font color="black">)</font>
+    <font color="black">{</font>
+        pattern <font color="black">=</font> <font color="black">(</font><font color="black">(</font>rand<font color="black">(</font><font color="black">)</font> <font color="black">&</font> <font color="maroon">0xff</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">24</font><font color="black">)</font> <font color="black">|</font> <font color="black">(</font><font color="black">(</font>rand<font color="black">(</font><font color="black">)</font> <font color="black">&</font> <font color="maroon">0xff</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">16</font><font color="black">)</font> <font color="black">|</font> <font color="black">(</font><font color="black">(</font>rand<font color="black">(</font><font color="black">)</font> <font color="black">&</font> <font color="maroon">0xff</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">8</font><font color="black">)</font> <font color="black">|</font> <font color="black">(</font>rand<font color="black">(</font><font color="black">)</font> <font color="black">&</font> <font color="maroon">0xff</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="green">// -DOC- We should wipe with 0's if we're not in debug mode, so we can help hide bugs if possible when we release the</font>
+    <font color="green">// product. So uncomment the following line for releases.</font>
+    <font color="green">//</font>
+    <font color="green">// Note that the "alwaysWipeAll" should be turned on for this to have effect, otherwise it won't do much good. But we'll</font>
+    <font color="green">// leave it this way (as an option) because this does slow things down.</font>
+<font color="green">//  pattern = 0;</font>
+
+    <font color="green">// This part of the operation is optional</font>
+
+    <font color="blue">if</font> <font color="black">(</font>alwaysWipeAll <font color="black">&</font><font color="black">&</font> allocUnit<font color="black">-</font><font color="black">&#62;</font>reportedSize <font color="black">&#62;</font> originalReportedSize<font color="black">)</font>
+    <font color="black">{</font>
+        <font color="green">// Fill the bulk</font>
+
+        <font color="blue">long</font>    <font color="black">*</font>lptr <font color="black">=</font> reinterpret_cast<font color="black">&#60;</font><font color="blue">long</font> <font color="black">*</font><font color="black">&#62;</font><font color="black">(</font>reinterpret_cast<font color="black">&#60;</font><font color="blue">char</font> <font color="black">*</font><font color="black">&#62;</font><font color="black">(</font>allocUnit<font color="black">-</font><font color="black">&#62;</font>reportedAddress<font color="black">)</font> <font color="black">+</font> originalReportedSize<font color="black">)</font>;
+        <font color="blue">int</font> length <font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>allocUnit<font color="black">-</font><font color="black">&#62;</font>reportedSize <font color="black">-</font>originalReportedSize<font color="black">)</font>;
+        <font color="blue">int</font> i;
+        <font color="blue">for</font> <font color="black">(</font>i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> <font color="black">(</font>length <font color="black">&#62;</font><font color="black">&#62;</font> <font color="maroon">2</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font>, lptr<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+        <font color="black">{</font>
+            <font color="black">*</font>lptr <font color="black">=</font> pattern;
+        <font color="black">}</font>
+
+        <font color="green">// Fill the remainder</font>
+
+        <font color="blue">unsigned</font> <font color="blue">int</font>    shiftCount <font color="black">=</font> <font color="maroon">0</font>;
+        <font color="blue">char</font>        <font color="black">*</font>cptr <font color="black">=</font> reinterpret_cast<font color="black">&#60;</font><font color="blue">char</font> <font color="black">*</font><font color="black">&#62;</font><font color="black">(</font>lptr<font color="black">)</font>;
+        <font color="blue">for</font> <font color="black">(</font>i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> <font color="black">(</font>length <font color="black">&</font> <font color="maroon">0x3</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font>, cptr<font color="black">+</font><font color="black">+</font>, shiftCount <font color="black">+</font><font color="black">=</font> <font color="maroon">8</font><font color="black">)</font>
+        <font color="black">{</font>
+            <font color="black">*</font>cptr <font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">char</font><font color="black">&#62;</font><font color="black">(</font><font color="black">(</font>pattern <font color="black">&</font> <font color="black">(</font><font color="maroon">0xff</font> <font color="black">&#60;</font><font color="black">&#60;</font> shiftCount<font color="black">)</font><font color="black">)</font> <font color="black">&#62;</font><font color="black">&#62;</font> shiftCount<font color="black">)</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="green">// Write in the prefix/postfix bytes</font>
+
+    <font color="blue">long</font>        <font color="black">*</font>pre <font color="black">=</font> reinterpret_cast<font color="black">&#60;</font><font color="blue">long</font> <font color="black">*</font><font color="black">&#62;</font><font color="black">(</font>allocUnit<font color="black">-</font><font color="black">&#62;</font>actualAddress<font color="black">)</font>;
+    <font color="blue">long</font>        <font color="black">*</font>post <font color="black">=</font> reinterpret_cast<font color="black">&#60;</font><font color="blue">long</font> <font color="black">*</font><font color="black">&#62;</font><font color="black">(</font>reinterpret_cast<font color="black">&#60;</font><font color="blue">char</font> <font color="black">*</font><font color="black">&#62;</font><font color="black">(</font>allocUnit<font color="black">-</font><font color="black">&#62;</font>actualAddress<font color="black">)</font> <font color="black">+</font> allocUnit<font color="black">-</font><font color="black">&#62;</font>actualSize <font color="black">-</font>paddingSize <font color="black">*</font> <font color="blue">sizeof</font><font color="black">(</font><font color="blue">long</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">unsigned</font> <font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> paddingSize; i<font color="black">+</font><font color="black">+</font>, pre<font color="black">+</font><font color="black">+</font>, post<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+        <font color="black">*</font>pre <font color="black">=</font> prefixPattern;
+        <font color="black">*</font>post <font color="black">=</font> postfixPattern;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  <font color="blue">void</font>    dumpAllocations<font color="black">(</font>FILE <font color="black">*</font>fp<font color="black">)</font>
+<font color="black">{</font>
+    fprintf<font color="black">(</font>fp, <font color="maroon">"Alloc.   Addr       Size       Addr       Size                        BreakOn BreakOn              \r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"Number Reported   Reported    Actual     Actual     Unused    Method  Dealloc Realloc Allocated by \r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"------ ---------- ---------- ---------- ---------- ---------- -------- ------- ------- --------------------------------------------------- \r\n"</font><font color="black">)</font>;
+
+
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">unsigned</font> <font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> hashSize; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+        sAllocUnit <font color="black">*</font>ptr <font color="black">=</font> hashTable<font color="black">[</font>i<font color="black">]</font>;
+        <font color="blue">while</font><font color="black">(</font>ptr<font color="black">)</font>
+        <font color="black">{</font>
+            fprintf<font color="black">(</font>fp, <font color="maroon">"%06d 0x%08X 0x%08X 0x%08X 0x%08X 0x%08X %-8s    %c       %c    %s\r\n"</font>,
+                ptr<font color="black">-</font><font color="black">&#62;</font>allocationNumber,
+                reinterpret_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>ptr<font color="black">-</font><font color="black">&#62;</font>reportedAddress<font color="black">)</font>, ptr<font color="black">-</font><font color="black">&#62;</font>reportedSize,
+                reinterpret_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>ptr<font color="black">-</font><font color="black">&#62;</font>actualAddress<font color="black">)</font>, ptr<font color="black">-</font><font color="black">&#62;</font>actualSize,
+                m_calcUnused<font color="black">(</font>ptr<font color="black">)</font>,
+                allocationTypes<font color="black">[</font>ptr<font color="black">-</font><font color="black">&#62;</font>allocationType<font color="black">]</font>,
+                ptr<font color="black">-</font><font color="black">&#62;</font>breakOnDealloc ? <font color="maroon">'Y'</font><font color="black">:</font><font color="maroon">'N'</font>,
+                ptr<font color="black">-</font><font color="black">&#62;</font>breakOnRealloc ? <font color="maroon">'Y'</font><font color="black">:</font><font color="maroon">'N'</font>,
+                ownerString<font color="black">(</font>ptr<font color="black">-</font><font color="black">&#62;</font>sourceFile, ptr<font color="black">-</font><font color="black">&#62;</font>sourceLine, ptr<font color="black">-</font><font color="black">&#62;</font>sourceFunc<font color="black">)</font><font color="black">)</font>;
+            ptr <font color="black">=</font> ptr<font color="black">-</font><font color="black">&#62;</font>next;
+        <font color="black">}</font>
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  <font color="blue">void</font>    dumpLeakReport<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Open the report file</font>
+
+    FILE    <font color="black">*</font>fp <font color="black">=</font> fopen<font color="black">(</font>memoryLeakLogFile, <font color="maroon">"w+b"</font><font color="black">)</font>;
+
+    <font color="green">// If you hit this assert, then the memory report generator is unable to log information to a file (can't open the file for</font>
+    <font color="green">// some reason.)</font>
+    m_assert<font color="black">(</font>fp<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>fp<font color="black">)</font> <font color="blue">return</font>;
+
+    <font color="green">// Any leaks?</font>
+
+    <font color="green">// Header</font>
+
+    <font color="blue">static</font>  <font color="blue">char</font>    timeString<font color="black">[</font><font color="maroon">25</font><font color="black">]</font>;
+    memset<font color="black">(</font>timeString, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>timeString<font color="black">)</font><font color="black">)</font>;
+    time_t  t <font color="black">=</font> time<font color="black">(</font>NULL<font color="black">)</font>;
+    <font color="blue">struct</font>  tm <font color="black">*</font>tme <font color="black">=</font> localtime<font color="black">(</font><font color="black">&</font>t<font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">" ---------------------------------------------------------------------------------------------------------------------------------- \r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"|                                          Memory leak report for:  %02d/%02d/%04d %02d:%02d:%02d                                            |\r\n"</font>, tme<font color="black">-</font><font color="black">&#62;</font>tm_mon <font color="black">+</font> <font color="maroon">1</font>, tme<font color="black">-</font><font color="black">&#62;</font>tm_mday, tme<font color="black">-</font><font color="black">&#62;</font>tm_year <font color="black">+</font> <font color="maroon">1900</font>, tme<font color="black">-</font><font color="black">&#62;</font>tm_hour, tme<font color="black">-</font><font color="black">&#62;</font>tm_min, tme<font color="black">-</font><font color="black">&#62;</font>tm_sec<font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">" ---------------------------------------------------------------------------------------------------------------------------------- \r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"\r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"\r\n"</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>stats.totalAllocUnitCount<font color="black">)</font>
+    <font color="black">{</font>
+        fprintf<font color="black">(</font>fp, <font color="maroon">"%d memory leak%s found:\r\n"</font>, stats.totalAllocUnitCount, stats.totalAllocUnitCount <font color="black">=</font><font color="black">=</font> <font color="maroon">1</font> ? <font color="maroon">""</font><font color="black">:</font><font color="maroon">"s"</font><font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+        fprintf<font color="black">(</font>fp, <font color="maroon">"Congratulations! No memory leaks found!\r\n"</font><font color="black">)</font>;
+
+        <font color="green">// We can finally free up our own memory allocations</font>
+
+        <font color="blue">if</font> <font color="black">(</font>reservoirBuffer<font color="black">)</font>
+        <font color="black">{</font>
+            <font color="blue">for</font> <font color="black">(</font><font color="blue">unsigned</font> <font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> reservoirBufferSize; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+            <font color="black">{</font>
+                free<font color="black">(</font>reservoirBuffer<font color="black">[</font>i<font color="black">]</font><font color="black">)</font>;
+            <font color="black">}</font>
+            free<font color="black">(</font>reservoirBuffer<font color="black">)</font>;
+            reservoirBuffer <font color="black">=</font> <font color="maroon">0</font>;
+            reservoirBufferSize <font color="black">=</font> <font color="maroon">0</font>;
+            reservoir <font color="black">=</font> NULL;
+        <font color="black">}</font>
+    <font color="black">}</font>
+    fprintf<font color="black">(</font>fp, <font color="maroon">"\r\n"</font><font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font>stats.totalAllocUnitCount<font color="black">)</font>
+    <font color="black">{</font>
+        dumpAllocations<font color="black">(</font>fp<font color="black">)</font>;
+    <font color="black">}</font>
+
+    fclose<font color="black">(</font>fp<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// We use a static class to let us know when we're in the midst of static deinitialization</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">class</font>   MemStaticTimeTracker
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+    MemStaticTimeTracker<font color="black">(</font><font color="black">)</font> <font color="black">{</font>doCleanupLogOnFirstRun<font color="black">(</font><font color="black">)</font>;<font color="black">}</font>
+    ~MemStaticTimeTracker<font color="black">(</font><font color="black">)</font> <font color="black">{</font>staticDeinitTime <font color="black">=</font> <font color="blue">true</font>; dumpLeakReport<font color="black">(</font><font color="black">)</font>;<font color="black">}</font>
+<font color="black">}</font>;
+<font color="blue">static</font>  MemStaticTimeTracker    mstt;
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// -DOC- Flags & options -- Call these routines to enable/disable the following options</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">bool</font>    <font color="black">&</font>m_alwaysValidateAll<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Force a validation of all allocation units each time we enter this software</font>
+    <font color="blue">return</font> alwaysValidateAll;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">bool</font>    <font color="black">&</font>m_alwaysLogAll<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Force a log of every allocation & deallocation into memory.log</font>
+    <font color="blue">return</font> alwaysLogAll;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">bool</font>    <font color="black">&</font>m_alwaysWipeAll<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Force this software to always wipe memory with a pattern when it is being allocated/dallocated</font>
+    <font color="blue">return</font> alwaysWipeAll;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">bool</font>    <font color="black">&</font>m_randomeWipe<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Force this software to use a random pattern when wiping memory -- good for stress testing</font>
+    <font color="blue">return</font> randomWipe;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// -DOC- Simply call this routine with the address of an allocated block of RAM, to cause it to force a breakpoint when it is</font>
+<font color="green">// reallocated.</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">bool</font>    <font color="black">&</font>m_breakOnRealloc<font color="black">(</font><font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Locate the existing allocation unit</font>
+
+    sAllocUnit  <font color="black">*</font>au <font color="black">=</font> findAllocUnit<font color="black">(</font>reportedAddress<font color="black">)</font>;
+
+    <font color="green">// If you hit this assert, you tried to set a breakpoint on reallocation for an address that doesn't exist. Interrogate the</font>
+    <font color="green">// stack frame or the variable 'au' to see which allocation this is.</font>
+    m_assert<font color="black">(</font>au <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font>;
+
+    <font color="green">// If you hit this assert, you tried to set a breakpoint on reallocation for an address that wasn't allocated in a way that</font>
+    <font color="green">// is compatible with reallocation.</font>
+    m_assert<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>allocationType <font color="black">=</font><font color="black">=</font> m_alloc_malloc <font color="black">|</font><font color="black">|</font>
+         au<font color="black">-</font><font color="black">&#62;</font>allocationType <font color="black">=</font><font color="black">=</font> m_alloc_calloc <font color="black">|</font><font color="black">|</font>
+         au<font color="black">-</font><font color="black">&#62;</font>allocationType <font color="black">=</font><font color="black">=</font> m_alloc_realloc<font color="black">)</font>;
+
+    <font color="blue">return</font> au<font color="black">-</font><font color="black">&#62;</font>breakOnRealloc;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// -DOC- Simply call this routine with the address of an allocated block of RAM, to cause it to force a breakpoint when it is</font>
+<font color="green">// deallocated.</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">bool</font>    <font color="black">&</font>m_breakOnDealloc<font color="black">(</font><font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Locate the existing allocation unit</font>
+
+    sAllocUnit  <font color="black">*</font>au <font color="black">=</font> findAllocUnit<font color="black">(</font>reportedAddress<font color="black">)</font>;
+
+    <font color="green">// If you hit this assert, you tried to set a breakpoint on deallocation for an address that doesn't exist. Interrogate the</font>
+    <font color="green">// stack frame or the variable 'au' to see which allocation this is.</font>
+    m_assert<font color="black">(</font>au <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font>;
+
+    <font color="blue">return</font> au<font color="black">-</font><font color="black">&#62;</font>breakOnDealloc;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// -DOC- When tracking down a difficult bug, use this routine to force a breakpoint on a specific allocation count</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>    m_breakOnAllocation<font color="black">(</font><font color="blue">unsigned</font> <font color="blue">int</font> count<font color="black">)</font>
+<font color="black">{</font>
+    breakOnAllocationCount <font color="black">=</font> count;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Used by the macros</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>    m_setOwner<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>file, <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> <font color="blue">line</font>, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>func<font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// You're probably wondering about this...</font>
+    <font color="green">//</font>
+    <font color="green">// It's important for this memory manager to primarily work with global new/delete in their original forms (i.e. with</font>
+    <font color="green">// no extra parameters.) In order to do this, we use macros that call this function prior to operators new & delete. This</font>
+    <font color="green">// is fine... usually. Here's what actually happens when you use this macro to delete an object:</font>
+    <font color="green">//</font>
+    <font color="green">// m_setOwner(__FILE__, __LINE__, __FUNCTION__) --&#62; object::~object() --&#62; delete</font>
+    <font color="green">//</font>
+    <font color="green">// Note that the compiler inserts a call to the object's destructor just prior to calling our overridden operator delete.</font>
+    <font color="green">// But what happens when we delete an object whose destructor deletes another object, whose desctuctor deletes another</font>
+    <font color="green">// object? Here's a diagram (indentation follows stack depth):</font>
+    <font color="green">//</font>
+    <font color="green">// m_setOwner(...) -&#62; ~obj1()                          // original call to delete obj1</font>
+    <font color="green">//     m_setOwner(...) -&#62; ~obj2()                      // obj1's destructor deletes obj2</font>
+    <font color="green">//         m_setOwner(...) -&#62; ~obj3()                  // obj2's destructor deletes obj3</font>
+    <font color="green">//             ...                                     // obj3's destructor just does some stuff</font>
+    <font color="green">//         delete                                      // back in obj2's destructor, we call delete</font>
+    <font color="green">//     delete                                          // back in obj1's destructor, we call delete</font>
+    <font color="green">// delete                                              // back to our original call, we call delete</font>
+    <font color="green">//</font>
+    <font color="green">// Because m_setOwner() just sets up some static variables (below) it's important that each call to m_setOwner() and</font>
+    <font color="green">// successive calls to new/delete alternate. However, in this case, three calls to m_setOwner() happen in succession</font>
+    <font color="green">// followed by three calls to delete in succession (with a few calls to destructors mixed in for fun.) This means that</font>
+    <font color="green">// only the final call to delete (in this chain of events) will have the proper reporting, and the first two in the chain</font>
+    <font color="green">// will not have ANY owner-reporting information. The deletes will still work fine, we just won't know who called us.</font>
+    <font color="green">//</font>
+    <font color="green">// "Then build a stack, my friend!" you might think... but it's a very common thing that people will be working with third-</font>
+    <font color="green">// party libraries (including MFC under Windows) which is not compiled with this memory manager's macros. In those cases,</font>
+    <font color="green">// m_setOwner() is never called, and rightfully should not have the proper trace-back information. So if one of the</font>
+    <font color="green">// destructors in the chain ends up being a call to a delete from a non-mmgr-compiled library, the stack will get confused.</font>
+    <font color="green">//</font>
+    <font color="green">// I've been unable to find a solution to this problem, but at least we can detect it and report the data before we</font>
+    <font color="green">// lose it. That's what this is all about. It makes it somewhat confusing to read in the logs, but at least ALL the</font>
+    <font color="green">// information is present...</font>
+    <font color="green">//</font>
+    <font color="green">// There's a caveat here... The compiler is not required to call operator delete if the value being deleted is NULL.</font>
+    <font color="green">// In this case, any call to delete with a NULL will sill call m_setOwner(), which will make m_setOwner() think that</font>
+    <font color="green">// there is a destructor chain becuase we setup the variables, but nothing gets called to clear them. Because of this</font>
+    <font color="green">// we report a "Possible destructor chain".</font>
+    <font color="green">//</font>
+    <font color="green">// Thanks to J. Woznack (from Kodiak Interactive Software Studios -- www.kodiakgames.com) for pointing this out.</font>
+
+    <font color="blue">if</font> <font color="black">(</font>sourceLine <font color="black">&</font><font color="black">&</font> alwaysLogAll<font color="black">)</font>
+    <font color="black">{</font>
+        log<font color="black">(</font><font color="maroon">"[I] NOTE! Possible destructor chain: previous owner is %s"</font>, ownerString<font color="black">(</font>sourceFile, sourceLine, sourceFunc<font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="green">// Okay... save this stuff off so we can keep track of the caller</font>
+
+    sourceFile <font color="black">=</font> file;
+    sourceLine <font color="black">=</font> <font color="blue">line</font>;
+    sourceFunc <font color="black">=</font> func;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">static</font>  <font color="blue">void</font>    resetGlobals<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    sourceFile <font color="black">=</font> <font color="maroon">"??"</font>;
+    sourceLine <font color="black">=</font> <font color="maroon">0</font>;
+    sourceFunc <font color="black">=</font> <font color="maroon">"??"</font>;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Global new/new[]</font>
+<font color="green">//</font>
+<font color="green">// These are the standard new/new[] operators. They are merely interface functions that operate like normal new/new[], but use our</font>
+<font color="green">// memory tracking routines.</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>    <font color="black">*</font><font color="blue">operator</font> <font color="blue">new</font><font color="black">(</font>size_t reportedSize<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+    log<font color="black">(</font><font color="maroon">"[D] ENTER: new"</font><font color="black">)</font>;
+    <font color="blue">#endif</font>
+
+    <font color="green">// Save these off...</font>
+
+    <font color="blue">const</font>   <font color="blue">char</font>        <font color="black">*</font>file <font color="black">=</font> sourceFile;
+    <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    <font color="blue">line</font> <font color="black">=</font> sourceLine;
+    <font color="blue">const</font>   <font color="blue">char</font>        <font color="black">*</font>func <font color="black">=</font> sourceFunc;
+
+    <font color="green">// ANSI says: allocation requests of 0 bytes will still return a valid value</font>
+
+    <font color="blue">if</font> <font color="black">(</font>reportedSize <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> reportedSize <font color="black">=</font> <font color="maroon">1</font>;
+
+    <font color="green">// ANSI says: loop continuously because the error handler could possibly free up some memory</font>
+
+    <font color="blue">for</font><font color="black">(</font>;;<font color="black">)</font>
+    <font color="black">{</font>
+        <font color="green">// Try the allocation</font>
+
+        <font color="blue">void</font>    <font color="black">*</font>ptr <font color="black">=</font> m_allocator<font color="black">(</font>file, <font color="blue">line</font>, func, m_alloc_new, reportedSize<font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font>ptr<font color="black">)</font>
+        <font color="black">{</font>
+            <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+            log<font color="black">(</font><font color="maroon">"[D] EXIT : new"</font><font color="black">)</font>;
+            <font color="blue">#endif</font>
+            <font color="blue">return</font> ptr;
+        <font color="black">}</font>
+
+        <font color="green">// There isn't a way to determine the new handler, except through setting it. So we'll just set it to NULL, then</font>
+        <font color="green">// set it back again.</font>
+
+        new_handler nh <font color="black">=</font> set_new_handler<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>;
+        set_new_handler<font color="black">(</font>nh<font color="black">)</font>;
+
+        <font color="green">// If there is an error handler, call it</font>
+
+        <font color="blue">if</font> <font color="black">(</font>nh<font color="black">)</font>
+        <font color="black">{</font>
+            <font color="black">(</font><font color="black">*</font>nh<font color="black">)</font><font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="green">// Otherwise, throw the exception</font>
+
+        <font color="blue">else</font>
+        <font color="black">{</font>
+            <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+            log<font color="black">(</font><font color="maroon">"[D] EXIT : new"</font><font color="black">)</font>;
+            <font color="blue">#endif</font>
+            <font color="blue">throw</font> std<font color="black">:</font><font color="black">:</font>bad_alloc<font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>    <font color="black">*</font><font color="blue">operator</font> <font color="blue">new</font><font color="black">[</font><font color="black">]</font><font color="black">(</font>size_t reportedSize<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+    log<font color="black">(</font><font color="maroon">"[D] ENTER: new[]"</font><font color="black">)</font>;
+    <font color="blue">#endif</font>
+
+    <font color="green">// Save these off...</font>
+
+    <font color="blue">const</font>   <font color="blue">char</font>        <font color="black">*</font>file <font color="black">=</font> sourceFile;
+    <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    <font color="blue">line</font> <font color="black">=</font> sourceLine;
+    <font color="blue">const</font>   <font color="blue">char</font>        <font color="black">*</font>func <font color="black">=</font> sourceFunc;
+
+    <font color="green">// The ANSI standard says that allocation requests of 0 bytes will still return a valid value</font>
+
+    <font color="blue">if</font> <font color="black">(</font>reportedSize <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> reportedSize <font color="black">=</font> <font color="maroon">1</font>;
+
+    <font color="green">// ANSI says: loop continuously because the error handler could possibly free up some memory</font>
+
+    <font color="blue">for</font><font color="black">(</font>;;<font color="black">)</font>
+    <font color="black">{</font>
+        <font color="green">// Try the allocation</font>
+
+        <font color="blue">void</font>    <font color="black">*</font>ptr <font color="black">=</font> m_allocator<font color="black">(</font>file, <font color="blue">line</font>, func, m_alloc_new_array, reportedSize<font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font>ptr<font color="black">)</font>
+        <font color="black">{</font>
+            <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+            log<font color="black">(</font><font color="maroon">"[D] EXIT : new[]"</font><font color="black">)</font>;
+            <font color="blue">#endif</font>
+            <font color="blue">return</font> ptr;
+        <font color="black">}</font>
+
+        <font color="green">// There isn't a way to determine the new handler, except through setting it. So we'll just set it to NULL, then</font>
+        <font color="green">// set it back again.</font>
+
+        new_handler nh <font color="black">=</font> set_new_handler<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>;
+        set_new_handler<font color="black">(</font>nh<font color="black">)</font>;
+
+        <font color="green">// If there is an error handler, call it</font>
+
+        <font color="blue">if</font> <font color="black">(</font>nh<font color="black">)</font>
+        <font color="black">{</font>
+            <font color="black">(</font><font color="black">*</font>nh<font color="black">)</font><font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="green">// Otherwise, throw the exception</font>
+
+        <font color="blue">else</font>
+        <font color="black">{</font>
+            <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+            log<font color="black">(</font><font color="maroon">"[D] EXIT : new[]"</font><font color="black">)</font>;
+            <font color="blue">#endif</font>
+            <font color="blue">throw</font> std<font color="black">:</font><font color="black">:</font>bad_alloc<font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Other global new/new[]</font>
+<font color="green">//</font>
+<font color="green">// These are the standard new/new[] operators as used by Microsoft's memory tracker. We don't want them interfering with our memory</font>
+<font color="green">// tracking efforts. Like the previous versions, these are merely interface functions that operate like normal new/new[], but use</font>
+<font color="green">// our memory tracking routines.</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>    <font color="black">*</font><font color="blue">operator</font> <font color="blue">new</font><font color="black">(</font>size_t reportedSize, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFile, <font color="blue">int</font> sourceLine<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+    log<font color="black">(</font><font color="maroon">"[D] ENTER: new"</font><font color="black">)</font>;
+    <font color="blue">#endif</font>
+
+    <font color="green">// The ANSI standard says that allocation requests of 0 bytes will still return a valid value</font>
+
+    <font color="blue">if</font> <font color="black">(</font>reportedSize <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> reportedSize <font color="black">=</font> <font color="maroon">1</font>;
+
+    <font color="green">// ANSI says: loop continuously because the error handler could possibly free up some memory</font>
+
+    <font color="blue">for</font><font color="black">(</font>;;<font color="black">)</font>
+    <font color="black">{</font>
+        <font color="green">// Try the allocation</font>
+
+        <font color="blue">void</font>    <font color="black">*</font>ptr <font color="black">=</font> m_allocator<font color="black">(</font>sourceFile, sourceLine, <font color="maroon">"??"</font>, m_alloc_new, reportedSize<font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font>ptr<font color="black">)</font>
+        <font color="black">{</font>
+            <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+            log<font color="black">(</font><font color="maroon">"[D] EXIT : new"</font><font color="black">)</font>;
+            <font color="blue">#endif</font>
+            <font color="blue">return</font> ptr;
+        <font color="black">}</font>
+
+        <font color="green">// There isn't a way to determine the new handler, except through setting it. So we'll just set it to NULL, then</font>
+        <font color="green">// set it back again.</font>
+
+        new_handler nh <font color="black">=</font> set_new_handler<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>;
+        set_new_handler<font color="black">(</font>nh<font color="black">)</font>;
+
+        <font color="green">// If there is an error handler, call it</font>
+
+        <font color="blue">if</font> <font color="black">(</font>nh<font color="black">)</font>
+        <font color="black">{</font>
+            <font color="black">(</font><font color="black">*</font>nh<font color="black">)</font><font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="green">// Otherwise, throw the exception</font>
+
+        <font color="blue">else</font>
+        <font color="black">{</font>
+            <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+            log<font color="black">(</font><font color="maroon">"[D] EXIT : new"</font><font color="black">)</font>;
+            <font color="blue">#endif</font>
+            <font color="blue">throw</font> std<font color="black">:</font><font color="black">:</font>bad_alloc<font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>    <font color="black">*</font><font color="blue">operator</font> <font color="blue">new</font><font color="black">[</font><font color="black">]</font><font color="black">(</font>size_t reportedSize, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFile, <font color="blue">int</font> sourceLine<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+    log<font color="black">(</font><font color="maroon">"[D] ENTER: new[]"</font><font color="black">)</font>;
+    <font color="blue">#endif</font>
+
+    <font color="green">// The ANSI standard says that allocation requests of 0 bytes will still return a valid value</font>
+
+    <font color="blue">if</font> <font color="black">(</font>reportedSize <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> reportedSize <font color="black">=</font> <font color="maroon">1</font>;
+
+    <font color="green">// ANSI says: loop continuously because the error handler could possibly free up some memory</font>
+
+    <font color="blue">for</font><font color="black">(</font>;;<font color="black">)</font>
+    <font color="black">{</font>
+        <font color="green">// Try the allocation</font>
+
+        <font color="blue">void</font>    <font color="black">*</font>ptr <font color="black">=</font> m_allocator<font color="black">(</font>sourceFile, sourceLine, <font color="maroon">"??"</font>, m_alloc_new_array, reportedSize<font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font>ptr<font color="black">)</font>
+        <font color="black">{</font>
+            <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+            log<font color="black">(</font><font color="maroon">"[D] EXIT : new[]"</font><font color="black">)</font>;
+            <font color="blue">#endif</font>
+            <font color="blue">return</font> ptr;
+        <font color="black">}</font>
+
+        <font color="green">// There isn't a way to determine the new handler, except through setting it. So we'll just set it to NULL, then</font>
+        <font color="green">// set it back again.</font>
+
+        new_handler nh <font color="black">=</font> set_new_handler<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>;
+        set_new_handler<font color="black">(</font>nh<font color="black">)</font>;
+
+        <font color="green">// If there is an error handler, call it</font>
+
+        <font color="blue">if</font> <font color="black">(</font>nh<font color="black">)</font>
+        <font color="black">{</font>
+            <font color="black">(</font><font color="black">*</font>nh<font color="black">)</font><font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="green">// Otherwise, throw the exception</font>
+
+        <font color="blue">else</font>
+        <font color="black">{</font>
+            <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+            log<font color="black">(</font><font color="maroon">"[D] EXIT : new[]"</font><font color="black">)</font>;
+            <font color="blue">#endif</font>
+            <font color="blue">throw</font> std<font color="black">:</font><font color="black">:</font>bad_alloc<font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Global delete/delete[]</font>
+<font color="green">//</font>
+<font color="green">// These are the standard delete/delete[] operators. They are merely interface functions that operate like normal delete/delete[],</font>
+<font color="green">// but use our memory tracking routines.</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>    <font color="blue">operator</font> <font color="blue">delete</font><font color="black">(</font><font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+    log<font color="black">(</font><font color="maroon">"[D] ENTER: delete"</font><font color="black">)</font>;
+    <font color="blue">#endif</font>
+
+    <font color="green">// ANSI says: delete & delete[] allow NULL pointers (they do nothing)</font>
+
+    <font color="blue">if</font> <font color="black">(</font>reportedAddress<font color="black">)</font> m_deallocator<font color="black">(</font>sourceFile, sourceLine, sourceFunc, m_alloc_delete, reportedAddress<font color="black">)</font>;
+    <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>alwaysLogAll<font color="black">)</font> log<font color="black">(</font><font color="maroon">"[-] ----- %8s of NULL                      by %s"</font>, allocationTypes<font color="black">[</font>m_alloc_delete<font color="black">]</font>, ownerString<font color="black">(</font>sourceFile, sourceLine, sourceFunc<font color="black">)</font><font color="black">)</font>;
+
+    <font color="green">// Resetting the globals insures that if at some later time, somebody calls our memory manager from an unknown</font>
+    <font color="green">// source (i.e. they didn't include our H file) then we won't think it was the last allocation.</font>
+
+    resetGlobals<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+    log<font color="black">(</font><font color="maroon">"[D] EXIT : delete"</font><font color="black">)</font>;
+    <font color="blue">#endif</font>
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>    <font color="blue">operator</font> <font color="blue">delete</font><font color="black">[</font><font color="black">]</font><font color="black">(</font><font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+    log<font color="black">(</font><font color="maroon">"[D] ENTER: delete[]"</font><font color="black">)</font>;
+    <font color="blue">#endif</font>
+
+    <font color="green">// ANSI says: delete & delete[] allow NULL pointers (they do nothing)</font>
+
+    <font color="blue">if</font> <font color="black">(</font>reportedAddress<font color="black">)</font> m_deallocator<font color="black">(</font>sourceFile, sourceLine, sourceFunc, m_alloc_delete_array, reportedAddress<font color="black">)</font>;
+    <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>alwaysLogAll<font color="black">)</font>
+        log<font color="black">(</font><font color="maroon">"[-] ----- %8s of NULL                      by %s"</font>, allocationTypes<font color="black">[</font>m_alloc_delete_array<font color="black">]</font>, ownerString<font color="black">(</font>sourceFile, sourceLine, sourceFunc<font color="black">)</font><font color="black">)</font>;
+
+    <font color="green">// Resetting the globals insures that if at some later time, somebody calls our memory manager from an unknown</font>
+    <font color="green">// source (i.e. they didn't include our H file) then we won't think it was the last allocation.</font>
+
+    resetGlobals<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+    log<font color="black">(</font><font color="maroon">"[D] EXIT : delete[]"</font><font color="black">)</font>;
+    <font color="blue">#endif</font>
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Allocate memory and track it</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>    <font color="black">*</font>m_allocator<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFile, <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> sourceLine, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFunc, <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> allocationType, <font color="blue">const</font> size_t reportedSize<font color="black">)</font>
+<font color="black">{</font>
+    try
+    <font color="black">{</font>
+        <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+        log<font color="black">(</font><font color="maroon">"[D] ENTER: m_allocator()"</font><font color="black">)</font>;
+        <font color="blue">#endif</font>
+
+        <font color="green">// Increase our allocation count</font>
+
+        currentAllocationCount<font color="black">+</font><font color="black">+</font>;
+
+        <font color="green">// Log the request</font>
+
+        <font color="blue">if</font> <font color="black">(</font>alwaysLogAll<font color="black">)</font> log<font color="black">(</font><font color="maroon">"[+] %05d %8s of size 0x%08X(%08d) by %s"</font>, currentAllocationCount, allocationTypes<font color="black">[</font>allocationType<font color="black">]</font>, reportedSize, reportedSize, ownerString<font color="black">(</font>sourceFile, sourceLine, sourceFunc<font color="black">)</font><font color="black">)</font>;
+
+        <font color="green">// If you hit this assert, you requested a breakpoint on a specific allocation count</font>
+        m_assert<font color="black">(</font>currentAllocationCount <font color="black">!</font><font color="black">=</font> breakOnAllocationCount<font color="black">)</font>;
+
+        <font color="green">// If necessary, grow the reservoir of unused allocation units</font>
+
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>reservoir<font color="black">)</font>
+        <font color="black">{</font>
+            <font color="green">// Allocate 256 reservoir elements</font>
+
+            reservoir <font color="black">=</font> <font color="black">(</font>sAllocUnit <font color="black">*</font><font color="black">)</font> malloc<font color="black">(</font><font color="blue">sizeof</font><font color="black">(</font>sAllocUnit<font color="black">)</font> <font color="black">*</font> <font color="maroon">256</font><font color="black">)</font>;
+
+            <font color="green">// If you hit this assert, then the memory manager failed to allocate internal memory for tracking the</font>
+            <font color="green">// allocations</font>
+            m_assert<font color="black">(</font>reservoir <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font>;
+
+            <font color="green">// Danger Will Robinson!</font>
+
+            <font color="blue">if</font> <font color="black">(</font>reservoir <font color="black">=</font><font color="black">=</font> NULL<font color="black">)</font> <font color="blue">throw</font> <font color="maroon">"Unable to allocate RAM for internal memory tracking data"</font>;
+
+            <font color="green">// Build a linked-list of the elements in our reservoir</font>
+
+            memset<font color="black">(</font>reservoir, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>sAllocUnit<font color="black">)</font> <font color="black">*</font> <font color="maroon">256</font><font color="black">)</font>;
+            <font color="blue">for</font> <font color="black">(</font><font color="blue">unsigned</font> <font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> <font color="maroon">256</font> <font color="maroon">-1</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+            <font color="black">{</font>
+                reservoir<font color="black">[</font>i<font color="black">]</font>.next <font color="black">=</font> <font color="black">&</font>reservoir<font color="black">[</font>i<font color="black">+</font><font color="maroon">1</font><font color="black">]</font>;
+            <font color="black">}</font>
+
+            <font color="green">// Add this address to our reservoirBuffer so we can free it later</font>
+
+            sAllocUnit  <font color="black">*</font><font color="black">*</font>temp <font color="black">=</font> <font color="black">(</font>sAllocUnit <font color="black">*</font><font color="black">*</font><font color="black">)</font> realloc<font color="black">(</font>reservoirBuffer, <font color="black">(</font>reservoirBufferSize <font color="black">+</font> <font color="maroon">1</font><font color="black">)</font> <font color="black">*</font> <font color="blue">sizeof</font><font color="black">(</font>sAllocUnit <font color="black">*</font><font color="black">)</font><font color="black">)</font>;
+            m_assert<font color="black">(</font>temp<font color="black">)</font>;
+            <font color="blue">if</font> <font color="black">(</font>temp<font color="black">)</font>
+            <font color="black">{</font>
+                reservoirBuffer <font color="black">=</font> temp;
+                reservoirBuffer<font color="black">[</font>reservoirBufferSize<font color="black">+</font><font color="black">+</font><font color="black">]</font> <font color="black">=</font> reservoir;
+            <font color="black">}</font>
+        <font color="black">}</font>
+
+        <font color="green">// Logical flow says this should never happen...</font>
+        m_assert<font color="black">(</font>reservoir <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font>;
+
+        <font color="green">// Grab a new allocaton unit from the front of the reservoir</font>
+
+        sAllocUnit  <font color="black">*</font>au <font color="black">=</font> reservoir;
+        reservoir <font color="black">=</font> au<font color="black">-</font><font color="black">&#62;</font>next;
+
+        <font color="green">// Populate it with some real data</font>
+
+        memset<font color="black">(</font>au, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>sAllocUnit<font color="black">)</font><font color="black">)</font>;
+        au<font color="black">-</font><font color="black">&#62;</font>actualSize        <font color="black">=</font> calculateActualSize<font color="black">(</font>reportedSize<font color="black">)</font>;
+        <font color="blue">#ifdef</font> RANDOM_FAILURE
+        <font color="blue">double</font>  a <font color="black">=</font> rand<font color="black">(</font><font color="black">)</font>;
+        <font color="blue">double</font>  b <font color="black">=</font> RAND_MAX <font color="black">/</font> <font color="maroon">100</font>.<font color="maroon">0</font> <font color="black">*</font> RANDOM_FAILURE;
+        <font color="blue">if</font> <font color="black">(</font>a <font color="black">&#62;</font> b<font color="black">)</font>
+        <font color="black">{</font>
+            au<font color="black">-</font><font color="black">&#62;</font>actualAddress <font color="black">=</font> malloc<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>actualSize<font color="black">)</font>;
+        <font color="black">}</font>
+        <font color="blue">else</font>
+        <font color="black">{</font>
+            log<font color="black">(</font><font color="maroon">"[F] Random faiure"</font><font color="black">)</font>;
+            au<font color="black">-</font><font color="black">&#62;</font>actualAddress <font color="black">=</font> NULL;
+        <font color="black">}</font>
+        <font color="blue">#else</font>
+        au<font color="black">-</font><font color="black">&#62;</font>actualAddress     <font color="black">=</font> malloc<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>actualSize<font color="black">)</font>;
+        <font color="blue">#endif</font>
+        au<font color="black">-</font><font color="black">&#62;</font>reportedSize      <font color="black">=</font> reportedSize;
+        au<font color="black">-</font><font color="black">&#62;</font>reportedAddress   <font color="black">=</font> calculateReportedAddress<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>actualAddress<font color="black">)</font>;
+        au<font color="black">-</font><font color="black">&#62;</font>allocationType    <font color="black">=</font> allocationType;
+        au<font color="black">-</font><font color="black">&#62;</font>sourceLine        <font color="black">=</font> sourceLine;
+        au<font color="black">-</font><font color="black">&#62;</font>allocationNumber  <font color="black">=</font> currentAllocationCount;
+        <font color="blue">if</font> <font color="black">(</font>sourceFile<font color="black">)</font> strncpy<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>sourceFile, sourceFileStripper<font color="black">(</font>sourceFile<font color="black">)</font>, <font color="blue">sizeof</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>sourceFile<font color="black">)</font> <font color="maroon">-1</font><font color="black">)</font>;
+        <font color="blue">else</font>        strcpy <font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>sourceFile, <font color="maroon">"??"</font><font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font>sourceFunc<font color="black">)</font> strncpy<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>sourceFunc, sourceFunc, <font color="blue">sizeof</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>sourceFunc<font color="black">)</font> <font color="maroon">-1</font><font color="black">)</font>;
+        <font color="blue">else</font>        strcpy <font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>sourceFunc, <font color="maroon">"??"</font><font color="black">)</font>;
+
+        <font color="green">// We don't want to assert with random failures, because we want the application to deal with them.</font>
+
+        <font color="blue">#ifndef</font> RANDOM_FAILURE
+        <font color="green">// If you hit this assert, then the requested allocation simply failed (you're out of memory.) Interrogate the</font>
+        <font color="green">// variable 'au' or the stack frame to see what you were trying to do.</font>
+        m_assert<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>actualAddress <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font>;
+        <font color="blue">#endif</font>
+
+        <font color="blue">if</font> <font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>actualAddress <font color="black">=</font><font color="black">=</font> NULL<font color="black">)</font>
+        <font color="black">{</font>
+            <font color="blue">throw</font> <font color="maroon">"Request for allocation failed. Out of memory."</font>;
+        <font color="black">}</font>
+
+        <font color="green">// If you hit this assert, then this allocation was made from a source that isn't setup to use this memory tracking</font>
+        <font color="green">// software, use the stack frame to locate the source and include our H file.</font>
+        m_assert<font color="black">(</font>allocationType <font color="black">!</font><font color="black">=</font> m_alloc_unknown<font color="black">)</font>;
+
+        <font color="green">// Insert the new allocation into the hash table</font>
+
+        <font color="blue">unsigned</font> <font color="blue">int</font>    hashIndex <font color="black">=</font> <font color="black">(</font>reinterpret_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>reportedAddress<font color="black">)</font> <font color="black">&#62;</font><font color="black">&#62;</font> <font color="maroon">4</font><font color="black">)</font> <font color="black">&</font> <font color="black">(</font>hashSize <font color="maroon">-1</font><font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font>hashTable<font color="black">[</font>hashIndex<font color="black">]</font><font color="black">)</font> hashTable<font color="black">[</font>hashIndex<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>prev <font color="black">=</font> au;
+        au<font color="black">-</font><font color="black">&#62;</font>next <font color="black">=</font> hashTable<font color="black">[</font>hashIndex<font color="black">]</font>;
+        au<font color="black">-</font><font color="black">&#62;</font>prev <font color="black">=</font> NULL;
+        hashTable<font color="black">[</font>hashIndex<font color="black">]</font> <font color="black">=</font> au;
+
+        <font color="green">// Account for the new allocatin unit in our stats</font>
+
+        stats.totalReportedMemory <font color="black">+</font><font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>reportedSize<font color="black">)</font>;
+        stats.totalActualMemory   <font color="black">+</font><font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>actualSize<font color="black">)</font>;
+        stats.totalAllocUnitCount<font color="black">+</font><font color="black">+</font>;
+        <font color="blue">if</font> <font color="black">(</font>stats.totalReportedMemory <font color="black">&#62;</font> stats.peakReportedMemory<font color="black">)</font> stats.peakReportedMemory <font color="black">=</font> stats.totalReportedMemory;
+        <font color="blue">if</font> <font color="black">(</font>stats.totalActualMemory   <font color="black">&#62;</font> stats.peakActualMemory<font color="black">)</font>   stats.peakActualMemory   <font color="black">=</font> stats.totalActualMemory;
+        <font color="blue">if</font> <font color="black">(</font>stats.totalAllocUnitCount <font color="black">&#62;</font> stats.peakAllocUnitCount<font color="black">)</font> stats.peakAllocUnitCount <font color="black">=</font> stats.totalAllocUnitCount;
+        stats.accumulatedReportedMemory <font color="black">+</font><font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>reportedSize<font color="black">)</font>;
+        stats.accumulatedActualMemory <font color="black">+</font><font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>actualSize<font color="black">)</font>;
+        stats.accumulatedAllocUnitCount<font color="black">+</font><font color="black">+</font>;
+
+        <font color="green">// Prepare the allocation unit for use (wipe it with recognizable garbage)</font>
+
+        wipeWithPattern<font color="black">(</font>au, unusedPattern<font color="black">)</font>;
+
+        <font color="green">// calloc() expects the reported memory address range to be filled with 0's</font>
+
+        <font color="blue">if</font> <font color="black">(</font>allocationType <font color="black">=</font><font color="black">=</font> m_alloc_calloc<font color="black">)</font>
+        <font color="black">{</font>
+            memset<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>reportedAddress, <font color="maroon">0</font>, au<font color="black">-</font><font color="black">&#62;</font>reportedSize<font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="green">// Validate every single allocated unit in memory</font>
+
+        <font color="blue">if</font> <font color="black">(</font>alwaysValidateAll<font color="black">)</font> m_validateAllAllocUnits<font color="black">(</font><font color="black">)</font>;
+
+        <font color="green">// Log the result</font>
+
+        <font color="blue">if</font> <font color="black">(</font>alwaysLogAll<font color="black">)</font> log<font color="black">(</font><font color="maroon">"[+] ----&#62;             addr 0x%08X"</font>, reinterpret_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>reportedAddress<font color="black">)</font><font color="black">)</font>;
+
+        <font color="green">// Resetting the globals insures that if at some later time, somebody calls our memory manager from an unknown</font>
+        <font color="green">// source (i.e. they didn't include our H file) then we won't think it was the last allocation.</font>
+
+        resetGlobals<font color="black">(</font><font color="black">)</font>;
+
+        <font color="green">// Return the (reported) address of the new allocation unit</font>
+
+        <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+        log<font color="black">(</font><font color="maroon">"[D] EXIT : m_allocator()"</font><font color="black">)</font>;
+        <font color="blue">#endif</font>
+
+        <font color="blue">return</font> au<font color="black">-</font><font color="black">&#62;</font>reportedAddress;
+    <font color="black">}</font>
+    <font color="blue">catch</font><font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>err<font color="black">)</font>
+    <font color="black">{</font>
+        <font color="green">// Deal with the errors</font>
+
+        log<font color="black">(</font><font color="maroon">"[!] %s"</font>, err<font color="black">)</font>;
+        resetGlobals<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+        log<font color="black">(</font><font color="maroon">"[D] EXIT : m_allocator()"</font><font color="black">)</font>;
+        <font color="blue">#endif</font>
+
+        <font color="blue">return</font> NULL;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Reallocate memory and track it</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>    <font color="black">*</font>m_reallocator<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFile, <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> sourceLine, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFunc, <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> reallocationType, <font color="blue">const</font> size_t reportedSize, <font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>
+<font color="black">{</font>
+    try
+    <font color="black">{</font>
+        <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+        log<font color="black">(</font><font color="maroon">"[D] ENTER: m_reallocator()"</font><font color="black">)</font>;
+        <font color="blue">#endif</font>
+
+        <font color="green">// Calling realloc with a NULL should force same operations as a malloc</font>
+
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>reportedAddress<font color="black">)</font>
+        <font color="black">{</font>
+            <font color="blue">return</font> m_allocator<font color="black">(</font>sourceFile, sourceLine, sourceFunc, reallocationType, reportedSize<font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="green">// Increase our allocation count</font>
+
+        currentAllocationCount<font color="black">+</font><font color="black">+</font>;
+
+        <font color="green">// If you hit this assert, you requested a breakpoint on a specific allocation count</font>
+        m_assert<font color="black">(</font>currentAllocationCount <font color="black">!</font><font color="black">=</font> breakOnAllocationCount<font color="black">)</font>;
+
+        <font color="green">// Log the request</font>
+
+        <font color="blue">if</font> <font color="black">(</font>alwaysLogAll<font color="black">)</font> log<font color="black">(</font><font color="maroon">"[~] %05d %8s of size 0x%08X(%08d) by %s"</font>, currentAllocationCount, allocationTypes<font color="black">[</font>reallocationType<font color="black">]</font>, reportedSize, reportedSize, ownerString<font color="black">(</font>sourceFile, sourceLine, sourceFunc<font color="black">)</font><font color="black">)</font>;
+
+        <font color="green">// Locate the existing allocation unit</font>
+
+        sAllocUnit  <font color="black">*</font>au <font color="black">=</font> findAllocUnit<font color="black">(</font>reportedAddress<font color="black">)</font>;
+
+        <font color="green">// If you hit this assert, you tried to reallocate RAM that wasn't allocated by this memory manager.</font>
+        m_assert<font color="black">(</font>au <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font>au <font color="black">=</font><font color="black">=</font> NULL<font color="black">)</font> <font color="blue">throw</font> <font color="maroon">"Request to reallocate RAM that was never allocated"</font>;
+
+        <font color="green">// If you hit this assert, then the allocation unit that is about to be reallocated is damaged. But you probably</font>
+        <font color="green">// already know that from a previous assert you should have seen in validateAllocUnit() :)</font>
+        m_assert<font color="black">(</font>m_validateAllocUnit<font color="black">(</font>au<font color="black">)</font><font color="black">)</font>;
+
+        <font color="green">// If you hit this assert, then this reallocation was made from a source that isn't setup to use this memory</font>
+        <font color="green">// tracking software, use the stack frame to locate the source and include our H file.</font>
+        m_assert<font color="black">(</font>reallocationType <font color="black">!</font><font color="black">=</font> m_alloc_unknown<font color="black">)</font>;
+
+        <font color="green">// If you hit this assert, you were trying to reallocate RAM that was not allocated in a way that is compatible with</font>
+        <font color="green">// realloc. In other words, you have a allocation/reallocation mismatch.</font>
+        m_assert<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>allocationType <font color="black">=</font><font color="black">=</font> m_alloc_malloc <font color="black">|</font><font color="black">|</font>
+             au<font color="black">-</font><font color="black">&#62;</font>allocationType <font color="black">=</font><font color="black">=</font> m_alloc_calloc <font color="black">|</font><font color="black">|</font>
+             au<font color="black">-</font><font color="black">&#62;</font>allocationType <font color="black">=</font><font color="black">=</font> m_alloc_realloc<font color="black">)</font>;
+
+        <font color="green">// If you hit this assert, then the "break on realloc" flag for this allocation unit is set (and will continue to be</font>
+        <font color="green">// set until you specifically shut it off. Interrogate the 'au' variable to determine information about this</font>
+        <font color="green">// allocation unit.</font>
+        m_assert<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>breakOnRealloc <font color="black">=</font><font color="black">=</font> <font color="blue">false</font><font color="black">)</font>;
+
+        <font color="green">// Keep track of the original size</font>
+
+        <font color="blue">unsigned</font> <font color="blue">int</font>    originalReportedSize <font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>reportedSize<font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font>alwaysLogAll<font color="black">)</font> log<font color="black">(</font><font color="maroon">"[~] ----&#62;             from 0x%08X(%08d)"</font>, originalReportedSize, originalReportedSize<font color="black">)</font>;
+
+        <font color="green">// Do the reallocation</font>
+
+        <font color="blue">void</font>    <font color="black">*</font>oldReportedAddress <font color="black">=</font> reportedAddress;
+        size_t  newActualSize <font color="black">=</font> calculateActualSize<font color="black">(</font>reportedSize<font color="black">)</font>;
+        <font color="blue">void</font>    <font color="black">*</font>newActualAddress <font color="black">=</font> NULL;
+        <font color="blue">#ifdef</font> RANDOM_FAILURE
+        <font color="blue">double</font>  a <font color="black">=</font> rand<font color="black">(</font><font color="black">)</font>;
+        <font color="blue">double</font>  b <font color="black">=</font> RAND_MAX <font color="black">/</font> <font color="maroon">100</font>.<font color="maroon">0</font> <font color="black">*</font> RANDOM_FAILURE;
+        <font color="blue">if</font> <font color="black">(</font>a <font color="black">&#62;</font> b<font color="black">)</font>
+        <font color="black">{</font>
+            newActualAddress <font color="black">=</font> realloc<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>actualAddress, newActualSize<font color="black">)</font>;
+        <font color="black">}</font>
+        <font color="blue">else</font>
+        <font color="black">{</font>
+            log<font color="black">(</font><font color="maroon">"[F] Random faiure"</font><font color="black">)</font>;
+        <font color="black">}</font>
+        <font color="blue">#else</font>
+        newActualAddress <font color="black">=</font> realloc<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>actualAddress, newActualSize<font color="black">)</font>;
+        <font color="blue">#endif</font>
+
+        <font color="green">// We don't want to assert with random failures, because we want the application to deal with them.</font>
+
+        <font color="blue">#ifndef</font> RANDOM_FAILURE
+        <font color="green">// If you hit this assert, then the requested allocation simply failed (you're out of memory) Interrogate the</font>
+        <font color="green">// variable 'au' to see the original allocation. You can also query 'newActualSize' to see the amount of memory</font>
+        <font color="green">// trying to be allocated. Finally, you can query 'reportedSize' to see how much memory was requested by the caller.</font>
+        m_assert<font color="black">(</font>newActualAddress<font color="black">)</font>;
+        <font color="blue">#endif</font>
+
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>newActualAddress<font color="black">)</font> <font color="blue">throw</font> <font color="maroon">"Request for reallocation failed. Out of memory."</font>;
+
+        <font color="green">// Remove this allocation from our stats (we'll add the new reallocation again later)</font>
+
+        stats.totalReportedMemory <font color="black">-</font><font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>reportedSize<font color="black">)</font>;
+        stats.totalActualMemory   <font color="black">-</font><font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>actualSize<font color="black">)</font>;
+
+        <font color="green">// Update the allocation with the new information</font>
+
+        au<font color="black">-</font><font color="black">&#62;</font>actualSize        <font color="black">=</font> newActualSize;
+        au<font color="black">-</font><font color="black">&#62;</font>actualAddress     <font color="black">=</font> newActualAddress;
+        au<font color="black">-</font><font color="black">&#62;</font>reportedSize      <font color="black">=</font> calculateReportedSize<font color="black">(</font>newActualSize<font color="black">)</font>;
+        au<font color="black">-</font><font color="black">&#62;</font>reportedAddress   <font color="black">=</font> calculateReportedAddress<font color="black">(</font>newActualAddress<font color="black">)</font>;
+        au<font color="black">-</font><font color="black">&#62;</font>allocationType    <font color="black">=</font> reallocationType;
+        au<font color="black">-</font><font color="black">&#62;</font>sourceLine        <font color="black">=</font> sourceLine;
+        au<font color="black">-</font><font color="black">&#62;</font>allocationNumber  <font color="black">=</font> currentAllocationCount;
+        <font color="blue">if</font> <font color="black">(</font>sourceFile<font color="black">)</font> strncpy<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>sourceFile, sourceFileStripper<font color="black">(</font>sourceFile<font color="black">)</font>, <font color="blue">sizeof</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>sourceFile<font color="black">)</font> <font color="maroon">-1</font><font color="black">)</font>;
+        <font color="blue">else</font>        strcpy <font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>sourceFile, <font color="maroon">"??"</font><font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font>sourceFunc<font color="black">)</font> strncpy<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>sourceFunc, sourceFunc, <font color="blue">sizeof</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>sourceFunc<font color="black">)</font> <font color="maroon">-1</font><font color="black">)</font>;
+        <font color="blue">else</font>        strcpy <font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>sourceFunc, <font color="maroon">"??"</font><font color="black">)</font>;
+
+        <font color="green">// The reallocation may cause the address to change, so we should relocate our allocation unit within the hash table</font>
+
+        <font color="blue">unsigned</font> <font color="blue">int</font>    hashIndex <font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font><font color="maroon">-1</font><font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font>oldReportedAddress <font color="black">!</font><font color="black">=</font> au<font color="black">-</font><font color="black">&#62;</font>reportedAddress<font color="black">)</font>
+        <font color="black">{</font>
+            <font color="green">// Remove this allocation unit from the hash table</font>
+
+            <font color="black">{</font>
+                <font color="blue">unsigned</font> <font color="blue">int</font>    hashIndex <font color="black">=</font> <font color="black">(</font>reinterpret_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>oldReportedAddress<font color="black">)</font> <font color="black">&#62;</font><font color="black">&#62;</font> <font color="maroon">4</font><font color="black">)</font> <font color="black">&</font> <font color="black">(</font>hashSize <font color="maroon">-1</font><font color="black">)</font>;
+                <font color="blue">if</font> <font color="black">(</font>hashTable<font color="black">[</font>hashIndex<font color="black">]</font> <font color="black">=</font><font color="black">=</font> au<font color="black">)</font>
+                <font color="black">{</font>
+                    hashTable<font color="black">[</font>hashIndex<font color="black">]</font> <font color="black">=</font> hashTable<font color="black">[</font>hashIndex<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>next;
+                <font color="black">}</font>
+                <font color="blue">else</font>
+                <font color="black">{</font>
+                    <font color="blue">if</font> <font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>prev<font color="black">)</font>   au<font color="black">-</font><font color="black">&#62;</font>prev<font color="black">-</font><font color="black">&#62;</font>next <font color="black">=</font> au<font color="black">-</font><font color="black">&#62;</font>next;
+                    <font color="blue">if</font> <font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>next<font color="black">)</font>   au<font color="black">-</font><font color="black">&#62;</font>next<font color="black">-</font><font color="black">&#62;</font>prev <font color="black">=</font> au<font color="black">-</font><font color="black">&#62;</font>prev;
+                <font color="black">}</font>
+            <font color="black">}</font>
+
+            <font color="green">// Re-insert it back into the hash table</font>
+
+            hashIndex <font color="black">=</font> <font color="black">(</font>reinterpret_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>reportedAddress<font color="black">)</font> <font color="black">&#62;</font><font color="black">&#62;</font> <font color="maroon">4</font><font color="black">)</font> <font color="black">&</font> <font color="black">(</font>hashSize <font color="maroon">-1</font><font color="black">)</font>;
+            <font color="blue">if</font> <font color="black">(</font>hashTable<font color="black">[</font>hashIndex<font color="black">]</font><font color="black">)</font> hashTable<font color="black">[</font>hashIndex<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>prev <font color="black">=</font> au;
+            au<font color="black">-</font><font color="black">&#62;</font>next <font color="black">=</font> hashTable<font color="black">[</font>hashIndex<font color="black">]</font>;
+            au<font color="black">-</font><font color="black">&#62;</font>prev <font color="black">=</font> NULL;
+            hashTable<font color="black">[</font>hashIndex<font color="black">]</font> <font color="black">=</font> au;
+        <font color="black">}</font>
+
+        <font color="green">// Account for the new allocatin unit in our stats</font>
+
+        stats.totalReportedMemory <font color="black">+</font><font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>reportedSize<font color="black">)</font>;
+        stats.totalActualMemory   <font color="black">+</font><font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>actualSize<font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font>stats.totalReportedMemory <font color="black">&#62;</font> stats.peakReportedMemory<font color="black">)</font> stats.peakReportedMemory <font color="black">=</font> stats.totalReportedMemory;
+        <font color="blue">if</font> <font color="black">(</font>stats.totalActualMemory   <font color="black">&#62;</font> stats.peakActualMemory<font color="black">)</font>   stats.peakActualMemory   <font color="black">=</font> stats.totalActualMemory;
+        <font color="blue">int</font> deltaReportedSize <font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>reportedSize <font color="black">-</font>originalReportedSize<font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font>deltaReportedSize <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+        <font color="black">{</font>
+            stats.accumulatedReportedMemory <font color="black">+</font><font color="black">=</font> deltaReportedSize;
+            stats.accumulatedActualMemory <font color="black">+</font><font color="black">=</font> deltaReportedSize;
+        <font color="black">}</font>
+
+        <font color="green">// Prepare the allocation unit for use (wipe it with recognizable garbage)</font>
+
+        wipeWithPattern<font color="black">(</font>au, unusedPattern, originalReportedSize<font color="black">)</font>;
+
+        <font color="green">// If you hit this assert, then something went wrong, because the allocation unit was properly validated PRIOR to</font>
+        <font color="green">// the reallocation. This should not happen.</font>
+        m_assert<font color="black">(</font>m_validateAllocUnit<font color="black">(</font>au<font color="black">)</font><font color="black">)</font>;
+
+        <font color="green">// Validate every single allocated unit in memory</font>
+
+        <font color="blue">if</font> <font color="black">(</font>alwaysValidateAll<font color="black">)</font> m_validateAllAllocUnits<font color="black">(</font><font color="black">)</font>;
+
+        <font color="green">// Log the result</font>
+
+        <font color="blue">if</font> <font color="black">(</font>alwaysLogAll<font color="black">)</font> log<font color="black">(</font><font color="maroon">"[~] ----&#62;             addr 0x%08X"</font>, reinterpret_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>reportedAddress<font color="black">)</font><font color="black">)</font>;
+
+        <font color="green">// Resetting the globals insures that if at some later time, somebody calls our memory manager from an unknown</font>
+        <font color="green">// source (i.e. they didn't include our H file) then we won't think it was the last allocation.</font>
+
+        resetGlobals<font color="black">(</font><font color="black">)</font>;
+
+        <font color="green">// Return the (reported) address of the new allocation unit</font>
+
+        <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+        log<font color="black">(</font><font color="maroon">"[D] EXIT : m_reallocator()"</font><font color="black">)</font>;
+        <font color="blue">#endif</font>
+
+        <font color="blue">return</font> au<font color="black">-</font><font color="black">&#62;</font>reportedAddress;
+    <font color="black">}</font>
+    <font color="blue">catch</font><font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>err<font color="black">)</font>
+    <font color="black">{</font>
+        <font color="green">// Deal with the errors</font>
+
+        log<font color="black">(</font><font color="maroon">"[!] %s"</font>, err<font color="black">)</font>;
+        resetGlobals<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+        log<font color="black">(</font><font color="maroon">"[D] EXIT : m_reallocator()"</font><font color="black">)</font>;
+        <font color="blue">#endif</font>
+
+        <font color="blue">return</font> NULL;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Deallocate memory and track it</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>    m_deallocator<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFile, <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> sourceLine, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFunc, <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> deallocationType, <font color="blue">const</font> <font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>
+<font color="black">{</font>
+    try
+    <font color="black">{</font>
+        <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+        log<font color="black">(</font><font color="maroon">"[D] ENTER: m_deallocator()"</font><font color="black">)</font>;
+        <font color="blue">#endif</font>
+
+        <font color="green">// Log the request</font>
+
+        <font color="blue">if</font> <font color="black">(</font>alwaysLogAll<font color="black">)</font> log<font color="black">(</font><font color="maroon">"[-] ----- %8s of addr 0x%08X           by %s"</font>, allocationTypes<font color="black">[</font>deallocationType<font color="black">]</font>, reinterpret_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>const_cast<font color="black">&#60;</font><font color="blue">void</font> <font color="black">*</font><font color="black">&#62;</font><font color="black">(</font>reportedAddress<font color="black">)</font><font color="black">)</font>, ownerString<font color="black">(</font>sourceFile, sourceLine, sourceFunc<font color="black">)</font><font color="black">)</font>;
+
+        <font color="green">// We should only ever get here with a null pointer if they try to do so with a call to free() (delete[] and delete will</font>
+        <font color="green">// both bail before they get here.) So, since ANSI allows free(NULL), we'll not bother trying to actually free the allocated</font>
+        <font color="green">// memory or track it any further.</font>
+
+        <font color="blue">if</font> <font color="black">(</font>reportedAddress<font color="black">)</font>
+        <font color="black">{</font>
+            <font color="green">// Go get the allocation unit</font>
+
+            sAllocUnit  <font color="black">*</font>au <font color="black">=</font> findAllocUnit<font color="black">(</font>reportedAddress<font color="black">)</font>;
+
+            <font color="green">// If you hit this assert, you tried to deallocate RAM that wasn't allocated by this memory manager.</font>
+            m_assert<font color="black">(</font>au <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font>;
+            <font color="blue">if</font> <font color="black">(</font>au <font color="black">=</font><font color="black">=</font> NULL<font color="black">)</font> <font color="blue">throw</font> <font color="maroon">"Request to deallocate RAM that was never allocated"</font>;
+
+            <font color="green">// If you hit this assert, then the allocation unit that is about to be deallocated is damaged. But you probably</font>
+            <font color="green">// already know that from a previous assert you should have seen in validateAllocUnit() :)</font>
+            m_assert<font color="black">(</font>m_validateAllocUnit<font color="black">(</font>au<font color="black">)</font><font color="black">)</font>;
+
+            <font color="green">// If you hit this assert, then this deallocation was made from a source that isn't setup to use this memory</font>
+            <font color="green">// tracking software, use the stack frame to locate the source and include our H file.</font>
+            m_assert<font color="black">(</font>deallocationType <font color="black">!</font><font color="black">=</font> m_alloc_unknown<font color="black">)</font>;
+
+            <font color="green">// If you hit this assert, you were trying to deallocate RAM that was not allocated in a way that is compatible with</font>
+            <font color="green">// the deallocation method requested. In other words, you have a allocation/deallocation mismatch.</font>
+            m_assert<font color="black">(</font><font color="black">(</font>deallocationType <font color="black">=</font><font color="black">=</font> m_alloc_delete       <font color="black">&</font><font color="black">&</font> au<font color="black">-</font><font color="black">&#62;</font>allocationType <font color="black">=</font><font color="black">=</font> m_alloc_new      <font color="black">)</font> <font color="black">|</font><font color="black">|</font>
+                <font color="black">(</font>deallocationType <font color="black">=</font><font color="black">=</font> m_alloc_delete_array <font color="black">&</font><font color="black">&</font> au<font color="black">-</font><font color="black">&#62;</font>allocationType <font color="black">=</font><font color="black">=</font> m_alloc_new_array<font color="black">)</font> <font color="black">|</font><font color="black">|</font>
+                <font color="black">(</font>deallocationType <font color="black">=</font><font color="black">=</font> m_alloc_free         <font color="black">&</font><font color="black">&</font> au<font color="black">-</font><font color="black">&#62;</font>allocationType <font color="black">=</font><font color="black">=</font> m_alloc_malloc   <font color="black">)</font> <font color="black">|</font><font color="black">|</font>
+                <font color="black">(</font>deallocationType <font color="black">=</font><font color="black">=</font> m_alloc_free         <font color="black">&</font><font color="black">&</font> au<font color="black">-</font><font color="black">&#62;</font>allocationType <font color="black">=</font><font color="black">=</font> m_alloc_calloc   <font color="black">)</font> <font color="black">|</font><font color="black">|</font>
+                <font color="black">(</font>deallocationType <font color="black">=</font><font color="black">=</font> m_alloc_free         <font color="black">&</font><font color="black">&</font> au<font color="black">-</font><font color="black">&#62;</font>allocationType <font color="black">=</font><font color="black">=</font> m_alloc_realloc  <font color="black">)</font> <font color="black">|</font><font color="black">|</font>
+                <font color="black">(</font>deallocationType <font color="black">=</font><font color="black">=</font> m_alloc_unknown                                                <font color="black">)</font> <font color="black">)</font>;
+
+            <font color="green">// If you hit this assert, then the "break on dealloc" flag for this allocation unit is set. Interrogate the 'au'</font>
+            <font color="green">// variable to determine information about this allocation unit.</font>
+            m_assert<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>breakOnDealloc <font color="black">=</font><font color="black">=</font> <font color="blue">false</font><font color="black">)</font>;
+
+            <font color="green">// Wipe the deallocated RAM with a new pattern. This doen't actually do us much good in debug mode under WIN32,</font>
+            <font color="green">// because Microsoft's memory debugging & tracking utilities will wipe it right after we do. Oh well.</font>
+
+            wipeWithPattern<font color="black">(</font>au, releasedPattern<font color="black">)</font>;
+
+            <font color="green">// Do the deallocation</font>
+
+            free<font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>actualAddress<font color="black">)</font>;
+
+            <font color="green">// Remove this allocation unit from the hash table</font>
+
+            <font color="blue">unsigned</font> <font color="blue">int</font>    hashIndex <font color="black">=</font> <font color="black">(</font>reinterpret_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>reportedAddress<font color="black">)</font> <font color="black">&#62;</font><font color="black">&#62;</font> <font color="maroon">4</font><font color="black">)</font> <font color="black">&</font> <font color="black">(</font>hashSize <font color="maroon">-1</font><font color="black">)</font>;
+            <font color="blue">if</font> <font color="black">(</font>hashTable<font color="black">[</font>hashIndex<font color="black">]</font> <font color="black">=</font><font color="black">=</font> au<font color="black">)</font>
+            <font color="black">{</font>
+                hashTable<font color="black">[</font>hashIndex<font color="black">]</font> <font color="black">=</font> au<font color="black">-</font><font color="black">&#62;</font>next;
+            <font color="black">}</font>
+            <font color="blue">else</font>
+            <font color="black">{</font>
+                <font color="blue">if</font> <font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>prev<font color="black">)</font>   au<font color="black">-</font><font color="black">&#62;</font>prev<font color="black">-</font><font color="black">&#62;</font>next <font color="black">=</font> au<font color="black">-</font><font color="black">&#62;</font>next;
+                <font color="blue">if</font> <font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>next<font color="black">)</font>   au<font color="black">-</font><font color="black">&#62;</font>next<font color="black">-</font><font color="black">&#62;</font>prev <font color="black">=</font> au<font color="black">-</font><font color="black">&#62;</font>prev;
+            <font color="black">}</font>
+
+            <font color="green">// Remove this allocation from our stats</font>
+
+            stats.totalReportedMemory <font color="black">-</font><font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>reportedSize<font color="black">)</font>;
+            stats.totalActualMemory   <font color="black">-</font><font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>au<font color="black">-</font><font color="black">&#62;</font>actualSize<font color="black">)</font>;
+            stats.totalAllocUnitCount<font color="black">-</font><font color="black">-</font>;
+
+            <font color="green">// Add this allocation unit to the front of our reservoir of unused allocation units</font>
+
+            memset<font color="black">(</font>au, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>sAllocUnit<font color="black">)</font><font color="black">)</font>;
+            au<font color="black">-</font><font color="black">&#62;</font>next <font color="black">=</font> reservoir;
+            reservoir <font color="black">=</font> au;
+        <font color="black">}</font>
+
+        <font color="green">// Resetting the globals insures that if at some later time, somebody calls our memory manager from an unknown</font>
+        <font color="green">// source (i.e. they didn't include our H file) then we won't think it was the last allocation.</font>
+
+        resetGlobals<font color="black">(</font><font color="black">)</font>;
+
+        <font color="green">// Validate every single allocated unit in memory</font>
+
+        <font color="blue">if</font> <font color="black">(</font>alwaysValidateAll<font color="black">)</font> m_validateAllAllocUnits<font color="black">(</font><font color="black">)</font>;
+
+        <font color="green">// If we're in the midst of static deinitialization time, track any pending memory leaks</font>
+
+        <font color="blue">if</font> <font color="black">(</font>staticDeinitTime<font color="black">)</font> dumpLeakReport<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">catch</font><font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>err<font color="black">)</font>
+    <font color="black">{</font>
+        <font color="green">// Deal with errors</font>
+
+        log<font color="black">(</font><font color="maroon">"[!] %s"</font>, err<font color="black">)</font>;
+        resetGlobals<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">#ifdef</font> TEST_MEMORY_MANAGER
+    log<font color="black">(</font><font color="maroon">"[D] EXIT : m_deallocator()"</font><font color="black">)</font>;
+    <font color="blue">#endif</font>
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// -DOC- The following utilitarian allow you to become proactive in tracking your own memory, or help you narrow in on those tough</font>
+<font color="green">// bugs.</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">bool</font>    m_validateAddress<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Just see if the address exists in our allocation routines</font>
+
+    <font color="blue">return</font> findAllocUnit<font color="black">(</font>reportedAddress<font color="black">)</font> <font color="black">!</font><font color="black">=</font> NULL;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">bool</font>    m_validateAllocUnit<font color="black">(</font><font color="blue">const</font> sAllocUnit <font color="black">*</font>allocUnit<font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Make sure the padding is untouched</font>
+
+    <font color="blue">long</font>    <font color="black">*</font>pre <font color="black">=</font> reinterpret_cast<font color="black">&#60;</font><font color="blue">long</font> <font color="black">*</font><font color="black">&#62;</font><font color="black">(</font>allocUnit<font color="black">-</font><font color="black">&#62;</font>actualAddress<font color="black">)</font>;
+    <font color="blue">long</font>    <font color="black">*</font>post <font color="black">=</font> reinterpret_cast<font color="black">&#60;</font><font color="blue">long</font> <font color="black">*</font><font color="black">&#62;</font><font color="black">(</font><font color="black">(</font><font color="blue">char</font> <font color="black">*</font><font color="black">)</font>allocUnit<font color="black">-</font><font color="black">&#62;</font>actualAddress <font color="black">+</font> allocUnit<font color="black">-</font><font color="black">&#62;</font>actualSize <font color="black">-</font>paddingSize <font color="black">*</font> <font color="blue">sizeof</font><font color="black">(</font><font color="blue">long</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">bool</font>    errorFlag <font color="black">=</font> <font color="blue">false</font>;
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">unsigned</font> <font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> paddingSize; i<font color="black">+</font><font color="black">+</font>, pre<font color="black">+</font><font color="black">+</font>, post<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font><font color="black">*</font>pre <font color="black">!</font><font color="black">=</font> <font color="black">(</font><font color="blue">long</font><font color="black">)</font> prefixPattern<font color="black">)</font>
+        <font color="black">{</font>
+            log<font color="black">(</font><font color="maroon">"[!] A memory allocation unit was corrupt because of an underrun:"</font><font color="black">)</font>;
+            m_dumpAllocUnit<font color="black">(</font>allocUnit, <font color="maroon">"  "</font><font color="black">)</font>;
+            errorFlag <font color="black">=</font> <font color="blue">true</font>;
+        <font color="black">}</font>
+
+        <font color="green">// If you hit this assert, then you should know that this allocation unit has been damaged. Something (possibly the</font>
+        <font color="green">// owner?) has underrun the allocation unit (modified a few bytes prior to the start). You can interrogate the</font>
+        <font color="green">// variable 'allocUnit' to see statistics and information about this damaged allocation unit.</font>
+        m_assert<font color="black">(</font><font color="black">*</font>pre <font color="black">=</font><font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">long</font><font color="black">&#62;</font><font color="black">(</font>prefixPattern<font color="black">)</font><font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font><font color="black">*</font>post <font color="black">!</font><font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">long</font><font color="black">&#62;</font><font color="black">(</font>postfixPattern<font color="black">)</font><font color="black">)</font>
+        <font color="black">{</font>
+            log<font color="black">(</font><font color="maroon">"[!] A memory allocation unit was corrupt because of an overrun:"</font><font color="black">)</font>;
+            m_dumpAllocUnit<font color="black">(</font>allocUnit, <font color="maroon">"  "</font><font color="black">)</font>;
+            errorFlag <font color="black">=</font> <font color="blue">true</font>;
+        <font color="black">}</font>
+
+        <font color="green">// If you hit this assert, then you should know that this allocation unit has been damaged. Something (possibly the</font>
+        <font color="green">// owner?) has overrun the allocation unit (modified a few bytes after the end). You can interrogate the variable</font>
+        <font color="green">// 'allocUnit' to see statistics and information about this damaged allocation unit.</font>
+        m_assert<font color="black">(</font><font color="black">*</font>post <font color="black">=</font><font color="black">=</font> static_cast<font color="black">&#60;</font><font color="blue">long</font><font color="black">&#62;</font><font color="black">(</font>postfixPattern<font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="green">// Return the error status (we invert it, because a return of 'false' means error)</font>
+
+    <font color="blue">return</font> <font color="black">!</font>errorFlag;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">bool</font>    m_validateAllAllocUnits<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Just go through each allocation unit in the hash table and count the ones that have errors</font>
+
+    <font color="blue">unsigned</font> <font color="blue">int</font>    errors <font color="black">=</font> <font color="maroon">0</font>;
+    <font color="blue">unsigned</font> <font color="blue">int</font>    allocCount <font color="black">=</font> <font color="maroon">0</font>;
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">unsigned</font> <font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> hashSize; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+        sAllocUnit  <font color="black">*</font>ptr <font color="black">=</font> hashTable<font color="black">[</font>i<font color="black">]</font>;
+        <font color="blue">while</font><font color="black">(</font>ptr<font color="black">)</font>
+        <font color="black">{</font>
+            allocCount<font color="black">+</font><font color="black">+</font>;
+            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>m_validateAllocUnit<font color="black">(</font>ptr<font color="black">)</font><font color="black">)</font> errors<font color="black">+</font><font color="black">+</font>;
+            ptr <font color="black">=</font> ptr<font color="black">-</font><font color="black">&#62;</font>next;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="green">// Test for hash-table correctness</font>
+
+    <font color="blue">if</font> <font color="black">(</font>allocCount <font color="black">!</font><font color="black">=</font> stats.totalAllocUnitCount<font color="black">)</font>
+    <font color="black">{</font>
+        log<font color="black">(</font><font color="maroon">"[!] Memory tracking hash table corrupt!"</font><font color="black">)</font>;
+        errors<font color="black">+</font><font color="black">+</font>;
+    <font color="black">}</font>
+
+    <font color="green">// If you hit this assert, then the internal memory (hash table) used by this memory tracking software is damaged! The</font>
+    <font color="green">// best way to track this down is to use the alwaysLogAll flag in conjunction with STRESS_TEST macro to narrow in on the</font>
+    <font color="green">// offending code. After running the application with these settings (and hitting this assert again), interrogate the</font>
+    <font color="green">// memory.log file to find the previous successful operation. The corruption will have occurred between that point and this</font>
+    <font color="green">// assertion.</font>
+    m_assert<font color="black">(</font>allocCount <font color="black">=</font><font color="black">=</font> stats.totalAllocUnitCount<font color="black">)</font>;
+
+    <font color="green">// If you hit this assert, then you've probably already been notified that there was a problem with a allocation unit in a</font>
+    <font color="green">// prior call to validateAllocUnit(), but this assert is here just to make sure you know about it. :)</font>
+    m_assert<font color="black">(</font>errors <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+
+    <font color="green">// Log any errors</font>
+
+    <font color="blue">if</font> <font color="black">(</font>errors<font color="black">)</font> log<font color="black">(</font><font color="maroon">"[!] While validting all allocation units, %d allocation unit(s) were found to have problems"</font>, errors<font color="black">)</font>;
+
+    <font color="green">// Return the error status</font>
+
+    <font color="blue">return</font> errors <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// -DOC- Unused RAM calculation routines. Use these to determine how much of your RAM is unused (in bytes)</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">unsigned</font> <font color="blue">int</font>    m_calcUnused<font color="black">(</font><font color="blue">const</font> sAllocUnit <font color="black">*</font>allocUnit<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">long</font> <font color="black">*</font>ptr <font color="black">=</font> reinterpret_cast<font color="black">&#60;</font><font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">long</font> <font color="black">*</font><font color="black">&#62;</font><font color="black">(</font>allocUnit<font color="black">-</font><font color="black">&#62;</font>reportedAddress<font color="black">)</font>;
+    <font color="blue">unsigned</font> <font color="blue">int</font>        count <font color="black">=</font> <font color="maroon">0</font>;
+
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">unsigned</font> <font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> allocUnit<font color="black">-</font><font color="black">&#62;</font>reportedSize; i <font color="black">+</font><font color="black">=</font> <font color="blue">sizeof</font><font color="black">(</font><font color="blue">long</font><font color="black">)</font>, ptr<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font><font color="black">*</font>ptr <font color="black">=</font><font color="black">=</font> unusedPattern<font color="black">)</font> count <font color="black">+</font><font color="black">=</font> <font color="blue">sizeof</font><font color="black">(</font><font color="blue">long</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> count;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">unsigned</font> <font color="blue">int</font>    m_calcAllUnused<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Just go through each allocation unit in the hash table and count the unused RAM</font>
+
+    <font color="blue">unsigned</font> <font color="blue">int</font>    total <font color="black">=</font> <font color="maroon">0</font>;
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">unsigned</font> <font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> hashSize; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+        sAllocUnit  <font color="black">*</font>ptr <font color="black">=</font> hashTable<font color="black">[</font>i<font color="black">]</font>;
+        <font color="blue">while</font><font color="black">(</font>ptr<font color="black">)</font>
+        <font color="black">{</font>
+            total <font color="black">+</font><font color="black">=</font> m_calcUnused<font color="black">(</font>ptr<font color="black">)</font>;
+            ptr <font color="black">=</font> ptr<font color="black">-</font><font color="black">&#62;</font>next;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> total;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// -DOC- The following functions are for logging and statistics reporting.</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>    m_dumpAllocUnit<font color="black">(</font><font color="blue">const</font> sAllocUnit <font color="black">*</font>allocUnit, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>prefix<font color="black">)</font>
+<font color="black">{</font>
+    log<font color="black">(</font><font color="maroon">"[I] %sAddress (reported): %010p"</font>,       prefix, allocUnit<font color="black">-</font><font color="black">&#62;</font>reportedAddress<font color="black">)</font>;
+    log<font color="black">(</font><font color="maroon">"[I] %sAddress (actual)  : %010p"</font>,       prefix, allocUnit<font color="black">-</font><font color="black">&#62;</font>actualAddress<font color="black">)</font>;
+    log<font color="black">(</font><font color="maroon">"[I] %sSize (reported)   : 0x%08X (%s)"</font>, prefix, static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>allocUnit<font color="black">-</font><font color="black">&#62;</font>reportedSize<font color="black">)</font>, memorySizeString<font color="black">(</font>static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>allocUnit<font color="black">-</font><font color="black">&#62;</font>reportedSize<font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+    log<font color="black">(</font><font color="maroon">"[I] %sSize (actual)     : 0x%08X (%s)"</font>, prefix, static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>allocUnit<font color="black">-</font><font color="black">&#62;</font>actualSize<font color="black">)</font>, memorySizeString<font color="black">(</font>static_cast<font color="black">&#60;</font><font color="blue">unsigned</font> <font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>allocUnit<font color="black">-</font><font color="black">&#62;</font>actualSize<font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+    log<font color="black">(</font><font color="maroon">"[I] %sOwner             : %s(%d)::%s"</font>,  prefix, allocUnit<font color="black">-</font><font color="black">&#62;</font>sourceFile, allocUnit<font color="black">-</font><font color="black">&#62;</font>sourceLine, allocUnit<font color="black">-</font><font color="black">&#62;</font>sourceFunc<font color="black">)</font>;
+    log<font color="black">(</font><font color="maroon">"[I] %sAllocation type   : %s"</font>,          prefix, allocationTypes<font color="black">[</font>allocUnit<font color="black">-</font><font color="black">&#62;</font>allocationType<font color="black">]</font><font color="black">)</font>;
+    log<font color="black">(</font><font color="maroon">"[I] %sAllocation number : %d"</font>,          prefix, allocUnit<font color="black">-</font><font color="black">&#62;</font>allocationNumber<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>    m_dumpMemoryReport<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>filename, <font color="blue">const</font> <font color="blue">bool</font> overwrite<font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Open the report file</font>
+
+    FILE    <font color="black">*</font>fp <font color="black">=</font> NULL;
+    
+    <font color="blue">if</font> <font color="black">(</font>overwrite<font color="black">)</font>  fp <font color="black">=</font> fopen<font color="black">(</font>filename, <font color="maroon">"w+b"</font><font color="black">)</font>;
+    <font color="blue">else</font>        fp <font color="black">=</font> fopen<font color="black">(</font>filename, <font color="maroon">"ab"</font><font color="black">)</font>;
+
+    <font color="green">// If you hit this assert, then the memory report generator is unable to log information to a file (can't open the file for</font>
+    <font color="green">// some reason.)</font>
+    m_assert<font color="black">(</font>fp<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>fp<font color="black">)</font> <font color="blue">return</font>;
+
+        <font color="green">// Header</font>
+
+        <font color="blue">static</font>  <font color="blue">char</font>    timeString<font color="black">[</font><font color="maroon">25</font><font color="black">]</font>;
+        memset<font color="black">(</font>timeString, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>timeString<font color="black">)</font><font color="black">)</font>;
+        time_t  t <font color="black">=</font> time<font color="black">(</font>NULL<font color="black">)</font>;
+        <font color="blue">struct</font>  tm <font color="black">*</font>tme <font color="black">=</font> localtime<font color="black">(</font><font color="black">&</font>t<font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">" ---------------------------------------------------------------------------------------------------------------------------------- \r\n"</font><font color="black">)</font>;
+        fprintf<font color="black">(</font>fp, <font color="maroon">"|                                             Memory report for: %02d/%02d/%04d %02d:%02d:%02d                                               |\r\n"</font>, tme<font color="black">-</font><font color="black">&#62;</font>tm_mon <font color="black">+</font> <font color="maroon">1</font>, tme<font color="black">-</font><font color="black">&#62;</font>tm_mday, tme<font color="black">-</font><font color="black">&#62;</font>tm_year <font color="black">+</font> <font color="maroon">1900</font>, tme<font color="black">-</font><font color="black">&#62;</font>tm_hour, tme<font color="black">-</font><font color="black">&#62;</font>tm_min, tme<font color="black">-</font><font color="black">&#62;</font>tm_sec<font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">" ---------------------------------------------------------------------------------------------------------------------------------- \r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"\r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"\r\n"</font><font color="black">)</font>;
+
+    <font color="green">// Report summary</font>
+
+    fprintf<font color="black">(</font>fp, <font color="maroon">" ---------------------------------------------------------------------------------------------------------------------------------- \r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"|                                                           T O T A L S                                                            |\r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">" ---------------------------------------------------------------------------------------------------------------------------------- \r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"              Allocation unit count: %10s\r\n"</font>, insertCommas<font color="black">(</font>stats.totalAllocUnitCount<font color="black">)</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"            Reported to application: %s\r\n"</font>, memorySizeString<font color="black">(</font>stats.totalReportedMemory<font color="black">)</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"         Actual total memory in use: %s\r\n"</font>, memorySizeString<font color="black">(</font>stats.totalActualMemory<font color="black">)</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"           Memory tracking overhead: %s\r\n"</font>, memorySizeString<font color="black">(</font>stats.totalActualMemory <font color="black">-</font>stats.totalReportedMemory<font color="black">)</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"\r\n"</font><font color="black">)</font>;
+
+    fprintf<font color="black">(</font>fp, <font color="maroon">" ---------------------------------------------------------------------------------------------------------------------------------- \r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"|                                                            P E A K S                                                             |\r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">" ---------------------------------------------------------------------------------------------------------------------------------- \r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"              Allocation unit count: %10s\r\n"</font>, insertCommas<font color="black">(</font>stats.peakAllocUnitCount<font color="black">)</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"            Reported to application: %s\r\n"</font>, memorySizeString<font color="black">(</font>stats.peakReportedMemory<font color="black">)</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"                             Actual: %s\r\n"</font>, memorySizeString<font color="black">(</font>stats.peakActualMemory<font color="black">)</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"           Memory tracking overhead: %s\r\n"</font>, memorySizeString<font color="black">(</font>stats.peakActualMemory <font color="black">-</font>stats.peakReportedMemory<font color="black">)</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"\r\n"</font><font color="black">)</font>;
+
+    fprintf<font color="black">(</font>fp, <font color="maroon">" ---------------------------------------------------------------------------------------------------------------------------------- \r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"|                                                      A C C U M U L A T E D                                                       |\r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">" ---------------------------------------------------------------------------------------------------------------------------------- \r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"              Allocation unit count: %s\r\n"</font>, memorySizeString<font color="black">(</font>stats.accumulatedAllocUnitCount<font color="black">)</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"            Reported to application: %s\r\n"</font>, memorySizeString<font color="black">(</font>stats.accumulatedReportedMemory<font color="black">)</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"                             Actual: %s\r\n"</font>, memorySizeString<font color="black">(</font>stats.accumulatedActualMemory<font color="black">)</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"\r\n"</font><font color="black">)</font>;
+
+    fprintf<font color="black">(</font>fp, <font color="maroon">" ---------------------------------------------------------------------------------------------------------------------------------- \r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"|                                                           U N U S E D                                                            |\r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">" ---------------------------------------------------------------------------------------------------------------------------------- \r\n"</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"    Memory allocated but not in use: %s\r\n"</font>, memorySizeString<font color="black">(</font>m_calcAllUnused<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>fp, <font color="maroon">"\r\n"</font><font color="black">)</font>;
+
+    dumpAllocations<font color="black">(</font>fp<font color="black">)</font>;
+
+    fclose<font color="black">(</font>fp<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+sMStats m_getMemoryStatistics<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">return</font> stats;
+<font color="black">}</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// mmgr.cpp - End of file</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+</PRE>
+</BODY>
+</HTML>

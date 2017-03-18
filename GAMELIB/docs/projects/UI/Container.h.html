@@ -1,0 +1,102 @@
+<HTML>
+<HEAD>
+<TITLE>
+Container.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _Container_h
+<font color="blue">#define</font> _Container_h
+
+<font color="blue">#include</font> <font color="maroon">"UIThing.h"</font>
+
+
+<font color="blue">class</font> Container<font color="black">:</font> <font color="blue">public</font> UIThing
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Container<font color="black">(</font><font color="black">)</font>;
+  
+  virtual string getName<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="maroon">"Container"</font>; <font color="black">}</font>
+  virtual <font color="blue">bool</font> isContainer<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">true</font>; <font color="black">}</font>
+  
+  <font color="blue">void</font> addUIThing<font color="black">(</font>UIThing<font color="black">*</font> thing<font color="black">)</font>;
+  <font color="blue">void</font> removeUIThing<font color="black">(</font>UIThing<font color="black">*</font> thing<font color="black">)</font>;
+
+  <font color="blue">void</font> moveToTop<font color="black">(</font>UIThing<font color="black">*</font> thing<font color="black">)</font>
+  <font color="black">{</font>
+    removeUIThing<font color="black">(</font>thing<font color="black">)</font>;
+    addUIThing<font color="black">(</font>thing<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">// from UIThing</font>
+  virtual <font color="blue">void</font> show<font color="black">(</font><font color="black">)</font>;
+  
+  <font color="green">/**
+    * determins whether "thing" is obscured
+    */</font>
+  virtual <font color="blue">bool</font> isObscured<font color="black">(</font>UIThing<font color="black">*</font> thing<font color="black">)</font>;
+  
+  <font color="green">// FOCUS STUFF</font>
+  virtual <font color="blue">bool</font> setFocus<font color="black">(</font>UIThing<font color="black">*</font> thing<font color="black">)</font>;
+  virtual <font color="blue">bool</font> nextFocus<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">// from UIThing</font>
+  virtual <font color="blue">bool</font> hasFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">true</font>; <font color="black">}</font>
+  virtual <font color="blue">void</font> takeFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font>; <font color="black">}</font>
+  virtual <font color="blue">void</font> loseFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font>; <font color="black">}</font>
+  virtual <font color="blue">bool</font> acceptsFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">true</font>; <font color="black">}</font>
+  <font color="green">// end UIThing</font>
+
+
+  <font color="green">/**
+    * return the thing that has focus
+    */</font>
+  virtual UIThing<font color="black">*</font> getFocus<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">// END FOCUS STUFF</font>
+
+  virtual <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>;
+
+
+   <font color="green">/** 
+    * Many event handlers to be overridden.
+    */</font>
+  virtual <font color="blue">void</font> onMousePress<font color="black">(</font>MousePressEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onMouseRelease<font color="black">(</font>MouseReleaseEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onMouseClick<font color="black">(</font>MouseClickEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onMouseDblClick<font color="black">(</font>MouseDblClickEvent<font color="black">*</font> event<font color="black">)</font>;
+  
+  virtual <font color="blue">void</font> onMouseMove<font color="black">(</font>MouseMoveEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onMouseEnter<font color="black">(</font>MouseEnterEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onMouseExit<font color="black">(</font>MouseExitEvent<font color="black">*</font> event<font color="black">)</font>;
+
+  virtual <font color="blue">void</font> onKeyPress<font color="black">(</font>KeyPressEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onKeyRelease<font color="black">(</font>KeyReleaseEvent<font color="black">*</font> event<font color="black">)</font>;
+
+<font color="blue">protected</font><font color="black">:</font>
+
+  <font color="green">/**
+    * return the UIThing under point
+    */</font>
+  UIThing<font color="black">*</font> findByPoint<font color="black">(</font>Point point<font color="black">)</font>;
+
+  <font color="green">/**
+    * translates screen to container relative
+    */</font>
+  Point translatePoint<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font>;
+
+  list<font color="black">&#60;</font>UIThing<font color="black">*</font><font color="black">&#62;</font> m_things;
+  
+  <font color="green">// FOCUS</font>
+  list<font color="black">&#60;</font>UIThing<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator m_currentFocus;
+
+
+  <font color="blue">bool</font> m_acceptFocus; <font color="green">// seet to true if at least one control want focus</font>
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

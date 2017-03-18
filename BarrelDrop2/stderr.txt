@@ -1,0 +1,19 @@
+11/10/03 19:10:52 - Inform: BarrelDrop! version 1.1.13
+11/10/03 19:10:52 - Inform: Built 11/10/03 18:56:03
+11/10/03 19:10:52 - Inform: Width: 640, Height: 480, Bpp: 32, Type: SDL, Flags: 0x00000000
+11/10/03 19:10:53 - Inform: HW Available: 1
+11/10/03 19:10:53 - Inform: Accelerated HW->HW Blits: 1
+11/10/03 19:10:53 - Inform: Accelerated HW->HW Colorkey Blits: 1
+11/10/03 19:10:53 - Inform: Accelerated HW->HW ALPHA Blits: 0
+11/10/03 19:10:53 - Inform: Accelerated SW->HW Blits: 1
+11/10/03 19:10:53 - Inform: Accelerated SW->HW Colorkey Blits: 1
+11/10/03 19:10:53 - Inform: Accelerated SW->HW ALPHA Blits: 0
+11/10/03 19:10:53 - Inform: Accelerated Fills :1
+11/10/03 19:10:53 - Inform: Screen is SW surface
+11/10/03 19:10:53 - Inform: Rmask 00ff0000
+11/10/03 19:10:53 - Inform: Gmask 0000ff00
+11/10/03 19:10:53 - Inform: Bmask 000000ff
+11/10/03 19:10:53 - Inform: Amask 00000000
+11/10/03 19:10:53 - Inform: SDLDisplay created.
+11/10/03 19:10:54 - *Error: tried to use old asset manager for tx_Splash
+11/10/03 19:10:54 - *Error: tried to use old asset manager for mus_Background

@@ -1,0 +1,215 @@
+<HTML>
+<HEAD>
+<TITLE>
+Link.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"Link.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Message.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+ 
+UDBLBYTE Link<font color="black">:</font><font color="black">:</font>s_seqNum <font color="black">=</font> <font color="maroon">0</font>;
+set<font color="black">&#60;</font>Link<font color="black">*</font><font color="black">&#62;</font> Link<font color="black">:</font><font color="black">:</font>s_links;
+
+
+Link<font color="black">:</font><font color="black">:</font>Link<font color="black">(</font>std<font color="black">:</font><font color="black">:</font>string <font color="blue">name</font><font color="black">)</font><font color="black">:</font> 
+m_name<font color="black">(</font><font color="blue">name</font><font color="black">)</font>,
+<font color="green">//d_onTimeout(*this, Link::onTimeout),</font>
+m_linkUp<font color="black">(</font><font color="blue">false</font><font color="black">)</font>
+<font color="black">{</font>
+  s_links.insert<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Link<font color="black">:</font><font color="black">:</font>~Link<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  s_links.erase<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> Link<font color="black">:</font><font color="black">:</font>processLinks<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  set<font color="black">&#60;</font>Link<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>s_links.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>s_links.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>process<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> Link<font color="black">:</font><font color="black">:</font>process<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_linkUp<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>isValid<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      m_linkUp <font color="black">=</font> <font color="blue">false</font>;
+      processLinkDown<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font> <font color="green">// isValid() == true;</font>
+      Message<font color="black">*</font> msg <font color="black">=</font> <font color="maroon">0</font>;
+      <font color="blue">while</font> <font color="black">(</font> isReceiveReady<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> <font color="black">(</font>msg<font color="black">=</font>receiveMessage<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+      <font color="black">{</font>
+        processReceivedMessage<font color="black">(</font>msg<font color="black">)</font>;
+        <font color="blue">delete</font> msg;
+      <font color="black">}</font>
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font> <font color="green">// m_linkUp = false</font>
+    <font color="green">// FIXME: reestablish is necessary</font>
+    <font color="blue">if</font> <font color="black">(</font>isValid<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      LinkUpEvent linkUp;
+      linkUp.link <font color="black">=</font> <font color="blue">this</font>;
+      set<font color="black">&#60;</font>LinkListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_linkListeners<font color="black">)</font>;
+      set<font color="black">&#60;</font>LinkListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+      <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+      <font color="black">{</font>
+        m_linkUp <font color="black">=</font> <font color="blue">true</font>;
+        <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>linkUp<font color="black">(</font><font color="black">&</font>linkUp<font color="black">)</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>   
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> Link<font color="black">:</font><font color="black">:</font>processLinkDown<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  LinkDownEvent linkDown;
+  linkDown.link <font color="black">=</font> <font color="blue">this</font>;
+  set<font color="black">&#60;</font>LinkListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_linkListeners<font color="black">)</font>;
+  set<font color="black">&#60;</font>LinkListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>linkDown<font color="black">(</font><font color="black">&</font>linkDown<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> Link<font color="black">:</font><font color="black">:</font>processReceivedMessage<font color="black">(</font>Message<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  set<font color="black">&#60;</font>LinkListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_linkListeners<font color="black">)</font>;
+  set<font color="black">&#60;</font>LinkListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>msg<font color="black">-</font><font color="black">&#62;</font>isAck<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      LinkAckEvent ackEvent;
+      ackEvent.link <font color="black">=</font> <font color="blue">this</font>;
+      ackEvent.original <font color="black">=</font> msg<font color="black">-</font><font color="black">&#62;</font>original;
+      ackEvent.ack <font color="black">=</font> <font color="black">(</font>Ack<font color="black">*</font><font color="black">)</font>msg;
+      <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>linkAck<font color="black">(</font><font color="black">&</font>ackEvent<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+      LinkMessageEvent messageEvent;
+      messageEvent.link <font color="black">=</font> <font color="blue">this</font>;
+      messageEvent.message <font color="black">=</font> msg;
+      <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>linkMessage<font color="black">(</font><font color="black">&</font>messageEvent<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+<font color="black">}</font>
+
+
+
+<font color="blue">void</font> Link<font color="black">:</font><font color="black">:</font>sendMessage<font color="black">(</font>Message<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  <font color="green">// an ack will allready have a seqnum set.</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>msg<font color="black">-</font><font color="black">&#62;</font>isAck<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    msg<font color="black">-</font><font color="black">&#62;</font>setSeqNum<font color="black">(</font>s_seqNum<font color="black">+</font><font color="black">+</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">//Message* copy = new Message(*msg);</font>
+  Message<font color="black">*</font> copy <font color="black">=</font> Message<font color="black">:</font><font color="black">:</font>unpack<font color="black">(</font><font color="black">*</font>msg<font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>copy<font color="black">-</font><font color="black">&#62;</font>isAck<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> copy<font color="black">-</font><font color="black">&#62;</font>hasAck<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    SentMessage<font color="black">*</font> sm <font color="black">=</font> m_smCache.acquire<font color="black">(</font><font color="black">)</font>;
+    sm<font color="black">-</font><font color="black">&#62;</font>timer <font color="black">=</font> Timer<font color="black">:</font><font color="black">:</font>create<font color="black">(</font><font color="maroon">"Link:SendMessage"</font>, <font color="maroon">0</font>, MESSAGE_TIMEOUT<font color="black">*</font><font color="maroon">1000</font>, <font color="blue">this</font>, sm, <font color="blue">false</font><font color="black">)</font>;
+    sm<font color="black">-</font><font color="black">&#62;</font>message <font color="black">=</font> copy;
+    m_outstanding<font color="black">[</font>msg<font color="black">-</font><font color="black">&#62;</font>getSeqNum<font color="black">(</font><font color="black">)</font><font color="black">]</font> <font color="black">=</font> sm;
+  <font color="black">}</font>
+  doSend<font color="black">(</font>msg<font color="black">)</font>;
+<font color="black">}</font>
+
+
+Message<font color="black">*</font> Link<font color="black">:</font><font color="black">:</font>receiveMessage<font color="black">(</font><font color="black">)</font> <font color="green">// reads from the q</font>
+<font color="black">{</font>
+  Message<font color="black">*</font> msg <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="blue">if</font> <font color="black">(</font>m_incomingQueue.size<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    msg <font color="black">=</font> m_incomingQueue.front<font color="black">(</font><font color="black">)</font>;
+    m_incomingQueue.pop_front<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    msg <font color="black">=</font> doReceive<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">if</font> <font color="black">(</font>msg<font color="black">)</font>
+  <font color="black">{</font>
+    clearTimeout<font color="black">(</font>msg<font color="black">)</font>;
+    msg<font color="black">-</font><font color="black">&#62;</font>link <font color="black">=</font> <font color="blue">this</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> msg;
+<font color="black">}</font>
+
+<font color="blue">void</font> Link<font color="black">:</font><font color="black">:</font>clearTimeout<font color="black">(</font>Message<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font> <font color="black">!</font>msg<font color="black">-</font><font color="black">&#62;</font>isAck<font color="black">(</font><font color="black">)</font> <font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">// only waiting for acks</font>
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+
+  map<font color="black">&#60;</font>UQUADBYTE, SentMessage<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  pair <font color="black">=</font> m_outstanding.find<font color="black">(</font>msg<font color="black">-</font><font color="black">&#62;</font>getSeqNum<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>pair <font color="black">!</font><font color="black">=</font> m_outstanding.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">// found it</font>
+    HTimer timer <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second<font color="black">-</font><font color="black">&#62;</font>timer;
+    Message<font color="black">*</font> orig <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second<font color="black">-</font><font color="black">&#62;</font>message;
+    m_outstanding.erase<font color="black">(</font>msg<font color="black">-</font><font color="black">&#62;</font>getSeqNum<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    Timer<font color="black">:</font><font color="black">:</font>destroy<font color="black">(</font>timer<font color="black">)</font>;
+    msg<font color="black">-</font><font color="black">&#62;</font>original <font color="black">=</font> orig;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">1024</font><font color="black">]</font>;
+    sprintf<font color="black">(</font>buf, <font color="maroon">"timeout wasn't cleared for ACK: %s - %s"</font>, msg<font color="black">-</font><font color="black">&#62;</font>getName<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font>, msg<font color="black">-</font><font color="black">&#62;</font>getHexString<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    logError<font color="black">(</font>buf, Inform<font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="black">}</font>
+
+<font color="blue">void</font> Link<font color="black">:</font><font color="black">:</font>timeout<font color="black">(</font>TimerEvent<font color="black">*</font> event<font color="black">)</font>
+<font color="black">{</font>
+  SentMessage<font color="black">*</font> sm <font color="black">=</font> <font color="black">(</font>SentMessage<font color="black">*</font><font color="black">)</font>event<font color="black">-</font><font color="black">&#62;</font>param;
+
+  map<font color="black">&#60;</font>UQUADBYTE, SentMessage<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+
+  UQUADBYTE seqNum <font color="black">=</font> sm<font color="black">-</font><font color="black">&#62;</font>message<font color="black">-</font><font color="black">&#62;</font>getSeqNum<font color="black">(</font><font color="black">)</font>;
+  
+<font color="blue">#ifdef</font> _DEBUG
+  pair <font color="black">=</font> m_outstanding.find<font color="black">(</font>seqNum<font color="black">)</font>;
+  lassert<font color="black">(</font>pair <font color="black">!</font><font color="black">=</font> m_outstanding.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="blue">#endif</font>
+
+  m_outstanding.erase<font color="black">(</font>seqNum<font color="black">)</font>;
+
+  Ack<font color="black">*</font> nack <font color="black">=</font> <font color="blue">new</font> Ack<font color="black">(</font>sm<font color="black">-</font><font color="black">&#62;</font>message<font color="black">-</font><font color="black">&#62;</font>getType<font color="black">(</font><font color="black">)</font> <font color="black">|</font> ACK_BIT, <font color="maroon">0</font><font color="black">)</font>;
+  nack<font color="black">-</font><font color="black">&#62;</font>setSeqNum<font color="black">(</font>sm<font color="black">-</font><font color="black">&#62;</font>message<font color="black">-</font><font color="black">&#62;</font>getSeqNum<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  nack<font color="black">-</font><font color="black">&#62;</font>setStatus<font color="black">(</font>ACK_TIMEOUT<font color="black">)</font>;
+  nack<font color="black">-</font><font color="black">&#62;</font>original <font color="black">=</font> sm<font color="black">-</font><font color="black">&#62;</font>message;
+  m_incomingQueue.push_back<font color="black">(</font>nack<font color="black">)</font>;
+  m_smCache.release<font color="black">(</font>sm<font color="black">)</font>;
+
+  <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">255</font><font color="black">]</font>;
+  sprintf<font color="black">(</font>buf, <font color="maroon">"No Ack for: %s"</font>, sm<font color="black">-</font><font color="black">&#62;</font>message<font color="black">-</font><font color="black">&#62;</font>getName<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  logError<font color="black">(</font>buf, Error<font color="black">)</font>;
+
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

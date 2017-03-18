@@ -1,0 +1,286 @@
+<HTML>
+<HEAD>
+<TITLE>
+Display.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4530</font> <font color="maroon">4503</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"Display.h"</font>
+<font color="blue">#include</font> <font color="maroon">"SDLDisplay.h"</font>
+<font color="blue">#include</font> <font color="maroon">"OpenGLDisplay.h"</font>
+<font color="blue">#include</font> <font color="maroon">"SDL_image.h"</font>
+<font color="blue">#include</font> <font color="maroon">"FileManager.h"</font>
+<font color="blue">#include</font> <font color="maroon">"StdString.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;iostream&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+
+Display<font color="black">*</font> theScreen;
+
+Display<font color="black">*</font> Display<font color="black">:</font><font color="black">:</font>instance <font color="black">=</font> <font color="maroon">0</font>;
+
+map<font color="black">&#60;</font>HTexture, <font color="blue">void</font><font color="black">*</font><font color="black">&#62;</font> textureMap;
+HTexture nextTextureId <font color="black">=</font> <font color="maroon">1</font>;
+
+<font color="green">// OpenGL will use ptr to GLTexture</font>
+<font color="green">// SDL will use ptr to SDL_Surface</font>
+
+Display<font color="black">*</font> Display<font color="black">:</font><font color="black">:</font>create<font color="black">(</font><font color="blue">int</font> width, <font color="blue">int</font> height, <font color="blue">int</font> bpp, DisplayType type, Uint32 flags<font color="black">)</font>
+<font color="black">{</font>
+
+  <font color="blue">const</font> SDL_VideoInfo<font color="black">*</font> vi;
+  vi <font color="black">=</font> SDL_GetVideoInfo<font color="black">(</font><font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"HW Available: %d"</font>, vi<font color="black">-</font><font color="black">&#62;</font>hw_available<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Accelerated HW-&#62;HW Blits: %d"</font>, vi<font color="black">-</font><font color="black">&#62;</font>blit_hw<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Accelerated HW-&#62;HW Colorkey Blits: %d"</font>, vi<font color="black">-</font><font color="black">&#62;</font>blit_hw_CC<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Accelerated HW-&#62;HW ALPHA Blits: %d"</font>, vi<font color="black">-</font><font color="black">&#62;</font>blit_hw_A<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Accelerated SW-&#62;HW Blits: %d"</font>, vi<font color="black">-</font><font color="black">&#62;</font>blit_sw<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Accelerated SW-&#62;HW Colorkey Blits: %d"</font>, vi<font color="black">-</font><font color="black">&#62;</font>blit_sw_CC<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Accelerated SW-&#62;HW ALPHA Blits: %d"</font>, vi<font color="black">-</font><font color="black">&#62;</font>blit_sw_A<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Accelerated Fills :%d"</font>, vi<font color="black">-</font><font color="black">&#62;</font>blit_fill<font color="black">)</font>;
+
+  
+  Display<font color="black">*</font> ret <font color="black">=</font> <font color="maroon">0</font>;
+
+  <font color="blue">switch</font><font color="black">(</font>type<font color="black">)</font>
+  <font color="black">{</font>
+  <font color="blue">case</font> OPENGL<font color="black">:</font>
+    <font color="black">{</font>
+      ret <font color="black">=</font> <font color="blue">new</font> OpenGLDisplay<font color="black">(</font>width, height, bpp, flags<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="blue">case</font> SDL<font color="black">:</font>
+    <font color="black">{</font>
+      ret <font color="black">=</font> <font color="blue">new</font> SDLDisplay<font color="black">(</font>width, height, bpp, flags<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="blue">case</font> D3D<font color="black">:</font>
+    <font color="black">{</font>
+      <font color="green">//ret = new D3DDisplay(width, height, bpp, flags);</font>
+      lassert<font color="black">(</font><font color="blue">false</font><font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="blue">default</font><font color="black">:</font>
+    lassert<font color="black">(</font><font color="blue">false</font><font color="black">)</font>;
+    <font color="blue">break</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>ret<font color="black">)</font>
+  <font color="black">{</font>
+    ret<font color="black">-</font><font color="black">&#62;</font>m_type <font color="black">=</font> type;
+    ret<font color="black">-</font><font color="black">&#62;</font>m_width <font color="black">=</font> width;
+    ret<font color="black">-</font><font color="black">&#62;</font>m_height <font color="black">=</font> height;
+    ret<font color="black">-</font><font color="black">&#62;</font>m_flags <font color="black">=</font> flags;
+    ret<font color="black">-</font><font color="black">&#62;</font>m_bpp <font color="black">=</font> bpp;
+  <font color="black">}</font>
+
+  instance <font color="black">=</font> ret;
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+Display<font color="black">:</font><font color="black">:</font>~Display<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_imageCache.size<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"not all textures released"</font><font color="black">)</font>;
+    map<font color="black">&#60;</font>string, TextureCacheEntry<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+    <font color="blue">for</font> <font color="black">(</font>pair <font color="black">=</font> m_imageCache.begin<font color="black">(</font><font color="black">)</font>; pair<font color="black">!</font><font color="black">=</font>m_imageCache.end<font color="black">(</font><font color="black">)</font>; pair<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      logError<font color="black">(</font>Error, <font color="maroon">"++++ %s"</font>, pair<font color="black">-</font><font color="black">&#62;</font>first.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+<font color="black">}</font>
+
+SDL_Surface<font color="black">*</font> loadSDLSurface<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename<font color="black">)</font>
+<font color="black">{</font>
+  SDL_RWops<font color="black">*</font> rw;
+  <font color="blue">void</font><font color="black">*</font> buffer;
+  <font color="blue">int</font> size <font color="black">=</font> loadFileToMemory<font color="black">(</font>filename, <font color="black">&</font>buffer<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>size <font color="black">&#60;</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  rw <font color="black">=</font> SDL_RWFromMem<font color="black">(</font>buffer, size<font color="black">)</font>;
+  
+  SDL_Surface<font color="black">*</font> ret <font color="black">=</font> IMG_Load_RW<font color="black">(</font>rw, <font color="maroon">0</font><font color="black">)</font>;
+  SDL_FreeRW<font color="black">(</font>rw<font color="black">)</font>;
+  free<font color="black">(</font>buffer<font color="black">)</font>;
+
+
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+SDL_Surface<font color="black">*</font> Display<font color="black">:</font><font color="black">:</font>createSDLSurface<font color="black">(</font><font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font>
+<font color="green">//SDL_Surface* createSDLSurface(int w, int h, SDL_Surface* inspiration)</font>
+<font color="black">{</font>
+  SDL_Surface<font color="black">*</font> inspiration <font color="black">=</font> m_surface;
+  Uint32 rmask, gmask, bmask, amask <font color="black">=</font> <font color="maroon">0</font>;
+  
+  <font color="green">/* SDL interprets each pixel as a 32-bit number, so our masks must depend
+  on the endianness (byte order) of the machine */</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>inspiration<font color="black">)</font>
+  <font color="black">{</font>
+<font color="blue">#if</font> SDL_BYTEORDER <font color="black">=</font><font color="black">=</font> SDL_BIG_ENDIAN
+    rmask <font color="black">=</font> <font color="maroon">0xff000000</font>;
+    gmask <font color="black">=</font> <font color="maroon">0x00ff0000</font>;
+    bmask <font color="black">=</font> <font color="maroon">0x0000ff00</font>;
+        amask <font color="black">=</font> <font color="maroon">0x000000ff</font>;
+<font color="blue">#else</font>
+    rmask <font color="black">=</font> <font color="maroon">0x000000ff</font>;
+    gmask <font color="black">=</font> <font color="maroon">0x0000ff00</font>;
+    bmask <font color="black">=</font> <font color="maroon">0x00ff0000</font>;
+        amask <font color="black">=</font> <font color="maroon">0xff000000</font>;
+<font color="blue">#endif</font>
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    rmask <font color="black">=</font> inspiration<font color="black">-</font><font color="black">&#62;</font>format<font color="black">-</font><font color="black">&#62;</font>Rmask;
+    gmask <font color="black">=</font> inspiration<font color="black">-</font><font color="black">&#62;</font>format<font color="black">-</font><font color="black">&#62;</font>Gmask;
+    bmask <font color="black">=</font> inspiration<font color="black">-</font><font color="black">&#62;</font>format<font color="black">-</font><font color="black">&#62;</font>Bmask;
+    amask <font color="black">=</font> inspiration<font color="black">-</font><font color="black">&#62;</font>format<font color="black">-</font><font color="black">&#62;</font>Amask;
+  <font color="black">}</font>
+
+
+
+  SDL_Surface<font color="black">*</font> surface <font color="black">=</font> SDL_CreateRGBSurface<font color="black">(</font>SDL_SWSURFACE, w, h, <font color="maroon">32</font>,
+    rmask, gmask, bmask, amask<font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>surface <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font><font color="maroon">"Failed to created SDL_Surface"</font>, Error<font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  Uint32 colorKey <font color="black">=</font> SDL_MapRGB<font color="black">(</font>surface<font color="black">-</font><font color="black">&#62;</font>format, <font color="maroon">0xf0</font>, <font color="maroon">0x00</font>, <font color="maroon">0xf0</font><font color="black">)</font>;
+  SDL_SetColorKey<font color="black">(</font>surface, SDL_SRCCOLORKEY <font color="black">|</font>SDL_RLEACCEL, colorKey<font color="black">)</font>;
+  
+  <font color="blue">return</font> surface;
+<font color="black">}</font>
+
+
+
+<font color="blue">void</font> Display<font color="black">:</font><font color="black">:</font>screenshot<font color="black">(</font>string fn<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> res <font color="black">=</font> SDL_SaveBMP<font color="black">(</font>m_surface, fn.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+HTexture Display<font color="black">:</font><font color="black">:</font>prepare<font color="black">(</font>SDL_Surface<font color="black">*</font> surface<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">static</font> <font color="blue">int</font> count <font color="black">=</font> <font color="maroon">0</font>;
+  lassert2<font color="black">(</font>surface <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font>, <font color="maroon">"null surface?"</font><font color="black">)</font>;
+  count<font color="black">+</font><font color="black">+</font>;
+  CStdString s;
+  s.Format<font color="black">(</font><font color="maroon">"Prepared%03d"</font>, count<font color="black">)</font>;
+  HTexture ret <font color="black">=</font> loadTexture<font color="black">(</font>surface<font color="black">)</font>;
+  TextureCacheEntry<font color="black">*</font> tce <font color="black">=</font> <font color="blue">new</font> TextureCacheEntry<font color="black">(</font>ret<font color="black">)</font>;
+  tce<font color="black">-</font><font color="black">&#62;</font>references<font color="black">+</font><font color="black">+</font>;
+  m_imageCache<font color="black">[</font>s<font color="black">]</font> <font color="black">=</font> tce;
+  m_filenameMap<font color="black">[</font>ret<font color="black">]</font> <font color="black">=</font> s;
+
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+HTexture Display<font color="black">:</font><font color="black">:</font>acquire<font color="black">(</font>string filename<font color="black">)</font>
+<font color="black">{</font>
+  HTexture id <font color="black">=</font> <font color="maroon">0</font>;
+  TextureCacheEntry<font color="black">*</font> tce <font color="black">=</font> <font color="maroon">0</font>;
+  map<font color="black">&#60;</font>string, TextureCacheEntry<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  pair<font color="black">=</font>m_imageCache.find<font color="black">(</font>filename<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font> pair <font color="black">=</font><font color="black">=</font> m_imageCache.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    id <font color="black">=</font> loadTexture<font color="black">(</font>filename.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    tce <font color="black">=</font> <font color="blue">new</font> TextureCacheEntry<font color="black">(</font>id<font color="black">)</font>;
+    m_imageCache<font color="black">[</font>filename<font color="black">]</font> <font color="black">=</font> tce;
+    m_filenameMap<font color="black">[</font>id<font color="black">]</font> <font color="black">=</font> filename;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    tce <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+  <font color="black">}</font>
+  tce<font color="black">-</font><font color="black">&#62;</font>references<font color="black">+</font><font color="black">+</font>;
+
+  <font color="blue">return</font> tce<font color="black">-</font><font color="black">&#62;</font>id;
+
+<font color="black">}</font>
+
+<font color="blue">void</font> Display<font color="black">:</font><font color="black">:</font>release<font color="black">(</font>HTexture id<font color="black">)</font>
+<font color="black">{</font>
+  string filename <font color="black">=</font> m_filenameMap<font color="black">[</font>id<font color="black">]</font>;
+
+  map<font color="black">&#60;</font>string, TextureCacheEntry<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  pair<font color="black">=</font>m_imageCache.find<font color="black">(</font>filename<font color="black">)</font>;
+  
+  <font color="blue">if</font> <font color="black">(</font> pair <font color="black">=</font><font color="black">=</font> m_imageCache.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    lassert2<font color="black">(</font>pair <font color="black">!</font><font color="black">=</font> m_imageCache.end<font color="black">(</font><font color="black">)</font>, <font color="maroon">"nothing to release?"</font><font color="black">)</font>;
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+  TextureCacheEntry<font color="black">*</font> tce <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+  
+  <font color="blue">if</font> <font color="black">(</font>tce <font color="black">&#60;</font><font color="black">=</font><font color="maroon">0</font> <font color="black">)</font>
+  <font color="black">{</font>
+    lassert2<font color="black">(</font>tce <font color="black">&#62;</font> <font color="maroon">0</font>, <font color="maroon">"no refrences?"</font><font color="black">)</font>;
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+  
+  tce<font color="black">-</font><font color="black">&#62;</font>references<font color="black">-</font><font color="black">-</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>tce<font color="black">-</font><font color="black">&#62;</font>references <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    freeTexture<font color="black">(</font>tce<font color="black">-</font><font color="black">&#62;</font>id<font color="black">)</font>;
+    m_imageCache.erase<font color="black">(</font>filename<font color="black">)</font>;
+    m_filenameMap.erase<font color="black">(</font>tce<font color="black">-</font><font color="black">&#62;</font>id<font color="black">)</font>;
+    <font color="blue">delete</font> tce;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> Display<font color="black">:</font><font color="black">:</font>sanityCheck<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>Inform, <font color="maroon">"Perfroming sanity check on Display"</font><font color="black">)</font>;
+  map<font color="black">&#60;</font>string, TextureCacheEntry<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  <font color="blue">for</font><font color="black">(</font>pair<font color="black">=</font>m_imageCache.begin<font color="black">(</font><font color="black">)</font>; pair<font color="black">!</font><font color="black">=</font>m_imageCache.end<font color="black">(</font><font color="black">)</font>; pair<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    string filename <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>first;
+    TextureCacheEntry<font color="black">*</font> tce <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+    lassert<font color="black">(</font>m_filenameMap<font color="black">[</font>tce<font color="black">-</font><font color="black">&#62;</font>id<font color="black">]</font> <font color="black">=</font><font color="black">=</font> filename<font color="black">)</font>;
+    lassert<font color="black">(</font>tce<font color="black">-</font><font color="black">&#62;</font>references <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>;
+  <font color="black">}</font>
+  logError<font color="black">(</font>Inform, <font color="maroon">"Done"</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> Display<font color="black">:</font><font color="black">:</font>report<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  sanityCheck<font color="black">(</font><font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Dislpay Report"</font><font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"--------------"</font><font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Loaded Textures: %d"</font>, m_imageCache.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Loaded Filenames: %d"</font>, m_filenameMap.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+  <font color="green">// count total references to textures</font>
+  <font color="blue">int</font> totalReferences <font color="black">=</font> <font color="maroon">0</font>;
+  TextureCacheEntry<font color="black">*</font> mostReferences <font color="black">=</font> <font color="maroon">0</font>;
+  map<font color="black">&#60;</font>string, TextureCacheEntry<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  <font color="blue">for</font><font color="black">(</font>pair<font color="black">=</font>m_imageCache.begin<font color="black">(</font><font color="black">)</font>; pair<font color="black">!</font><font color="black">=</font>m_imageCache.end<font color="black">(</font><font color="black">)</font>; pair<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    totalReferences<font color="black">+</font><font color="black">=</font>pair<font color="black">-</font><font color="black">&#62;</font>second<font color="black">-</font><font color="black">&#62;</font>references;
+    <font color="blue">if</font> <font color="black">(</font>mostReferences <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font> <font color="black">|</font><font color="black">|</font> pair<font color="black">-</font><font color="black">&#62;</font>second<font color="black">-</font><font color="black">&#62;</font>references <font color="black">&#62;</font> mostReferences<font color="black">-</font><font color="black">&#62;</font>references<font color="black">)</font>
+    <font color="black">{</font>
+      mostReferences <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  logError<font color="black">(</font>Inform, <font color="maroon">"Total Texture References: %d"</font>, totalReferences<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>mostReferences <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Inform, <font color="maroon">"Greatest Number of references: %d for %s"</font>, 
+      mostReferences<font color="black">-</font><font color="black">&#62;</font>references, 
+      m_filenameMap<font color="black">[</font>mostReferences<font color="black">-</font><font color="black">&#62;</font>id<font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  logError<font color="black">(</font>Inform, <font color="maroon">"---------------"</font><font color="black">)</font>;
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

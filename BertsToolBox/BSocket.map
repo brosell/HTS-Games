@@ -1,0 +1,227 @@
+stlp45dm.lib
+ Warning 2: File Not Found stlp45dm.lib
+SND.lib
+ Warning 2: File Not Found SND.lib
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined ?deallocate@__new_alloc@std@@SAXPAXI@Z (void cdecl std::__new_alloc::deallocate(void *,unsigned ))
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined ?length@?$char_traits@std@D@std@@SAIPBD@Z (unsigned cdecl std::D::d::char_traits<>::length(char const *))
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined ?compare@?$char_traits@std@D@std@@SAHPBD0I@Z (int cdecl std::D::d::char_traits<>::compare(char const *,char const *,unsigned ))
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _WSAStartup@8
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _WSACleanup@0
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined ?allocate@__new_alloc@std@@SAPAXI@Z (void *cdecl std::__new_alloc::allocate(unsigned ))
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _closesocket@4
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _accept@12
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _select@20
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _listen@8
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _bind@12
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _htons@4
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _setsockopt@20
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _socket@12
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _getprotobyname@4
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _recv@16
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _send@16
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _WSAGetLastError@0
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _connect@12
+BSocket.obj(BSocket) 
+ Error 42: Symbol Undefined _inet_addr@4
+Link.obj(Link) 
+ Error 42: Symbol Undefined ?assign@?$char_traits@std@D@std@@SAPADPADID@Z (char *cdecl std::D::d::char_traits<>::assign(char *,unsigned ,char ))
+Link.obj(Link) 
+ Error 42: Symbol Undefined ?assign@?$char_traits@std@D@std@@SAXAADABD@Z (void cdecl std::D::d::char_traits<>::assign(char &,char const &))
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?good@ios_base@std@@QBE_NXZ
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?rdstate@ios_base@std@@QBEHXZ (int syscall std::ios_base::rdstate(void )const )
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?_M_clear_nothrow@ios_base@std@@IAEXH@Z (void syscall std::ios_base::_M_clear_nothrow(int ))
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?pubsync@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@QAEHXZ
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?flags@ios_base@std@@QBEHXZ (int syscall std::ios_base::flags(void )const )
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?width@ios_base@std@@QAEHH@Z (int syscall std::ios_base::width(int ))
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?sputn@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@QAEHPBDH@Z
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?width@ios_base@std@@QBEHXZ (int syscall std::ios_base::width(void )const )
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?_M_sputnc@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@QAEHDH@Z
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?pbase@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@IBEPADXZ
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?pptr@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@IBEPADXZ
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?pbump@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@IAEXH@Z
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?setp@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@IAEXPAD0@Z
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?gptr@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@IBEPADXZ
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?eback@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@IBEPADXZ
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?setg@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@IAEXPAD00@Z
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?epptr@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@IBEPADXZ
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?to_char_type@?$char_traits@std@D@std@@SADABH@Z (char cdecl std::D::d::char_traits<>::to_char_type(int const &))
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?gbump@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@IAEXH@Z
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?egptr@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@IBEPADXZ
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?to_int_type@?$char_traits@std@D@std@@SAHABD@Z (int cdecl std::D::d::char_traits<>::to_int_type(char const &))
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?widen@?$ctype@std@D@std@@QBEDD@Z (char syscall std::D::d::ctype<>::widen(char )const )
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?grouping@?$numpunct@std@D@std@@QBE?AV?$basic_string@std@DV?$char_traits@std@D@1@V?$allocator@std@D@1@@2@ (basic_string<>::d::DV?$char_traits::std::D::numpunct<> syscall std::D::d::numpunct<>::grouping(allocator<>::d::D::numpunct<> )const )
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?_M_set_exception_mask@ios_base@std@@IAEXH@Z (void syscall std::ios_base::_M_set_exception_mask(int ))
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?flags@ios_base@std@@QAEHH@Z (int syscall std::ios_base::flags(int ))
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?precision@ios_base@std@@QAEHH@Z (int syscall std::ios_base::precision(int ))
+Message.obj(Message) 
+ Error 42: Symbol Undefined ?_M_ctype_facet@ios_base@std@@QBEPBVfacet@locale@2@XZ (facet::locale::std const *syscall std::ios_base::_M_ctype_facet(void )const )
+Message.obj(Message) 
+ Error 42: Symbol Undefined ??0?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@IAE@XZ
+CommandLineParser.obj(CommandLineParser) 
+ Error 42: Symbol Undefined _SysReAllocStringLen@12
+ThreadSafeList.obj(ThreadSafeList) 
+ Error 42: Symbol Undefined ?sputbackc@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@QAEHD@Z
+ThreadSafeList.obj(ThreadSafeList) 
+ Error 42: Symbol Undefined ?sbumpc@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@QAEHXZ
+ThreadSafeList.obj(ThreadSafeList) 
+ Error 42: Symbol Undefined ?sgetc@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@QAEHXZ
+ThreadSafeList.obj(ThreadSafeList) 
+ Error 42: Symbol Undefined ?_M_get_exception_mask@ios_base@std@@IBEHXZ (int syscall std::ios_base::_M_get_exception_mask(void )const )
+ThreadSafeList.obj(ThreadSafeList) 
+ Error 42: Symbol Undefined ?_M_setstate_nothrow@ios_base@std@@IAEXH@Z (void syscall std::ios_base::_M_setstate_nothrow(int ))
+Timer.obj(Timer) 
+ Error 42: Symbol Undefined _timeGetTime@0
+Thread.obj(Thread) 
+ Error 42: Symbol Undefined ?getloc@ios_base@std@@QBE?AVlocale@2@XZ (locale::std syscall std::ios_base::getloc(void )const )
+FileUtils.obj(FileUtils) 
+ Error 42: Symbol Undefined ?encoding@?$codecvt@std@DDU__stl_mbstate_t@@@std@@QBEHXZ
+FileUtils.obj(FileUtils) 
+ Error 42: Symbol Undefined ?max_length@?$codecvt@std@DDU__stl_mbstate_t@@@std@@QBEHXZ
+FileUtils.obj(FileUtils) 
+ Error 42: Symbol Undefined ?always_noconv@?$codecvt@std@DDU__stl_mbstate_t@@@std@@QBE_NXZ
+FileUtils.obj(FileUtils) 
+ Error 42: Symbol Undefined ?out@?$codecvt@std@DDU__stl_mbstate_t@@@std@@QBE?AW4result@codecvt_base@2@U__stl_mbstate_t@@PBD1AAPBDPAD3AAPAD@Z
+FileUtils.obj(FileUtils) 
+ Error 42: Symbol Undefined ?__is_open@_Filebuf_base@std@@QBE_NXZ
+FileUtils.obj(FileUtils) 
+ Error 42: Symbol Undefined ?__o_mode@_Filebuf_base@std@@QBEHXZ (int syscall std::_Filebuf_base::__o_mode(void )const )
+FileUtils.obj(FileUtils) 
+ Error 42: Symbol Undefined ?__page_size@_Filebuf_base@std@@SAIXZ (unsigned cdecl std::_Filebuf_base::__page_size(void ))
+FileUtils.obj(FileUtils) 
+ Error 42: Symbol Undefined ?unshift@?$codecvt@std@DDU__stl_mbstate_t@@@std@@QBE?AW4result@codecvt_base@2@AAU__stl_mbstate_t@@PAD1AAPAD@Z
+FileUtils.obj(FileUtils) 
+ Error 42: Symbol Undefined ?_M_in_binary_mode@_Filebuf_base@std@@QBE_NXZ
+FileUtils.obj(FileUtils) 
+ Error 42: Symbol Undefined ?_M_get_offset@_Filebuf_base@std@@QAEJPAD0@Z (long syscall std::_Filebuf_base::_M_get_offset(char *,char *))
+FileUtils.obj(FileUtils) 
+ Error 42: Symbol Undefined ?length@?$codecvt@std@DDU__stl_mbstate_t@@@std@@QBEHABU__stl_mbstate_t@@PBD1I@Z
+FileUtils.obj(FileUtils) 
+ Error 42: Symbol Undefined ?in@?$codecvt@std@DDU__stl_mbstate_t@@@std@@QBE?AW4result@codecvt_base@2@AAU__stl_mbstate_t@@PBD1AAPBDPAD3AAPAD@Z
+Log.obj(Log) 
+ Error 42: Symbol Undefined ?_M_egptr@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@QBEPADXZ
+Log.obj(Log) 
+ Error 42: Symbol Undefined ?_M_gptr@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@QBEPADXZ
+Log.obj(Log) 
+ Error 42: Symbol Undefined ?_M_gbump@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@QAEXH@Z
+Log.obj(Log) 
+ Error 42: Symbol Undefined ?is@?$ctype@std@D@std@@QBE_NW4mask@ctype_base@2@D@Z
+Log.obj(Log) 
+ Error 42: Symbol Undefined ?snextc@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@QAEHXZ
+Log.obj(Log) 
+ Error 42: Symbol Undefined ?eof@ios_base@std@@QBE_NXZ
+Log.obj(Log) 
+ Error 42: Symbol Undefined ?in_avail@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@QAEHXZ
+Log.obj(Log) 
+ Error 42: Symbol Undefined ?pubseekoff@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@QAE?AV?$fpos@std@U__stl_mbstate_t@@@2@JHH@Z
+Log.obj(Log) 
+ Error 42: Symbol Undefined ?fail@ios_base@std@@QBE_NXZ
+Log.obj(Log) 
+ Error 42: Symbol Undefined ?pubseekpos@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@QAE?AV?$fpos@std@U__stl_mbstate_t@@@2@V32@H@Z
+Log.obj(Log) 
+ Error 42: Symbol Undefined ?sungetc@?$basic_streambuf@std@DV?$char_traits@std@D@1@@std@@QAEHXZ
+Log.obj(Log) 
+ Error 42: Symbol Undefined __p_iob
+PakFile.obj(PakFile) 
+ Error 42: Symbol Undefined _htonl@4
+PakFile.obj(PakFile) 
+ Error 42: Symbol Undefined _ntohl@4
+C:\DM\BIN\..\lib\stlp45dm_static.lib(locale_impl) 
+ Error 42: Symbol Undefined ?_M_numpunct_facet@ios_base@std@@QBEPBVfacet@locale@2@XZ (facet::locale::std const *syscall std::ios_base::_M_numpunct_facet(void )const )
+C:\DM\BIN\..\lib\stlp45dm_static.lib(locale_impl) 
+ Error 42: Symbol Undefined ?_M_grouping@ios_base@std@@QBEABV?$basic_string@std@DV?$char_traits@std@D@1@V?$allocator@std@D@1@@2@ (basic_string<>::d::DV?$char_traits::std::D::ios_base const &syscall std::ios_base::_M_grouping(allocator<>::d::D::ios_base )const )
+C:\DM\BIN\..\lib\stlp45dm_static.lib(locale_impl) 
+ Error 42: Symbol Undefined ?thousands_sep@?$numpunct@std@D@std@@QBEDXZ (char syscall std::D::d::numpunct<>::thousands_sep(void )const )
+C:\DM\BIN\..\lib\stlp45dm_static.lib(locale_impl) 
+ Error 42: Symbol Undefined ?precision@ios_base@std@@QBEHXZ (int syscall std::ios_base::precision(void )const )
+C:\DM\BIN\..\lib\stlp45dm_static.lib(locale_impl) 
+ Error 42: Symbol Undefined ?decimal_point@?$numpunct@std@D@std@@QBEDXZ (char syscall std::D::d::numpunct<>::decimal_point(void )const )
+C:\DM\BIN\..\lib\stlp45dm_static.lib(locale_impl) 
+ Error 42: Symbol Undefined ?truename@?$numpunct@std@D@std@@QBE?AV?$basic_string@std@DV?$char_traits@std@D@1@V?$allocator@std@D@1@@2@ (basic_string<>::d::DV?$char_traits::std::D::numpunct<> syscall std::D::d::numpunct<>::truename(allocator<>::d::D::numpunct<> )const )
+C:\DM\BIN\..\lib\stlp45dm_static.lib(locale_impl) 
+ Error 42: Symbol Undefined ?falsename@?$numpunct@std@D@std@@QBE?AV?$basic_string@std@DV?$char_traits@std@D@1@V?$allocator@std@D@1@@2@ (basic_string<>::d::DV?$char_traits::std::D::numpunct<> syscall std::D::d::numpunct<>::falsename(allocator<>::d::D::numpunct<> )const )
+C:\DM\BIN\..\lib\stlp45dm_static.lib(locale_impl) 
+ Error 42: Symbol Undefined ?setf@ios_base@std@@QAEHHH@Z (int syscall std::ios_base::setf(int ,int ))
+C:\DM\BIN\..\lib\stlp45dm_static.lib(locale_impl) 
+ Error 42: Symbol Undefined ?setf@ios_base@std@@QAEHH@Z (int syscall std::ios_base::setf(int ))
+
+ Start         Length     Name                   Class
+ 0002:00000000 00052C92H  _TEXT                  CODE 32-bit
+ 0002:00052C94 000001B6H  ICODE                  ICODE 32-bit
+ 0003:00000000 00000004H  .CRT$XIA               DATA 32-bit
+ 0003:00000010 00000004H  .CRT$XIZ               DATA 32-bit
+ 0003:00000020 00000004H  .CRT$XCA               DATA 32-bit
+ 0003:00000030 00000004H  .CRT$XCZ               DATA 32-bit
+ 0003:00000040 00000004H  .CRT$XPA               DATA 32-bit
+ 0003:00000050 00000004H  .CRT$XPZ               DATA 32-bit
+ 0003:00000060 00000004H  .CRT$XTA               DATA 32-bit
+ 0003:00000070 00000004H  .CRT$XTZ               DATA 32-bit
+ 0003:00000074 0000008CH  IMP__DATA              IMP__DATA 32-bit
+ 0003:00000100 0001E5D8H  _DATA                  DATA 32-bit
+ 0003:0001E6D8 00000000H  XIFCB                  DATA 32-bit
+ 0003:0001E6D8 00000064H  XIFU                   DATA 32-bit
+ 0003:0001E73C 00000000H  XIFL                   DATA 32-bit
+ 0003:0001E73C 00000004H  XIFM                   DATA 32-bit
+ 0003:0001E740 00000000H  XIFCE                  DATA 32-bit
+ 0003:0001E740 00000000H  XIB                    DATA 32-bit
+ 0003:0001E740 00000018H  XI                     DATA 32-bit
+ 0003:0001E758 00000000H  XIE                    DATA 32-bit
+ 0003:0001E758 00000000H  XCB                    DATA 32-bit
+ 0003:0001E758 00000008H  XC                     DATA 32-bit
+ 0003:0001E760 00000000H  XCE                    DATA 32-bit
+ 0003:0001E760 00000000H  CONST                  CONST 32-bit
+ 0003:0001E760 00002E10H  _BSS                   BSS 32-bit
+ 0003:00021570 00000000H  XOFB                   BSS 32-bit
+ 0003:00021570 00000168H  XOF                    BSS 32-bit
+ 0003:000216D8 00000000H  XOFE                   BSS 32-bit
+ 0003:000216D8 00000000H  XOB                    BSS 32-bit
+ 0003:000216D8 00000000H  XO                     BSS 32-bit
+ 0003:000216D8 00000000H  XOE                    BSS 32-bit
+ 0003:000216E0 000008C2H  c_common               BSS 32-bit
+ 0003:00021FA4 00000000H  EEND                   ENDBSS 32-bit
+ 0003:00021FB0 00000000H  STACK                  STACK 32-bit
+OPTLINK : Warning 134: No Start Address 

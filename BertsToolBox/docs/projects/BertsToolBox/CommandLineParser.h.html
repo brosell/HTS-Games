@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<TITLE>
+CommandLineParser.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> CommandLineParser_h
+<font color="blue">#define</font> CommandLineParser_h
+
+<font color="blue">#include</font> <font color="maroon">"StringTokenizer.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;map&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;list&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;set&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">class</font> CommandLineParser
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">void</font> parse<font color="black">(</font><font color="blue">int</font> argc, <font color="blue">char</font><font color="black">*</font><font color="black">*</font> argv<font color="black">)</font>;
+
+<font color="green">// return true if arg was really passed</font>
+  <font color="blue">bool</font> isSet<font color="black">(</font>string argname<font color="black">)</font> 
+  <font color="black">{</font> 
+    std<font color="black">:</font><font color="black">:</font>set<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+    <font color="blue">return</font>  m_passedArgs.find<font color="black">(</font>argname<font color="black">)</font> <font color="black">!</font><font color="black">=</font> m_passedArgs.end<font color="black">(</font><font color="black">)</font>; 
+  <font color="black">}</font>
+  
+  <font color="blue">void</font> setFlagDef<font color="black">(</font>string argname, <font color="blue">bool</font> defval<font color="black">)</font> <font color="black">{</font> m_flagArgs<font color="black">[</font>argname<font color="black">]</font> <font color="black">=</font> defval; <font color="black">}</font>
+  <font color="blue">void</font> setStringDef<font color="black">(</font>string argname, string defval<font color="black">)</font> <font color="black">{</font> m_stringArgs<font color="black">[</font>argname<font color="black">]</font> <font color="black">=</font> defval; <font color="black">}</font>
+
+  <font color="blue">int</font> getIntArg<font color="black">(</font>string argname<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> atoi<font color="black">(</font>m_stringArgs<font color="black">[</font>argname<font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">bool</font> getFlagArg<font color="black">(</font>string argname<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_flagArgs<font color="black">[</font>argname<font color="black">]</font>; <font color="black">}</font>
+  string getStringArg<font color="black">(</font>string argname<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_stringArgs<font color="black">[</font>argname<font color="black">]</font>; <font color="black">}</font>
+
+  string getNextName<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">int</font> countNames<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_names.size<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">int</font> getLastChar<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> str<font color="black">)</font>;
+  <font color="blue">bool</font> isLastChar<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> str, <font color="blue">int</font> ch<font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  set<font color="black">&#60;</font>string<font color="black">&#62;</font> m_passedArgs;
+  map<font color="black">&#60;</font>string, <font color="blue">bool</font><font color="black">&#62;</font> m_flagArgs;
+  map<font color="black">&#60;</font>string, string<font color="black">&#62;</font> m_stringArgs;
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font> m_names;
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator m_currentName;
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

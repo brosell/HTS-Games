@@ -1,0 +1,33 @@
+<HTML>
+<HEAD>
+<TITLE>
+Wizard.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> Wizard_h
+<font color="blue">#define</font> Wizard_h
+<font color="blue">#include</font> <font color="maroon">"UI/DialogBox.h"</font>
+<font color="blue">#include</font> <font color="maroon">"UI/IniBasedDialog.h"</font>
+
+<font color="blue">class</font> Wizard<font color="black">:</font> <font color="blue">public</font> DialogBox
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Wizard<font color="black">(</font>IniFile<font color="black">&</font> ini, string <font color="blue">name</font><font color="black">)</font>;
+  ~Wizard<font color="black">(</font><font color="black">)</font>;
+  
+  <font color="green">/**
+  cycles though each dialog using doModal
+  */</font>
+  
+  virtual <font color="blue">int</font> doModal<font color="black">(</font>Delegate<font color="black">*</font> loop <font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  list<font color="black">&#60;</font>IniBasedDialog<font color="black">*</font><font color="black">&#62;</font> m_dialogs;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

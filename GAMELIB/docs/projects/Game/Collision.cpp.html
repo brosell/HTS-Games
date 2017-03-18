@@ -1,0 +1,174 @@
+<HTML>
+<HEAD>
+<TITLE>
+Collision.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">//#include "Collision.h"</font>
+<font color="green">//#include "Misc/GameMath.h"</font>
+
+<font color="green">//Collision::Collision(Thing& hitter, Thing& hittee, bool useProportionalSides)</font>
+<font color="green">//: m_hitter(hitter), m_hittee(hittee), m_useProportionalSides(useProportionalSides)</font>
+<font color="green">//{</font>
+<font color="green">//  int hitterX=hitter.getX();</font>
+<font color="green">//  int hitterY=hitter.getY();</font>
+<font color="green">//  int hitterWidth=hitter.getWidth();</font>
+<font color="green">//  int hitterHeight=hitter.getHeight();</font>
+<font color="green">//</font>
+<font color="green">//  int hitteeX=hittee.getX();</font>
+<font color="green">//  int hitteeY=hittee.getY();</font>
+<font color="green">//  int hitteeWidth=hittee.getWidth();</font>
+<font color="green">//  int hitteeHeight=hittee.getHeight();</font>
+<font color="green">//</font>
+<font color="green">//  bool useProportionalTopAndBottom = false;</font>
+<font color="green">//  bool useProportionalRightAndLeft = false;</font>
+<font color="green">//  </font>
+<font color="green">//  if (hitteeWidth &#62; hitteeHeight && m_useProportionalSides)</font>
+<font color="green">//  {</font>
+<font color="green">//    useProportionalTopAndBottom = true;</font>
+<font color="green">//  }</font>
+<font color="green">//  else if (hitteeWidth &#60; hitteeHeight && m_useProportionalSides)</font>
+<font color="green">//  {</font>
+<font color="green">//    useProportionalRightAndLeft = true;</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//</font>
+<font color="green">//  Point hitterCenter;</font>
+<font color="green">//  hitterCenter.x = hitterX + (hitterWidth * 0.5);</font>
+<font color="green">//  hitterCenter.y = hitterY + (hitterHeight * 0.5);</font>
+<font color="green">//</font>
+<font color="green">//</font>
+<font color="green">////// hittee TOP</font>
+<font color="green">//  Point hitteeTop;</font>
+<font color="green">//  hitteeTop.x = hitteeX + (hitteeWidth * 0.5);</font>
+<font color="green">//  hitteeTop.y = hitteeY;</font>
+<font color="green">//</font>
+<font color="green">//  Point hitteeTopRight;</font>
+<font color="green">//  hitteeTopRight.x = (hitteeX + hitteeWidth) - (hitteeHeight * 0.5);</font>
+<font color="green">//  hitteeTopRight.y = hitteeY;</font>
+<font color="green">//</font>
+<font color="green">//  Point hitteeTopLeft;</font>
+<font color="green">//  hitteeTopLeft.x = hitteeX + (hitteeHeight * 0.5);</font>
+<font color="green">//  hitteeTopLeft.y = hitteeY;</font>
+<font color="green">//</font>
+<font color="green">//</font>
+<font color="green">////// Hittee BOTTOM</font>
+<font color="green">//  Point hitteeBottom;</font>
+<font color="green">//  hitteeBottom.x = hitteeX + (hitteeWidth * 0.5);</font>
+<font color="green">//  hitteeBottom.y = hitteeY + hitteeHeight;</font>
+<font color="green">//</font>
+<font color="green">//  Point hitteeBottomRight;</font>
+<font color="green">//  hitteeBottomRight.x = (hitteeX + hitteeWidth) - (hitteeHeight * 0.5);</font>
+<font color="green">//  hitteeBottomRight.y = hitteeY + hitteeHeight;</font>
+<font color="green">//</font>
+<font color="green">//  Point hitteeBottomLeft;</font>
+<font color="green">//  hitteeBottomLeft.x = hitteeX + (hitteeHeight * 0.5);</font>
+<font color="green">//  hitteeBottomLeft.y = hitteeY + hitteeHeight;</font>
+<font color="green">//</font>
+<font color="green">//</font>
+<font color="green">////// Hittee RIGHT</font>
+<font color="green">//  Point hitteeRight;</font>
+<font color="green">//  hitteeRight.x = hitteeX + hitteeWidth;</font>
+<font color="green">//  hitteeRight.y = hitteeY + (hitteeHeight * 0.5);</font>
+<font color="green">//</font>
+<font color="green">//  Point hitteeRightTop;</font>
+<font color="green">//  hitteeRightTop.x = hitteeX + hitteeWidth;</font>
+<font color="green">//  hitteeRightTop.y = hitteeY + (hitteeWidth * 0.5);</font>
+<font color="green">//</font>
+<font color="green">//  Point hitteeRightBottom;</font>
+<font color="green">//  hitteeRightBottom.x = hitteeX + hitteeWidth;</font>
+<font color="green">//  hitteeRightBottom.y = hitteeY + hitteeWidth - (hitteeHeight * 0.5);</font>
+<font color="green">//</font>
+<font color="green">////// hittee LEFT</font>
+<font color="green">//  Point hitteeLeft;</font>
+<font color="green">//  hitteeLeft.x = hitteeX;</font>
+<font color="green">//  hitteeLeft.y = hitteeY + (hitteeHeight * 0.5);</font>
+<font color="green">//</font>
+<font color="green">//  Point hitteeLeftTop;</font>
+<font color="green">//  hitteeLeftTop.x = hitteeX;</font>
+<font color="green">//  hitteeLeftTop.y = hitteeY + (hitteeWidth * 0.5);</font>
+<font color="green">//</font>
+<font color="green">//  Point hitteeLeftBottom;</font>
+<font color="green">//  hitteeLeftBottom.x = hitteeX;</font>
+<font color="green">//  hitteeLeftBottom.y = hitteeY + hitteeWidth - (hitteeHeight * 0.5);</font>
+<font color="green">//</font>
+<font color="green">//  Side whichOne;</font>
+<font color="green">//</font>
+<font color="green">//  //// TOP</font>
+<font color="green">//  if (hitterCenter.isShortestDistance(hitteeTop))</font>
+<font color="green">//  {</font>
+<font color="green">//    whichOne = TOP;</font>
+<font color="green">//  }</font>
+<font color="green">//  if (useProportionalTopAndBottom)</font>
+<font color="green">//  {</font>
+<font color="green">//    if (hitterCenter.isShortestDistance(hitteeTopRight))</font>
+<font color="green">//    {</font>
+<font color="green">//      whichOne = TOP;</font>
+<font color="green">//    }</font>
+<font color="green">//    if (hitterCenter.isShortestDistance(hitteeTopLeft))</font>
+<font color="green">//    {</font>
+<font color="green">//      whichOne = TOP;</font>
+<font color="green">//    }</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//</font>
+<font color="green">//  //// BOTTOM</font>
+<font color="green">//  if (hitterCenter.isShortestDistance(hitteeBottom))</font>
+<font color="green">//  {</font>
+<font color="green">//    whichOne = BOTTOM;</font>
+<font color="green">//  }</font>
+<font color="green">//  if (useProportionalTopAndBottom)</font>
+<font color="green">//  {</font>
+<font color="green">//    if (hitterCenter.isShortestDistance(hitteeBottomRight))</font>
+<font color="green">//    {</font>
+<font color="green">//      whichOne = BOTTOM;</font>
+<font color="green">//    }</font>
+<font color="green">//    if (hitterCenter.isShortestDistance(hitteeBottomLeft))</font>
+<font color="green">//    {</font>
+<font color="green">//      whichOne = BOTTOM;</font>
+<font color="green">//    }</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//  //// RIGHT</font>
+<font color="green">//  if (hitterCenter.isShortestDistance(hitteeRight))</font>
+<font color="green">//  {</font>
+<font color="green">//    whichOne = RIGHT;</font>
+<font color="green">//  }</font>
+<font color="green">//  if (useProportionalRightAndLeft)</font>
+<font color="green">//  {</font>
+<font color="green">//    if (hitterCenter.isShortestDistance(hitteeRightTop))</font>
+<font color="green">//    {</font>
+<font color="green">//      whichOne = RIGHT;</font>
+<font color="green">//    }</font>
+<font color="green">//    if (hitterCenter.isShortestDistance(hitteeRightBottom))</font>
+<font color="green">//    {</font>
+<font color="green">//      whichOne = RIGHT;</font>
+<font color="green">//    }</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//  //// LEFT</font>
+<font color="green">//  if (hitterCenter.isShortestDistance(hitteeLeft))</font>
+<font color="green">//  {</font>
+<font color="green">//    whichOne = LEFT;</font>
+<font color="green">//  }</font>
+<font color="green">//  if (useProportionalRightAndLeft)</font>
+<font color="green">//  {</font>
+<font color="green">//    if (hitterCenter.isShortestDistance(hitteeLeftTop))</font>
+<font color="green">//    {</font>
+<font color="green">//      whichOne = LEFT;</font>
+<font color="green">//    }</font>
+<font color="green">//    if (hitterCenter.isShortestDistance(hitteeLeftBottom))</font>
+<font color="green">//    {</font>
+<font color="green">//      whichOne = LEFT;</font>
+<font color="green">//    }</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//</font>
+<font color="green">//  m_hitteeSide = whichOne;</font>
+<font color="green">//}</font>
+
+</PRE>
+</BODY>
+</HTML>

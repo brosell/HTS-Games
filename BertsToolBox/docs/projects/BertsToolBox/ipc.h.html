@@ -1,0 +1,30 @@
+<HTML>
+<HEAD>
+<TITLE>
+ipc.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> ipc_h
+<font color="blue">#define</font> ipc_h
+
+<font color="blue">#include</font> <font color="maroon">"Types.h"</font>
+
+<font color="blue">const</font> <font color="blue">int</font> HEADER_SIZE <font color="black">=</font> <font color="maroon">8</font>;
+<font color="blue">const</font> <font color="blue">int</font> SIZE_OFFSET <font color="black">=</font> <font color="maroon">0</font>;
+<font color="blue">const</font> <font color="blue">int</font> TYPE_OFFSET <font color="black">=</font> <font color="maroon">2</font>;
+<font color="blue">const</font> <font color="blue">int</font> SEQNUM_OFFSET <font color="black">=</font> <font color="maroon">4</font>;
+<font color="blue">const</font> <font color="blue">int</font> DATA_OFFSET <font color="black">=</font> <font color="maroon">8</font>;
+<font color="blue">const</font> <font color="blue">int</font> STATUS_SIZE <font color="black">=</font> <font color="maroon">2</font>;
+<font color="blue">const</font> <font color="blue">int</font> STATUS_OFFSET <font color="black">=</font> DATA_OFFSET;
+<font color="blue">const</font> <font color="blue">int</font> ACK_DATA_OFFSET <font color="black">=</font> DATA_OFFSET <font color="black">+</font> STATUS_SIZE;
+
+<font color="blue">const</font> UDBLBYTE ACK_BIT <font color="black">=</font> <font color="maroon">0x8000</font>;
+
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

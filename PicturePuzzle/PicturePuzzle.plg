@@ -1,0 +1,900 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: Organizer - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP31A.bat" with contents
+[
+@echo off
+c:\tools\versioner.exe -major=1 -minor=0 .\Version.ini
+]
+Creating command line "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP31A.bat"
+Creating temporary file "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP31B.bat" with contents
+[
+@echo off
+.\releaseOrganize.bat
+]
+Creating command line "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP31B.bat"
+<h3>Output Window</h3>
+Performing Custom Build Step on .\Version.ini
+Setting build number to (1:0:12)
+Performing Custom Build Step on .\releaseOrganize.bat
+        1 file(s) copied.
+ running asseter
+01/09/04 20:34:05 - Inform: assetfilename : Assets_Full.ini
+01/09/04 20:34:05 - Inform: destination   : c:\_Puzzle_release_nopack
+01/09/04 20:34:05 - Inform: testOnly      : False
+01/09/04 20:34:05 - Inform: asset (fnt_Menu_White) filename (assets\fonts\fnt_MenuItems_white.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\fonts\fnt_MenuItems_white.png -> c:\_Puzzle_release_nopack\assets\fonts\fnt_MenuItems_white.png
+01/09/04 20:34:05 - Inform: asset (fnt_Menu_Yellow) filename (assets\fonts\fnt_MenuItems_yellow.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\fonts\fnt_MenuItems_yellow.png -> c:\_Puzzle_release_nopack\assets\fonts\fnt_MenuItems_yellow.png
+01/09/04 20:34:05 - Inform: asset (fnt_Score) filename (assets\fonts\fnt_score.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\fonts\fnt_score.png -> c:\_Puzzle_release_nopack\assets\fonts\fnt_score.png
+01/09/04 20:34:05 - Inform: asset (fnt_Title) filename (assets\fonts\fnt_title.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\fonts\fnt_title.png -> c:\_Puzzle_release_nopack\assets\fonts\fnt_title.png
+01/09/04 20:34:05 - Inform: asset (mouse_Default) filename (assets\gfx\ui\mouse\def_mouse.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\mouse\def_mouse.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\mouse\def_mouse.png
+01/09/04 20:34:05 - Inform: asset (mouse_Over) filename (assets\gfx\ui\mouse\over_mouse.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\mouse\over_mouse.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\mouse\over_mouse.png
+01/09/04 20:34:05 - Inform: asset (mus_Background) filename (assets\audio\music\MusicBakery19960617mag.ogg) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\audio\music\MusicBakery19960617mag.ogg -> c:\_Puzzle_release_nopack\assets\audio\music\MusicBakery19960617mag.ogg
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (Assets.ini) - seems to be valid
+01/09/04 20:34:05 - Inform: Assets.ini -> c:\_Puzzle_release_nopack\Assets.ini
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (assets\assets_ui.ini) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\assets_ui.ini -> c:\_Puzzle_release_nopack\assets\assets_ui.ini
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (assets\dlg\dlg_MainMenu.ini) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\dlg\dlg_MainMenu.ini -> c:\_Puzzle_release_nopack\assets\dlg\dlg_MainMenu.ini
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (assets\dlg\dlg_PlayScreen.ini) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\dlg\dlg_PlayScreen.ini -> c:\_Puzzle_release_nopack\assets\dlg\dlg_PlayScreen.ini
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (assets\dlg\dlg_Preview.ini) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\dlg\dlg_Preview.ini -> c:\_Puzzle_release_nopack\assets\dlg\dlg_Preview.ini
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (Assets_Common.ini) - seems to be valid
+01/09/04 20:34:05 - Inform: Assets_Common.ini -> c:\_Puzzle_release_nopack\Assets_Common.ini
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (Assets_Demo.ini) - seems to be valid
+01/09/04 20:34:05 - Inform: Assets_Demo.ini -> c:\_Puzzle_release_nopack\Assets_Demo.ini
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (Assets_Full.ini) - seems to be valid
+01/09/04 20:34:05 - Inform: Assets_Full.ini -> c:\_Puzzle_release_nopack\Assets_Full.ini
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (AudioAssets.ini) - seems to be valid
+01/09/04 20:34:05 - Inform: AudioAssets.ini -> c:\_Puzzle_release_nopack\AudioAssets.ini
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (images\placeholder.png) - seems to be valid
+01/09/04 20:34:05 - Inform: images\placeholder.png -> c:\_Puzzle_release_nopack\images\placeholder.png
+01/09/04 20:34:05 - *Error: asset (RelevantFiles) file not found (NoArchive)
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (Options.ini) - seems to be valid
+01/09/04 20:34:05 - Inform: Options.ini -> c:\_Puzzle_release_nopack\Options.ini
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (Options_assets.ini) - seems to be valid
+01/09/04 20:34:05 - Inform: Options_assets.ini -> c:\_Puzzle_release_nopack\Options_assets.ini
+01/09/04 20:34:05 - *Error: asset (RelevantFiles) file not found (Type)
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (UI\dialogs.ini) - seems to be valid
+01/09/04 20:34:05 - Inform: UI\dialogs.ini -> c:\_Puzzle_release_nopack\UI\dialogs.ini
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (UI\Options_dlg.ini) - seems to be valid
+01/09/04 20:34:05 - Inform: UI\Options_dlg.ini -> c:\_Puzzle_release_nopack\UI\Options_dlg.ini
+01/09/04 20:34:05 - Inform: asset (RelevantFiles) filename (Version.ini) - seems to be valid
+01/09/04 20:34:05 - Inform: Version.ini -> c:\_Puzzle_release_nopack\Version.ini
+01/09/04 20:34:05 - Inform: asset (rq_exe) filename (Puzzle.exe) - seems to be valid
+01/09/04 20:34:05 - Inform: Puzzle.exe -> c:\_Puzzle_release_nopack\Puzzle.exe
+01/09/04 20:34:05 - Inform: asset (rq_icon) filename (Icon.ico) - seems to be valid
+01/09/04 20:34:05 - Inform: Icon.ico -> c:\_Puzzle_release_nopack\Icon.ico
+01/09/04 20:34:05 - Inform: asset (rq_Lib_JPG) filename (jpeg.dll) - seems to be valid
+01/09/04 20:34:05 - Inform: jpeg.dll -> c:\_Puzzle_release_nopack\jpeg.dll
+01/09/04 20:34:05 - Inform: asset (rq_Lib_PNG) filename (libpng1.dll) - seems to be valid
+01/09/04 20:34:05 - Inform: libpng1.dll -> c:\_Puzzle_release_nopack\libpng1.dll
+01/09/04 20:34:05 - Inform: asset (rq_Lib_ZLib) filename (zlib.dll) - seems to be valid
+01/09/04 20:34:05 - Inform: zlib.dll -> c:\_Puzzle_release_nopack\zlib.dll
+01/09/04 20:34:05 - Inform: asset (rq_SDL) filename (SDL.dll) - seems to be valid
+01/09/04 20:34:05 - Inform: SDL.dll -> c:\_Puzzle_release_nopack\SDL.dll
+01/09/04 20:34:05 - Inform: asset (rq_SDL_Image) filename (SDL_Image.dll) - seems to be valid
+01/09/04 20:34:05 - Inform: SDL_Image.dll -> c:\_Puzzle_release_nopack\SDL_Image.dll
+01/09/04 20:34:05 - Inform: asset (rq_SDL_Mixer) filename (SDL_Mixer.dll) - seems to be valid
+01/09/04 20:34:05 - Inform: SDL_Mixer.dll -> c:\_Puzzle_release_nopack\SDL_Mixer.dll
+01/09/04 20:34:05 - Inform: asset (skn_btn_Fullscreen_Mode) filename (assets\gfx\ui\buttons\tgl_Options_ScreenMode_Fullscreen.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\tgl_Options_ScreenMode_Fullscreen.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\tgl_Options_ScreenMode_Fullscreen.png
+01/09/04 20:34:05 - Inform: asset (skn_btn_Windowed_Mode) filename (assets\gfx\ui\buttons\tgl_Options_ScreenMode_Windowed.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\tgl_Options_ScreenMode_Windowed.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\tgl_Options_ScreenMode_Windowed.png
+01/09/04 20:34:05 - Inform: asset (skn_chk_PlayScreen_ShowGrid) filename (assets\gfx\ui\buttons\chk_DisplayGrid_Checked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\chk_DisplayGrid_Checked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\chk_DisplayGrid_Checked.png
+01/09/04 20:34:05 - Inform: asset (skn_chk_Preview_Preview_Checked) filename (assets\gfx\ui\buttons\chk_Preview_Preview_Checked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\chk_Preview_Preview_Checked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\chk_Preview_Preview_Checked.png
+01/09/04 20:34:05 - Inform: asset (skn_chk_Preview_Preview_Unchecked) filename (assets\gfx\ui\buttons\chk_Preview_Preview_Unchecked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\chk_Preview_Preview_Unchecked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\chk_Preview_Preview_Unchecked.png
+01/09/04 20:34:05 - Inform: asset (skn_chk_Preview_SpinningTiles_Checked) filename (assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Checked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Checked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Checked.png
+01/09/04 20:34:05 - Inform: asset (skn_chk_Preview_SpinningTiles_Unchecked) filename (assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Unchecked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Unchecked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Unchecked.png
+01/09/04 20:34:05 - Inform: asset (skn_chk_Preview_UseHelper_Checked) filename (assets\gfx\ui\buttons\chk_Preview_UseHelper_Checked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\chk_Preview_UseHelper_Checked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\chk_Preview_UseHelper_Checked.png
+01/09/04 20:34:05 - Inform: asset (skn_chk_Preview_UseHelper_Disabled) filename (assets\gfx\ui\buttons\chk_Preview_UseHelper_Disabled.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\chk_Preview_UseHelper_Disabled.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\chk_Preview_UseHelper_Disabled.png
+01/09/04 20:34:05 - Inform: asset (skn_chk_Preview_UseHelper_Unchecked) filename (assets\gfx\ui\buttons\chk_Preview_UseHelper_Unchecked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\chk_Preview_UseHelper_Unchecked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\chk_Preview_UseHelper_Unchecked.png
+01/09/04 20:34:05 - Inform: asset (skn_Disabled) filename (UI\disabled.png) - seems to be valid
+01/09/04 20:34:05 - Inform: UI\disabled.png -> c:\_Puzzle_release_nopack\UI\disabled.png
+01/09/04 20:34:05 - Inform: asset (skn_dlg_AreYouSure) filename (assets\gfx\ui\dialogs\dlg_AreYouSure.jpg) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\dialogs\dlg_AreYouSure.jpg -> c:\_Puzzle_release_nopack\assets\gfx\ui\dialogs\dlg_AreYouSure.jpg
+01/09/04 20:34:05 - Inform: asset (skn_dlg_Credits) filename (assets\gfx\ui\dialogs\dlg_Credits.jpg) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\dialogs\dlg_Credits.jpg -> c:\_Puzzle_release_nopack\assets\gfx\ui\dialogs\dlg_Credits.jpg
+01/09/04 20:34:05 - Inform: asset (skn_dlg_Finally_Full) filename (assets\gfx\ui\dialogs\dlg_Finally_Full.jpg) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\dialogs\dlg_Finally_Full.jpg -> c:\_Puzzle_release_nopack\assets\gfx\ui\dialogs\dlg_Finally_Full.jpg
+01/09/04 20:34:05 - Inform: asset (skn_dlg_Finished) filename (assets\gfx\ui\dialogs\dlg_Finished.jpg) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\dialogs\dlg_Finished.jpg -> c:\_Puzzle_release_nopack\assets\gfx\ui\dialogs\dlg_Finished.jpg
+01/09/04 20:34:05 - Inform: asset (skn_dlg_Game) filename (UI\scn_Game.jpg) - seems to be valid
+01/09/04 20:34:05 - Inform: UI\scn_Game.jpg -> c:\_Puzzle_release_nopack\UI\scn_Game.jpg
+01/09/04 20:34:05 - Inform: asset (skn_dlg_Main) filename (UI\scn_Main.jpg) - seems to be valid
+01/09/04 20:34:05 - Inform: UI\scn_Main.jpg -> c:\_Puzzle_release_nopack\UI\scn_Main.jpg
+01/09/04 20:34:05 - Inform: asset (skn_dlg_MainMenu) filename (assets\gfx\ui\dialogs\dlg_MainMenu.jpg) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\dialogs\dlg_MainMenu.jpg -> c:\_Puzzle_release_nopack\assets\gfx\ui\dialogs\dlg_MainMenu.jpg
+01/09/04 20:34:05 - Inform: asset (skn_dlg_PlayScreen_Puzzle) filename (assets\gfx\ui\dialogs\dlg_GameScreen_Puzzle.jpg) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\dialogs\dlg_GameScreen_Puzzle.jpg -> c:\_Puzzle_release_nopack\assets\gfx\ui\dialogs\dlg_GameScreen_Puzzle.jpg
+01/09/04 20:34:05 - Inform: asset (skn_dlg_PlayScreen_Swapper) filename (assets\gfx\ui\dialogs\dlg_GameScreen_Swapper.jpg) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\dialogs\dlg_GameScreen_Swapper.jpg -> c:\_Puzzle_release_nopack\assets\gfx\ui\dialogs\dlg_GameScreen_Swapper.jpg
+01/09/04 20:34:05 - Inform: asset (skn_dlg_Preview) filename (assets\gfx\ui\dialogs\dlg_Preview.jpg) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\dialogs\dlg_Preview.jpg -> c:\_Puzzle_release_nopack\assets\gfx\ui\dialogs\dlg_Preview.jpg
+01/09/04 20:34:05 - Inform: asset (skn_dlg_Rules_Place) filename (assets\gfx\ui\dialogs\dlg_Rules_Place.jpg) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\dialogs\dlg_Rules_Place.jpg -> c:\_Puzzle_release_nopack\assets\gfx\ui\dialogs\dlg_Rules_Place.jpg
+01/09/04 20:34:05 - Inform: asset (skn_dlg_Rules_Swap) filename (assets\gfx\ui\dialogs\dlg_Rules_Swap.jpg) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\dialogs\dlg_Rules_Swap.jpg -> c:\_Puzzle_release_nopack\assets\gfx\ui\dialogs\dlg_Rules_Swap.jpg
+01/09/04 20:34:05 - Inform: asset (skn_dlg_Splash) filename (Splash.jpg) - seems to be valid
+01/09/04 20:34:05 - Inform: Splash.jpg -> c:\_Puzzle_release_nopack\Splash.jpg
+01/09/04 20:34:05 - Inform: asset (skn_fx_YouDidIt) filename (assets\gfx\game\YouDidIt.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\game\YouDidIt.png -> c:\_Puzzle_release_nopack\assets\gfx\game\YouDidIt.png
+01/09/04 20:34:05 - Inform: asset (skn_hlt_MainMenu_PakList) filename (assets\gfx\ui\buttons\hlt_PakList_Highlight.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\hlt_PakList_Highlight.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\hlt_PakList_Highlight.png
+01/09/04 20:34:05 - Inform: asset (skn_OptionsScreen) filename (assets\gfx\ui\dialogs\dlg_Options.jpg) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\dialogs\dlg_Options.jpg -> c:\_Puzzle_release_nopack\assets\gfx\ui\dialogs\dlg_Options.jpg
+01/09/04 20:34:05 - Inform: asset (skn_Radio_Check) filename (UI\buttons\Radio_checked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: UI\buttons\Radio_checked.png -> c:\_Puzzle_release_nopack\UI\buttons\Radio_checked.png
+01/09/04 20:34:05 - Inform: asset (skn_Radio_Disabled) filename (UI\buttons\Radio_disabled.png) - seems to be valid
+01/09/04 20:34:05 - Inform: UI\buttons\Radio_disabled.png -> c:\_Puzzle_release_nopack\UI\buttons\Radio_disabled.png
+01/09/04 20:34:05 - Inform: asset (skn_Radio_Uncheck) filename (UI\buttons\Radio_unchecked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: UI\buttons\Radio_unchecked.png -> c:\_Puzzle_release_nopack\UI\buttons\Radio_unchecked.png
+01/09/04 20:34:05 - Inform: asset (skn_rdo_Preview_Easy_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_Easy_Checked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\rdo_Preview_Easy_Checked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\rdo_Preview_Easy_Checked.png
+01/09/04 20:34:05 - Inform: asset (skn_rdo_Preview_Easy_Disabled) filename (assets\gfx\ui\buttons\rdo_Preview_Easy_Disabled.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\rdo_Preview_Easy_Disabled.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\rdo_Preview_Easy_Disabled.png
+01/09/04 20:34:05 - Inform: asset (skn_rdo_Preview_Easy_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_Easy_Unchecked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\rdo_Preview_Easy_Unchecked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\rdo_Preview_Easy_Unchecked.png
+01/09/04 20:34:05 - Inform: asset (skn_rdo_Preview_Hard_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_Hard_Checked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\rdo_Preview_Hard_Checked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\rdo_Preview_Hard_Checked.png
+01/09/04 20:34:05 - Inform: asset (skn_rdo_Preview_Hard_Disabled) filename (assets\gfx\ui\buttons\rdo_Preview_Hard_Disabled.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\rdo_Preview_Hard_Disabled.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\rdo_Preview_Hard_Disabled.png
+01/09/04 20:34:05 - Inform: asset (skn_rdo_Preview_Hard_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_Hard_Unchecked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\rdo_Preview_Hard_Unchecked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\rdo_Preview_Hard_Unchecked.png
+01/09/04 20:34:05 - Inform: asset (skn_rdo_Preview_Medium_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_Medium_Checked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\rdo_Preview_Medium_Checked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\rdo_Preview_Medium_Checked.png
+01/09/04 20:34:05 - Inform: asset (skn_rdo_Preview_Medium_Disabled) filename (assets\gfx\ui\buttons\rdo_Preview_Medium_Disabled.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\rdo_Preview_Medium_Disabled.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\rdo_Preview_Medium_Disabled.png
+01/09/04 20:34:05 - Inform: asset (skn_rdo_Preview_Medium_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_Medium_Unchecked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\rdo_Preview_Medium_Unchecked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\rdo_Preview_Medium_Unchecked.png
+01/09/04 20:34:05 - Inform: asset (skn_rdo_Preview_PlaceTiles_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Checked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Checked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Checked.png
+01/09/04 20:34:05 - Inform: asset (skn_rdo_Preview_PlaceTiles_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Unchecked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Unchecked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Unchecked.png
+01/09/04 20:34:05 - Inform: asset (skn_rdo_Preview_SwapTiles_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Checked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Checked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Checked.png
+01/09/04 20:34:05 - Inform: asset (skn_rdo_Preview_SwapTiles_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Unchecked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Unchecked.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Unchecked.png
+01/09/04 20:34:05 - Inform: asset (skn_SliderControl) filename (assets\gfx\ui\buttons\sdr_Options.png) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\gfx\ui\buttons\sdr_Options.png -> c:\_Puzzle_release_nopack\assets\gfx\ui\buttons\sdr_Options.png
+01/09/04 20:34:05 - Inform: asset (skn_Toggle_Check) filename (UI\buttons\Toggle_checked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: UI\buttons\Toggle_checked.png -> c:\_Puzzle_release_nopack\UI\buttons\Toggle_checked.png
+01/09/04 20:34:05 - Inform: asset (skn_Toggle_Disabled) filename (UI\buttons\Toggle_disabled.png) - seems to be valid
+01/09/04 20:34:05 - Inform: UI\buttons\Toggle_disabled.png -> c:\_Puzzle_release_nopack\UI\buttons\Toggle_disabled.png
+01/09/04 20:34:05 - Inform: asset (skn_Toggle_Uncheck) filename (UI\buttons\Toggle_unchecked.png) - seems to be valid
+01/09/04 20:34:05 - Inform: UI\buttons\Toggle_unchecked.png -> c:\_Puzzle_release_nopack\UI\buttons\Toggle_unchecked.png
+01/09/04 20:34:05 - Inform: asset (snd_Button) filename (assets\audio\fx\Button.wav) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\audio\fx\Button.wav -> c:\_Puzzle_release_nopack\assets\audio\fx\Button.wav
+01/09/04 20:34:05 - Inform: asset (snd_NotHere) filename (assets\audio\fx\NotHere.wav) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\audio\fx\NotHere.wav -> c:\_Puzzle_release_nopack\assets\audio\fx\NotHere.wav
+01/09/04 20:34:05 - Inform: asset (snd_OnPuzzle) filename (assets\audio\fx\PieceOnPuzzle.wav) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\audio\fx\PieceOnPuzzle.wav -> c:\_Puzzle_release_nopack\assets\audio\fx\PieceOnPuzzle.wav
+01/09/04 20:34:05 - Inform: asset (snd_Swap) filename (assets\audio\fx\Swap.wav) - seems to be valid
+01/09/04 20:34:05 - Inform: assets\audio\fx\Swap.wav -> c:\_Puzzle_release_nopack\assets\audio\fx\Swap.wav
+01/09/04 20:34:05 - *Error: 81 file(s) processed - There were errors
+01/09/04 20:34:05 - Inform: assetfilename : Assets_Full.ini
+01/09/04 20:34:05 - Inform: destination   : c:\_Puzzle_release
+01/09/04 20:34:05 - Inform: testOnly      : False
+01/09/04 20:34:06 - Inform: to PakFile: assets\fonts\fnt_MenuItems_white.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\fonts\fnt_MenuItems_yellow.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\fonts\fnt_score.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\fonts\fnt_title.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\mouse\def_mouse.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\mouse\over_mouse.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\audio\music\MusicBakery19960617mag.ogg
+01/09/04 20:34:06 - Inform: to PakFile: Assets.ini
+01/09/04 20:34:06 - Inform: to PakFile: assets\assets_ui.ini
+01/09/04 20:34:06 - Inform: to PakFile: assets\dlg\dlg_MainMenu.ini
+01/09/04 20:34:06 - Inform: to PakFile: assets\dlg\dlg_PlayScreen.ini
+01/09/04 20:34:06 - Inform: to PakFile: assets\dlg\dlg_Preview.ini
+01/09/04 20:34:06 - Inform: to PakFile: Assets_Common.ini
+01/09/04 20:34:06 - Inform: to PakFile: Assets_Demo.ini
+01/09/04 20:34:06 - Inform: to PakFile: Assets_Full.ini
+01/09/04 20:34:06 - Inform: to PakFile: AudioAssets.ini
+01/09/04 20:34:06 - Inform: to PakFile: images\placeholder.png
+01/09/04 20:34:06 - Inform: to PakFile: NoArchive
+01/09/04 20:34:06 - Inform: to PakFile: Options.ini
+01/09/04 20:34:06 - Inform: to PakFile: Options_assets.ini
+01/09/04 20:34:06 - Inform: to PakFile: Type
+01/09/04 20:34:06 - Inform: to PakFile: UI\dialogs.ini
+01/09/04 20:34:06 - Inform: to PakFile: UI\Options_dlg.ini
+01/09/04 20:34:06 - Inform: to PakFile: Version.ini
+01/09/04 20:34:06 - Inform: asset (rq_exe) filename (Puzzle.exe) - seems to be valid
+01/09/04 20:34:06 - Inform: Puzzle.exe -> c:\_Puzzle_release\Puzzle.exe
+01/09/04 20:34:06 - Inform: asset (rq_icon) filename (Icon.ico) - seems to be valid
+01/09/04 20:34:06 - Inform: Icon.ico -> c:\_Puzzle_release\Icon.ico
+01/09/04 20:34:06 - Inform: asset (rq_Lib_JPG) filename (jpeg.dll) - seems to be valid
+01/09/04 20:34:06 - Inform: jpeg.dll -> c:\_Puzzle_release\jpeg.dll
+01/09/04 20:34:06 - Inform: asset (rq_Lib_PNG) filename (libpng1.dll) - seems to be valid
+01/09/04 20:34:06 - Inform: libpng1.dll -> c:\_Puzzle_release\libpng1.dll
+01/09/04 20:34:06 - Inform: asset (rq_Lib_ZLib) filename (zlib.dll) - seems to be valid
+01/09/04 20:34:06 - Inform: zlib.dll -> c:\_Puzzle_release\zlib.dll
+01/09/04 20:34:06 - Inform: asset (rq_SDL) filename (SDL.dll) - seems to be valid
+01/09/04 20:34:06 - Inform: SDL.dll -> c:\_Puzzle_release\SDL.dll
+01/09/04 20:34:06 - Inform: asset (rq_SDL_Image) filename (SDL_Image.dll) - seems to be valid
+01/09/04 20:34:06 - Inform: SDL_Image.dll -> c:\_Puzzle_release\SDL_Image.dll
+01/09/04 20:34:06 - Inform: asset (rq_SDL_Mixer) filename (SDL_Mixer.dll) - seems to be valid
+01/09/04 20:34:06 - Inform: SDL_Mixer.dll -> c:\_Puzzle_release\SDL_Mixer.dll
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\tgl_Options_ScreenMode_Fullscreen.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\tgl_Options_ScreenMode_Windowed.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\chk_DisplayGrid_Checked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_Preview_Checked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_Preview_Unchecked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Checked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Unchecked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_UseHelper_Checked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_UseHelper_Disabled.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_UseHelper_Unchecked.png
+01/09/04 20:34:06 - Inform: to PakFile: UI\disabled.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_AreYouSure.jpg
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Credits.jpg
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Finally_Full.jpg
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Finished.jpg
+01/09/04 20:34:06 - Inform: to PakFile: UI\scn_Game.jpg
+01/09/04 20:34:06 - Inform: to PakFile: UI\scn_Main.jpg
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_MainMenu.jpg
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_GameScreen_Puzzle.jpg
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_GameScreen_Swapper.jpg
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Preview.jpg
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Rules_Place.jpg
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Rules_Swap.jpg
+01/09/04 20:34:06 - Inform: asset (skn_dlg_Splash) filename (Splash.jpg) - seems to be valid
+01/09/04 20:34:06 - Inform: Splash.jpg -> c:\_Puzzle_release\Splash.jpg
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\game\YouDidIt.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\hlt_PakList_Highlight.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Options.jpg
+01/09/04 20:34:06 - Inform: to PakFile: UI\buttons\Radio_checked.png
+01/09/04 20:34:06 - Inform: to PakFile: UI\buttons\Radio_disabled.png
+01/09/04 20:34:06 - Inform: to PakFile: UI\buttons\Radio_unchecked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Easy_Checked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Easy_Disabled.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Easy_Unchecked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Hard_Checked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Hard_Disabled.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Hard_Unchecked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Medium_Checked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Medium_Disabled.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Medium_Unchecked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Checked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Unchecked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Checked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Unchecked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\gfx\ui\buttons\sdr_Options.png
+01/09/04 20:34:06 - Inform: to PakFile: UI\buttons\Toggle_checked.png
+01/09/04 20:34:06 - Inform: to PakFile: UI\buttons\Toggle_disabled.png
+01/09/04 20:34:06 - Inform: to PakFile: UI\buttons\Toggle_unchecked.png
+01/09/04 20:34:06 - Inform: to PakFile: assets\audio\fx\Button.wav
+01/09/04 20:34:06 - Inform: to PakFile: assets\audio\fx\NotHere.wav
+01/09/04 20:34:06 - Inform: to PakFile: assets\audio\fx\PieceOnPuzzle.wav
+01/09/04 20:34:06 - Inform: to PakFile: assets\audio\fx\Swap.wav
+01/09/04 20:34:06 - Inform: 83 file(s) successfully processed
+picpaks\Dawn_Rosell.picpak
+picpaks\Demo.picpak
+picpaks\Friends.picpak
+picpaks\Monet.picpak
+picpaks\NASA.picpak
+picpaks\Van_Gogh.picpak
+        6 file(s) copied.
+picpaks\Dawn_Rosell.picpak
+picpaks\Demo.picpak
+picpaks\Friends.picpak
+picpaks\Monet.picpak
+picpaks\NASA.picpak
+picpaks\Van_Gogh.picpak
+        6 file(s) copied.
+
+
+
+<h3>Results</h3>
+Organizer - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: Organizer - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP31C.bat" with contents
+[
+@echo off
+.\debugOrganize.bat
+]
+Creating command line "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP31C.bat"
+<h3>Output Window</h3>
+Performing Custom Build Step on .\debugOrganize.bat
+        1 file(s) copied.
+ running asseter
+01/09/04 20:34:14 - Inform: assetfilename : Assets_Full.ini
+01/09/04 20:34:14 - Inform: destination   : c:\_Puzzle_debug_nopack
+01/09/04 20:34:14 - Inform: testOnly      : False
+01/09/04 20:34:14 - Inform: asset (fnt_Menu_White) filename (assets\fonts\fnt_MenuItems_white.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\fonts\fnt_MenuItems_white.png -> c:\_Puzzle_debug_nopack\assets\fonts\fnt_MenuItems_white.png
+01/09/04 20:34:14 - Inform: asset (fnt_Menu_Yellow) filename (assets\fonts\fnt_MenuItems_yellow.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\fonts\fnt_MenuItems_yellow.png -> c:\_Puzzle_debug_nopack\assets\fonts\fnt_MenuItems_yellow.png
+01/09/04 20:34:14 - Inform: asset (fnt_Score) filename (assets\fonts\fnt_score.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\fonts\fnt_score.png -> c:\_Puzzle_debug_nopack\assets\fonts\fnt_score.png
+01/09/04 20:34:14 - Inform: asset (fnt_Title) filename (assets\fonts\fnt_title.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\fonts\fnt_title.png -> c:\_Puzzle_debug_nopack\assets\fonts\fnt_title.png
+01/09/04 20:34:14 - Inform: asset (mouse_Default) filename (assets\gfx\ui\mouse\def_mouse.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\mouse\def_mouse.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\mouse\def_mouse.png
+01/09/04 20:34:14 - Inform: asset (mouse_Over) filename (assets\gfx\ui\mouse\over_mouse.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\mouse\over_mouse.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\mouse\over_mouse.png
+01/09/04 20:34:14 - Inform: asset (mus_Background) filename (assets\audio\music\MusicBakery19960617mag.ogg) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\audio\music\MusicBakery19960617mag.ogg -> c:\_Puzzle_debug_nopack\assets\audio\music\MusicBakery19960617mag.ogg
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (Assets.ini) - seems to be valid
+01/09/04 20:34:14 - Inform: Assets.ini -> c:\_Puzzle_debug_nopack\Assets.ini
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (assets\assets_ui.ini) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\assets_ui.ini -> c:\_Puzzle_debug_nopack\assets\assets_ui.ini
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (assets\dlg\dlg_MainMenu.ini) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\dlg\dlg_MainMenu.ini -> c:\_Puzzle_debug_nopack\assets\dlg\dlg_MainMenu.ini
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (assets\dlg\dlg_PlayScreen.ini) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\dlg\dlg_PlayScreen.ini -> c:\_Puzzle_debug_nopack\assets\dlg\dlg_PlayScreen.ini
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (assets\dlg\dlg_Preview.ini) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\dlg\dlg_Preview.ini -> c:\_Puzzle_debug_nopack\assets\dlg\dlg_Preview.ini
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (Assets_Common.ini) - seems to be valid
+01/09/04 20:34:14 - Inform: Assets_Common.ini -> c:\_Puzzle_debug_nopack\Assets_Common.ini
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (Assets_Demo.ini) - seems to be valid
+01/09/04 20:34:14 - Inform: Assets_Demo.ini -> c:\_Puzzle_debug_nopack\Assets_Demo.ini
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (Assets_Full.ini) - seems to be valid
+01/09/04 20:34:14 - Inform: Assets_Full.ini -> c:\_Puzzle_debug_nopack\Assets_Full.ini
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (AudioAssets.ini) - seems to be valid
+01/09/04 20:34:14 - Inform: AudioAssets.ini -> c:\_Puzzle_debug_nopack\AudioAssets.ini
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (images\placeholder.png) - seems to be valid
+01/09/04 20:34:14 - Inform: images\placeholder.png -> c:\_Puzzle_debug_nopack\images\placeholder.png
+01/09/04 20:34:14 - *Error: asset (RelevantFiles) file not found (NoArchive)
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (Options.ini) - seems to be valid
+01/09/04 20:34:14 - Inform: Options.ini -> c:\_Puzzle_debug_nopack\Options.ini
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (Options_assets.ini) - seems to be valid
+01/09/04 20:34:14 - Inform: Options_assets.ini -> c:\_Puzzle_debug_nopack\Options_assets.ini
+01/09/04 20:34:14 - *Error: asset (RelevantFiles) file not found (Type)
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (UI\dialogs.ini) - seems to be valid
+01/09/04 20:34:14 - Inform: UI\dialogs.ini -> c:\_Puzzle_debug_nopack\UI\dialogs.ini
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (UI\Options_dlg.ini) - seems to be valid
+01/09/04 20:34:14 - Inform: UI\Options_dlg.ini -> c:\_Puzzle_debug_nopack\UI\Options_dlg.ini
+01/09/04 20:34:14 - Inform: asset (RelevantFiles) filename (Version.ini) - seems to be valid
+01/09/04 20:34:14 - Inform: Version.ini -> c:\_Puzzle_debug_nopack\Version.ini
+01/09/04 20:34:14 - Inform: asset (rq_exe) filename (Puzzle.exe) - seems to be valid
+01/09/04 20:34:14 - Inform: Puzzle.exe -> c:\_Puzzle_debug_nopack\Puzzle.exe
+01/09/04 20:34:14 - Inform: asset (rq_icon) filename (Icon.ico) - seems to be valid
+01/09/04 20:34:14 - Inform: Icon.ico -> c:\_Puzzle_debug_nopack\Icon.ico
+01/09/04 20:34:14 - Inform: asset (rq_Lib_JPG) filename (jpeg.dll) - seems to be valid
+01/09/04 20:34:14 - Inform: jpeg.dll -> c:\_Puzzle_debug_nopack\jpeg.dll
+01/09/04 20:34:14 - Inform: asset (rq_Lib_PNG) filename (libpng1.dll) - seems to be valid
+01/09/04 20:34:14 - Inform: libpng1.dll -> c:\_Puzzle_debug_nopack\libpng1.dll
+01/09/04 20:34:14 - Inform: asset (rq_Lib_ZLib) filename (zlib.dll) - seems to be valid
+01/09/04 20:34:14 - Inform: zlib.dll -> c:\_Puzzle_debug_nopack\zlib.dll
+01/09/04 20:34:14 - Inform: asset (rq_SDL) filename (SDL.dll) - seems to be valid
+01/09/04 20:34:14 - Inform: SDL.dll -> c:\_Puzzle_debug_nopack\SDL.dll
+01/09/04 20:34:14 - Inform: asset (rq_SDL_Image) filename (SDL_Image.dll) - seems to be valid
+01/09/04 20:34:14 - Inform: SDL_Image.dll -> c:\_Puzzle_debug_nopack\SDL_Image.dll
+01/09/04 20:34:14 - Inform: asset (rq_SDL_Mixer) filename (SDL_Mixer.dll) - seems to be valid
+01/09/04 20:34:14 - Inform: SDL_Mixer.dll -> c:\_Puzzle_debug_nopack\SDL_Mixer.dll
+01/09/04 20:34:14 - Inform: asset (skn_btn_Fullscreen_Mode) filename (assets\gfx\ui\buttons\tgl_Options_ScreenMode_Fullscreen.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\buttons\tgl_Options_ScreenMode_Fullscreen.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\tgl_Options_ScreenMode_Fullscreen.png
+01/09/04 20:34:14 - Inform: asset (skn_btn_Windowed_Mode) filename (assets\gfx\ui\buttons\tgl_Options_ScreenMode_Windowed.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\buttons\tgl_Options_ScreenMode_Windowed.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\tgl_Options_ScreenMode_Windowed.png
+01/09/04 20:34:14 - Inform: asset (skn_chk_PlayScreen_ShowGrid) filename (assets\gfx\ui\buttons\chk_DisplayGrid_Checked.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\buttons\chk_DisplayGrid_Checked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\chk_DisplayGrid_Checked.png
+01/09/04 20:34:14 - Inform: asset (skn_chk_Preview_Preview_Checked) filename (assets\gfx\ui\buttons\chk_Preview_Preview_Checked.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\buttons\chk_Preview_Preview_Checked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\chk_Preview_Preview_Checked.png
+01/09/04 20:34:14 - Inform: asset (skn_chk_Preview_Preview_Unchecked) filename (assets\gfx\ui\buttons\chk_Preview_Preview_Unchecked.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\buttons\chk_Preview_Preview_Unchecked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\chk_Preview_Preview_Unchecked.png
+01/09/04 20:34:14 - Inform: asset (skn_chk_Preview_SpinningTiles_Checked) filename (assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Checked.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Checked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Checked.png
+01/09/04 20:34:14 - Inform: asset (skn_chk_Preview_SpinningTiles_Unchecked) filename (assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Unchecked.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Unchecked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Unchecked.png
+01/09/04 20:34:14 - Inform: asset (skn_chk_Preview_UseHelper_Checked) filename (assets\gfx\ui\buttons\chk_Preview_UseHelper_Checked.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\buttons\chk_Preview_UseHelper_Checked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\chk_Preview_UseHelper_Checked.png
+01/09/04 20:34:14 - Inform: asset (skn_chk_Preview_UseHelper_Disabled) filename (assets\gfx\ui\buttons\chk_Preview_UseHelper_Disabled.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\buttons\chk_Preview_UseHelper_Disabled.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\chk_Preview_UseHelper_Disabled.png
+01/09/04 20:34:14 - Inform: asset (skn_chk_Preview_UseHelper_Unchecked) filename (assets\gfx\ui\buttons\chk_Preview_UseHelper_Unchecked.png) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\buttons\chk_Preview_UseHelper_Unchecked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\chk_Preview_UseHelper_Unchecked.png
+01/09/04 20:34:14 - Inform: asset (skn_Disabled) filename (UI\disabled.png) - seems to be valid
+01/09/04 20:34:14 - Inform: UI\disabled.png -> c:\_Puzzle_debug_nopack\UI\disabled.png
+01/09/04 20:34:14 - Inform: asset (skn_dlg_AreYouSure) filename (assets\gfx\ui\dialogs\dlg_AreYouSure.jpg) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\dialogs\dlg_AreYouSure.jpg -> c:\_Puzzle_debug_nopack\assets\gfx\ui\dialogs\dlg_AreYouSure.jpg
+01/09/04 20:34:14 - Inform: asset (skn_dlg_Credits) filename (assets\gfx\ui\dialogs\dlg_Credits.jpg) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\dialogs\dlg_Credits.jpg -> c:\_Puzzle_debug_nopack\assets\gfx\ui\dialogs\dlg_Credits.jpg
+01/09/04 20:34:14 - Inform: asset (skn_dlg_Finally_Full) filename (assets\gfx\ui\dialogs\dlg_Finally_Full.jpg) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\dialogs\dlg_Finally_Full.jpg -> c:\_Puzzle_debug_nopack\assets\gfx\ui\dialogs\dlg_Finally_Full.jpg
+01/09/04 20:34:14 - Inform: asset (skn_dlg_Finished) filename (assets\gfx\ui\dialogs\dlg_Finished.jpg) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\dialogs\dlg_Finished.jpg -> c:\_Puzzle_debug_nopack\assets\gfx\ui\dialogs\dlg_Finished.jpg
+01/09/04 20:34:14 - Inform: asset (skn_dlg_Game) filename (UI\scn_Game.jpg) - seems to be valid
+01/09/04 20:34:14 - Inform: UI\scn_Game.jpg -> c:\_Puzzle_debug_nopack\UI\scn_Game.jpg
+01/09/04 20:34:14 - Inform: asset (skn_dlg_Main) filename (UI\scn_Main.jpg) - seems to be valid
+01/09/04 20:34:14 - Inform: UI\scn_Main.jpg -> c:\_Puzzle_debug_nopack\UI\scn_Main.jpg
+01/09/04 20:34:14 - Inform: asset (skn_dlg_MainMenu) filename (assets\gfx\ui\dialogs\dlg_MainMenu.jpg) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\dialogs\dlg_MainMenu.jpg -> c:\_Puzzle_debug_nopack\assets\gfx\ui\dialogs\dlg_MainMenu.jpg
+01/09/04 20:34:14 - Inform: asset (skn_dlg_PlayScreen_Puzzle) filename (assets\gfx\ui\dialogs\dlg_GameScreen_Puzzle.jpg) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\dialogs\dlg_GameScreen_Puzzle.jpg -> c:\_Puzzle_debug_nopack\assets\gfx\ui\dialogs\dlg_GameScreen_Puzzle.jpg
+01/09/04 20:34:14 - Inform: asset (skn_dlg_PlayScreen_Swapper) filename (assets\gfx\ui\dialogs\dlg_GameScreen_Swapper.jpg) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\dialogs\dlg_GameScreen_Swapper.jpg -> c:\_Puzzle_debug_nopack\assets\gfx\ui\dialogs\dlg_GameScreen_Swapper.jpg
+01/09/04 20:34:14 - Inform: asset (skn_dlg_Preview) filename (assets\gfx\ui\dialogs\dlg_Preview.jpg) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\dialogs\dlg_Preview.jpg -> c:\_Puzzle_debug_nopack\assets\gfx\ui\dialogs\dlg_Preview.jpg
+01/09/04 20:34:14 - Inform: asset (skn_dlg_Rules_Place) filename (assets\gfx\ui\dialogs\dlg_Rules_Place.jpg) - seems to be valid
+01/09/04 20:34:14 - Inform: assets\gfx\ui\dialogs\dlg_Rules_Place.jpg -> c:\_Puzzle_debug_nopack\assets\gfx\ui\dialogs\dlg_Rules_Place.jpg
+01/09/04 20:34:15 - Inform: asset (skn_dlg_Rules_Swap) filename (assets\gfx\ui\dialogs\dlg_Rules_Swap.jpg) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\dialogs\dlg_Rules_Swap.jpg -> c:\_Puzzle_debug_nopack\assets\gfx\ui\dialogs\dlg_Rules_Swap.jpg
+01/09/04 20:34:15 - Inform: asset (skn_dlg_Splash) filename (Splash.jpg) - seems to be valid
+01/09/04 20:34:15 - Inform: Splash.jpg -> c:\_Puzzle_debug_nopack\Splash.jpg
+01/09/04 20:34:15 - Inform: asset (skn_fx_YouDidIt) filename (assets\gfx\game\YouDidIt.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\game\YouDidIt.png -> c:\_Puzzle_debug_nopack\assets\gfx\game\YouDidIt.png
+01/09/04 20:34:15 - Inform: asset (skn_hlt_MainMenu_PakList) filename (assets\gfx\ui\buttons\hlt_PakList_Highlight.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\hlt_PakList_Highlight.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\hlt_PakList_Highlight.png
+01/09/04 20:34:15 - Inform: asset (skn_OptionsScreen) filename (assets\gfx\ui\dialogs\dlg_Options.jpg) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\dialogs\dlg_Options.jpg -> c:\_Puzzle_debug_nopack\assets\gfx\ui\dialogs\dlg_Options.jpg
+01/09/04 20:34:15 - Inform: asset (skn_Radio_Check) filename (UI\buttons\Radio_checked.png) - seems to be valid
+01/09/04 20:34:15 - Inform: UI\buttons\Radio_checked.png -> c:\_Puzzle_debug_nopack\UI\buttons\Radio_checked.png
+01/09/04 20:34:15 - Inform: asset (skn_Radio_Disabled) filename (UI\buttons\Radio_disabled.png) - seems to be valid
+01/09/04 20:34:15 - Inform: UI\buttons\Radio_disabled.png -> c:\_Puzzle_debug_nopack\UI\buttons\Radio_disabled.png
+01/09/04 20:34:15 - Inform: asset (skn_Radio_Uncheck) filename (UI\buttons\Radio_unchecked.png) - seems to be valid
+01/09/04 20:34:15 - Inform: UI\buttons\Radio_unchecked.png -> c:\_Puzzle_debug_nopack\UI\buttons\Radio_unchecked.png
+01/09/04 20:34:15 - Inform: asset (skn_rdo_Preview_Easy_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_Easy_Checked.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\rdo_Preview_Easy_Checked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\rdo_Preview_Easy_Checked.png
+01/09/04 20:34:15 - Inform: asset (skn_rdo_Preview_Easy_Disabled) filename (assets\gfx\ui\buttons\rdo_Preview_Easy_Disabled.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\rdo_Preview_Easy_Disabled.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\rdo_Preview_Easy_Disabled.png
+01/09/04 20:34:15 - Inform: asset (skn_rdo_Preview_Easy_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_Easy_Unchecked.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\rdo_Preview_Easy_Unchecked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\rdo_Preview_Easy_Unchecked.png
+01/09/04 20:34:15 - Inform: asset (skn_rdo_Preview_Hard_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_Hard_Checked.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\rdo_Preview_Hard_Checked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\rdo_Preview_Hard_Checked.png
+01/09/04 20:34:15 - Inform: asset (skn_rdo_Preview_Hard_Disabled) filename (assets\gfx\ui\buttons\rdo_Preview_Hard_Disabled.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\rdo_Preview_Hard_Disabled.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\rdo_Preview_Hard_Disabled.png
+01/09/04 20:34:15 - Inform: asset (skn_rdo_Preview_Hard_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_Hard_Unchecked.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\rdo_Preview_Hard_Unchecked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\rdo_Preview_Hard_Unchecked.png
+01/09/04 20:34:15 - Inform: asset (skn_rdo_Preview_Medium_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_Medium_Checked.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\rdo_Preview_Medium_Checked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\rdo_Preview_Medium_Checked.png
+01/09/04 20:34:15 - Inform: asset (skn_rdo_Preview_Medium_Disabled) filename (assets\gfx\ui\buttons\rdo_Preview_Medium_Disabled.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\rdo_Preview_Medium_Disabled.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\rdo_Preview_Medium_Disabled.png
+01/09/04 20:34:15 - Inform: asset (skn_rdo_Preview_Medium_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_Medium_Unchecked.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\rdo_Preview_Medium_Unchecked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\rdo_Preview_Medium_Unchecked.png
+01/09/04 20:34:15 - Inform: asset (skn_rdo_Preview_PlaceTiles_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Checked.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Checked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Checked.png
+01/09/04 20:34:15 - Inform: asset (skn_rdo_Preview_PlaceTiles_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Unchecked.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Unchecked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Unchecked.png
+01/09/04 20:34:15 - Inform: asset (skn_rdo_Preview_SwapTiles_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Checked.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Checked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Checked.png
+01/09/04 20:34:15 - Inform: asset (skn_rdo_Preview_SwapTiles_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Unchecked.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Unchecked.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Unchecked.png
+01/09/04 20:34:15 - Inform: asset (skn_SliderControl) filename (assets\gfx\ui\buttons\sdr_Options.png) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\gfx\ui\buttons\sdr_Options.png -> c:\_Puzzle_debug_nopack\assets\gfx\ui\buttons\sdr_Options.png
+01/09/04 20:34:15 - Inform: asset (skn_Toggle_Check) filename (UI\buttons\Toggle_checked.png) - seems to be valid
+01/09/04 20:34:15 - Inform: UI\buttons\Toggle_checked.png -> c:\_Puzzle_debug_nopack\UI\buttons\Toggle_checked.png
+01/09/04 20:34:15 - Inform: asset (skn_Toggle_Disabled) filename (UI\buttons\Toggle_disabled.png) - seems to be valid
+01/09/04 20:34:15 - Inform: UI\buttons\Toggle_disabled.png -> c:\_Puzzle_debug_nopack\UI\buttons\Toggle_disabled.png
+01/09/04 20:34:15 - Inform: asset (skn_Toggle_Uncheck) filename (UI\buttons\Toggle_unchecked.png) - seems to be valid
+01/09/04 20:34:15 - Inform: UI\buttons\Toggle_unchecked.png -> c:\_Puzzle_debug_nopack\UI\buttons\Toggle_unchecked.png
+01/09/04 20:34:15 - Inform: asset (snd_Button) filename (assets\audio\fx\Button.wav) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\audio\fx\Button.wav -> c:\_Puzzle_debug_nopack\assets\audio\fx\Button.wav
+01/09/04 20:34:15 - Inform: asset (snd_NotHere) filename (assets\audio\fx\NotHere.wav) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\audio\fx\NotHere.wav -> c:\_Puzzle_debug_nopack\assets\audio\fx\NotHere.wav
+01/09/04 20:34:15 - Inform: asset (snd_OnPuzzle) filename (assets\audio\fx\PieceOnPuzzle.wav) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\audio\fx\PieceOnPuzzle.wav -> c:\_Puzzle_debug_nopack\assets\audio\fx\PieceOnPuzzle.wav
+01/09/04 20:34:15 - Inform: asset (snd_Swap) filename (assets\audio\fx\Swap.wav) - seems to be valid
+01/09/04 20:34:15 - Inform: assets\audio\fx\Swap.wav -> c:\_Puzzle_debug_nopack\assets\audio\fx\Swap.wav
+01/09/04 20:34:15 - *Error: 81 file(s) processed - There were errors
+01/09/04 20:34:15 - Inform: assetfilename : Assets_Full.ini
+01/09/04 20:34:15 - Inform: destination   : c:\_Puzzle_debug
+01/09/04 20:34:15 - Inform: testOnly      : False
+01/09/04 20:34:15 - Inform: to PakFile: assets\fonts\fnt_MenuItems_white.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\fonts\fnt_MenuItems_yellow.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\fonts\fnt_score.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\fonts\fnt_title.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\mouse\def_mouse.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\mouse\over_mouse.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\audio\music\MusicBakery19960617mag.ogg
+01/09/04 20:34:15 - Inform: to PakFile: Assets.ini
+01/09/04 20:34:15 - Inform: to PakFile: assets\assets_ui.ini
+01/09/04 20:34:15 - Inform: to PakFile: assets\dlg\dlg_MainMenu.ini
+01/09/04 20:34:15 - Inform: to PakFile: assets\dlg\dlg_PlayScreen.ini
+01/09/04 20:34:15 - Inform: to PakFile: assets\dlg\dlg_Preview.ini
+01/09/04 20:34:15 - Inform: to PakFile: Assets_Common.ini
+01/09/04 20:34:15 - Inform: to PakFile: Assets_Demo.ini
+01/09/04 20:34:15 - Inform: to PakFile: Assets_Full.ini
+01/09/04 20:34:15 - Inform: to PakFile: AudioAssets.ini
+01/09/04 20:34:15 - Inform: to PakFile: images\placeholder.png
+01/09/04 20:34:15 - Inform: to PakFile: NoArchive
+01/09/04 20:34:15 - Inform: to PakFile: Options.ini
+01/09/04 20:34:15 - Inform: to PakFile: Options_assets.ini
+01/09/04 20:34:15 - Inform: to PakFile: Type
+01/09/04 20:34:15 - Inform: to PakFile: UI\dialogs.ini
+01/09/04 20:34:15 - Inform: to PakFile: UI\Options_dlg.ini
+01/09/04 20:34:15 - Inform: to PakFile: Version.ini
+01/09/04 20:34:15 - Inform: asset (rq_exe) filename (Puzzle.exe) - seems to be valid
+01/09/04 20:34:15 - Inform: Puzzle.exe -> c:\_Puzzle_debug\Puzzle.exe
+01/09/04 20:34:15 - Inform: asset (rq_icon) filename (Icon.ico) - seems to be valid
+01/09/04 20:34:15 - Inform: Icon.ico -> c:\_Puzzle_debug\Icon.ico
+01/09/04 20:34:15 - Inform: asset (rq_Lib_JPG) filename (jpeg.dll) - seems to be valid
+01/09/04 20:34:15 - Inform: jpeg.dll -> c:\_Puzzle_debug\jpeg.dll
+01/09/04 20:34:15 - Inform: asset (rq_Lib_PNG) filename (libpng1.dll) - seems to be valid
+01/09/04 20:34:15 - Inform: libpng1.dll -> c:\_Puzzle_debug\libpng1.dll
+01/09/04 20:34:15 - Inform: asset (rq_Lib_ZLib) filename (zlib.dll) - seems to be valid
+01/09/04 20:34:15 - Inform: zlib.dll -> c:\_Puzzle_debug\zlib.dll
+01/09/04 20:34:15 - Inform: asset (rq_SDL) filename (SDL.dll) - seems to be valid
+01/09/04 20:34:15 - Inform: SDL.dll -> c:\_Puzzle_debug\SDL.dll
+01/09/04 20:34:15 - Inform: asset (rq_SDL_Image) filename (SDL_Image.dll) - seems to be valid
+01/09/04 20:34:15 - Inform: SDL_Image.dll -> c:\_Puzzle_debug\SDL_Image.dll
+01/09/04 20:34:15 - Inform: asset (rq_SDL_Mixer) filename (SDL_Mixer.dll) - seems to be valid
+01/09/04 20:34:15 - Inform: SDL_Mixer.dll -> c:\_Puzzle_debug\SDL_Mixer.dll
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\tgl_Options_ScreenMode_Fullscreen.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\tgl_Options_ScreenMode_Windowed.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\chk_DisplayGrid_Checked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_Preview_Checked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_Preview_Unchecked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Checked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Unchecked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_UseHelper_Checked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_UseHelper_Disabled.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_UseHelper_Unchecked.png
+01/09/04 20:34:15 - Inform: to PakFile: UI\disabled.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_AreYouSure.jpg
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Credits.jpg
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Finally_Full.jpg
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Finished.jpg
+01/09/04 20:34:15 - Inform: to PakFile: UI\scn_Game.jpg
+01/09/04 20:34:15 - Inform: to PakFile: UI\scn_Main.jpg
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_MainMenu.jpg
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_GameScreen_Puzzle.jpg
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_GameScreen_Swapper.jpg
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Preview.jpg
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Rules_Place.jpg
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Rules_Swap.jpg
+01/09/04 20:34:15 - Inform: asset (skn_dlg_Splash) filename (Splash.jpg) - seems to be valid
+01/09/04 20:34:15 - Inform: Splash.jpg -> c:\_Puzzle_debug\Splash.jpg
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\game\YouDidIt.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\hlt_PakList_Highlight.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Options.jpg
+01/09/04 20:34:15 - Inform: to PakFile: UI\buttons\Radio_checked.png
+01/09/04 20:34:15 - Inform: to PakFile: UI\buttons\Radio_disabled.png
+01/09/04 20:34:15 - Inform: to PakFile: UI\buttons\Radio_unchecked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Easy_Checked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Easy_Disabled.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Easy_Unchecked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Hard_Checked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Hard_Disabled.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Hard_Unchecked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Medium_Checked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Medium_Disabled.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Medium_Unchecked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Checked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Unchecked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Checked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Unchecked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\gfx\ui\buttons\sdr_Options.png
+01/09/04 20:34:15 - Inform: to PakFile: UI\buttons\Toggle_checked.png
+01/09/04 20:34:15 - Inform: to PakFile: UI\buttons\Toggle_disabled.png
+01/09/04 20:34:15 - Inform: to PakFile: UI\buttons\Toggle_unchecked.png
+01/09/04 20:34:15 - Inform: to PakFile: assets\audio\fx\Button.wav
+01/09/04 20:34:15 - Inform: to PakFile: assets\audio\fx\NotHere.wav
+01/09/04 20:34:15 - Inform: to PakFile: assets\audio\fx\PieceOnPuzzle.wav
+01/09/04 20:34:15 - Inform: to PakFile: assets\audio\fx\Swap.wav
+01/09/04 20:34:16 - Inform: 83 file(s) successfully processed
+picpaks\Dawn_Rosell.picpak
+picpaks\Demo.picpak
+picpaks\Friends.picpak
+picpaks\Monet.picpak
+picpaks\NASA.picpak
+picpaks\Van_Gogh.picpak
+        6 file(s) copied.
+picpaks\Dawn_Rosell.picpak
+picpaks\Demo.picpak
+picpaks\Friends.picpak
+picpaks\Monet.picpak
+picpaks\NASA.picpak
+picpaks\Van_Gogh.picpak
+        6 file(s) copied.
+
+
+
+<h3>Results</h3>
+Organizer - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: Organizer - Win32 Demo--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP31D.bat" with contents
+[
+@echo off
+.\demoOrganize.bat
+]
+Creating command line "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP31D.bat"
+<h3>Output Window</h3>
+Performing Custom Build Step on .\demoOrganize.bat
+        1 file(s) copied.
+ running asseter
+01/09/04 20:34:23 - Inform: assetfilename : Assets_Demo.ini
+01/09/04 20:34:23 - Inform: destination   : c:\_Puzzle_demo_nopack
+01/09/04 20:34:23 - Inform: testOnly      : False
+01/09/04 20:34:23 - Inform: asset (fnt_Menu_White) filename (assets\fonts\fnt_MenuItems_white.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\fonts\fnt_MenuItems_white.png -> c:\_Puzzle_demo_nopack\assets\fonts\fnt_MenuItems_white.png
+01/09/04 20:34:23 - Inform: asset (fnt_Menu_Yellow) filename (assets\fonts\fnt_MenuItems_yellow.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\fonts\fnt_MenuItems_yellow.png -> c:\_Puzzle_demo_nopack\assets\fonts\fnt_MenuItems_yellow.png
+01/09/04 20:34:23 - Inform: asset (fnt_Score) filename (assets\fonts\fnt_score.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\fonts\fnt_score.png -> c:\_Puzzle_demo_nopack\assets\fonts\fnt_score.png
+01/09/04 20:34:23 - Inform: asset (fnt_Title) filename (assets\fonts\fnt_title.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\fonts\fnt_title.png -> c:\_Puzzle_demo_nopack\assets\fonts\fnt_title.png
+01/09/04 20:34:23 - Inform: asset (mouse_Default) filename (assets\gfx\ui\mouse\def_mouse.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\mouse\def_mouse.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\mouse\def_mouse.png
+01/09/04 20:34:23 - Inform: asset (mouse_Over) filename (assets\gfx\ui\mouse\over_mouse.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\mouse\over_mouse.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\mouse\over_mouse.png
+01/09/04 20:34:23 - Inform: asset (mus_Background) filename (assets\audio\music\MusicBakery19960617mag.ogg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\audio\music\MusicBakery19960617mag.ogg -> c:\_Puzzle_demo_nopack\assets\audio\music\MusicBakery19960617mag.ogg
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (Assets.ini) - seems to be valid
+01/09/04 20:34:23 - Inform: Assets.ini -> c:\_Puzzle_demo_nopack\Assets.ini
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (assets\assets_ui.ini) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\assets_ui.ini -> c:\_Puzzle_demo_nopack\assets\assets_ui.ini
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (assets\dlg\dlg_MainMenu.ini) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\dlg\dlg_MainMenu.ini -> c:\_Puzzle_demo_nopack\assets\dlg\dlg_MainMenu.ini
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (assets\dlg\dlg_PlayScreen.ini) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\dlg\dlg_PlayScreen.ini -> c:\_Puzzle_demo_nopack\assets\dlg\dlg_PlayScreen.ini
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (assets\dlg\dlg_Preview.ini) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\dlg\dlg_Preview.ini -> c:\_Puzzle_demo_nopack\assets\dlg\dlg_Preview.ini
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (Assets_Common.ini) - seems to be valid
+01/09/04 20:34:23 - Inform: Assets_Common.ini -> c:\_Puzzle_demo_nopack\Assets_Common.ini
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (Assets_Demo.ini) - seems to be valid
+01/09/04 20:34:23 - Inform: Assets_Demo.ini -> c:\_Puzzle_demo_nopack\Assets_Demo.ini
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (Assets_Full.ini) - seems to be valid
+01/09/04 20:34:23 - Inform: Assets_Full.ini -> c:\_Puzzle_demo_nopack\Assets_Full.ini
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (AudioAssets.ini) - seems to be valid
+01/09/04 20:34:23 - Inform: AudioAssets.ini -> c:\_Puzzle_demo_nopack\AudioAssets.ini
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (images\placeholder.png) - seems to be valid
+01/09/04 20:34:23 - Inform: images\placeholder.png -> c:\_Puzzle_demo_nopack\images\placeholder.png
+01/09/04 20:34:23 - *Error: asset (RelevantFiles) file not found (NoArchive)
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (Options.ini) - seems to be valid
+01/09/04 20:34:23 - Inform: Options.ini -> c:\_Puzzle_demo_nopack\Options.ini
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (Options_assets.ini) - seems to be valid
+01/09/04 20:34:23 - Inform: Options_assets.ini -> c:\_Puzzle_demo_nopack\Options_assets.ini
+01/09/04 20:34:23 - *Error: asset (RelevantFiles) file not found (Type)
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (UI\dialogs.ini) - seems to be valid
+01/09/04 20:34:23 - Inform: UI\dialogs.ini -> c:\_Puzzle_demo_nopack\UI\dialogs.ini
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (UI\Options_dlg.ini) - seems to be valid
+01/09/04 20:34:23 - Inform: UI\Options_dlg.ini -> c:\_Puzzle_demo_nopack\UI\Options_dlg.ini
+01/09/04 20:34:23 - Inform: asset (RelevantFiles) filename (Version.ini) - seems to be valid
+01/09/04 20:34:23 - Inform: Version.ini -> c:\_Puzzle_demo_nopack\Version.ini
+01/09/04 20:34:23 - Inform: asset (rq_exe) filename (Puzzle.exe) - seems to be valid
+01/09/04 20:34:23 - Inform: Puzzle.exe -> c:\_Puzzle_demo_nopack\Puzzle.exe
+01/09/04 20:34:23 - Inform: asset (rq_icon) filename (Icon.ico) - seems to be valid
+01/09/04 20:34:23 - Inform: Icon.ico -> c:\_Puzzle_demo_nopack\Icon.ico
+01/09/04 20:34:23 - Inform: asset (rq_Lib_JPG) filename (jpeg.dll) - seems to be valid
+01/09/04 20:34:23 - Inform: jpeg.dll -> c:\_Puzzle_demo_nopack\jpeg.dll
+01/09/04 20:34:23 - Inform: asset (rq_Lib_PNG) filename (libpng1.dll) - seems to be valid
+01/09/04 20:34:23 - Inform: libpng1.dll -> c:\_Puzzle_demo_nopack\libpng1.dll
+01/09/04 20:34:23 - Inform: asset (rq_Lib_ZLib) filename (zlib.dll) - seems to be valid
+01/09/04 20:34:23 - Inform: zlib.dll -> c:\_Puzzle_demo_nopack\zlib.dll
+01/09/04 20:34:23 - Inform: asset (rq_SDL) filename (SDL.dll) - seems to be valid
+01/09/04 20:34:23 - Inform: SDL.dll -> c:\_Puzzle_demo_nopack\SDL.dll
+01/09/04 20:34:23 - Inform: asset (rq_SDL_Image) filename (SDL_Image.dll) - seems to be valid
+01/09/04 20:34:23 - Inform: SDL_Image.dll -> c:\_Puzzle_demo_nopack\SDL_Image.dll
+01/09/04 20:34:23 - Inform: asset (rq_SDL_Mixer) filename (SDL_Mixer.dll) - seems to be valid
+01/09/04 20:34:23 - Inform: SDL_Mixer.dll -> c:\_Puzzle_demo_nopack\SDL_Mixer.dll
+01/09/04 20:34:23 - Inform: asset (skn_btn_Fullscreen_Mode) filename (assets\gfx\ui\buttons\tgl_Options_ScreenMode_Fullscreen.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\tgl_Options_ScreenMode_Fullscreen.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\tgl_Options_ScreenMode_Fullscreen.png
+01/09/04 20:34:23 - Inform: asset (skn_btn_Windowed_Mode) filename (assets\gfx\ui\buttons\tgl_Options_ScreenMode_Windowed.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\tgl_Options_ScreenMode_Windowed.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\tgl_Options_ScreenMode_Windowed.png
+01/09/04 20:34:23 - Inform: asset (skn_chk_PlayScreen_ShowGrid) filename (assets\gfx\ui\buttons\chk_DisplayGrid_Checked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\chk_DisplayGrid_Checked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\chk_DisplayGrid_Checked.png
+01/09/04 20:34:23 - Inform: asset (skn_chk_Preview_Preview_Checked) filename (assets\gfx\ui\buttons\chk_Preview_Preview_Checked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\chk_Preview_Preview_Checked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\chk_Preview_Preview_Checked.png
+01/09/04 20:34:23 - Inform: asset (skn_chk_Preview_Preview_Unchecked) filename (assets\gfx\ui\buttons\chk_Preview_Preview_Unchecked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\chk_Preview_Preview_Unchecked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\chk_Preview_Preview_Unchecked.png
+01/09/04 20:34:23 - Inform: asset (skn_chk_Preview_SpinningTiles_Checked) filename (assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Checked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Checked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Checked.png
+01/09/04 20:34:23 - Inform: asset (skn_chk_Preview_SpinningTiles_Unchecked) filename (assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Unchecked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Unchecked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Unchecked.png
+01/09/04 20:34:23 - Inform: asset (skn_chk_Preview_UseHelper_Checked) filename (assets\gfx\ui\buttons\chk_Preview_UseHelper_Checked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\chk_Preview_UseHelper_Checked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\chk_Preview_UseHelper_Checked.png
+01/09/04 20:34:23 - Inform: asset (skn_chk_Preview_UseHelper_Disabled) filename (assets\gfx\ui\buttons\chk_Preview_UseHelper_Disabled.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\chk_Preview_UseHelper_Disabled.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\chk_Preview_UseHelper_Disabled.png
+01/09/04 20:34:23 - Inform: asset (skn_chk_Preview_UseHelper_Unchecked) filename (assets\gfx\ui\buttons\chk_Preview_UseHelper_Unchecked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\chk_Preview_UseHelper_Unchecked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\chk_Preview_UseHelper_Unchecked.png
+01/09/04 20:34:23 - Inform: asset (skn_Disabled) filename (UI\disabled.png) - seems to be valid
+01/09/04 20:34:23 - Inform: UI\disabled.png -> c:\_Puzzle_demo_nopack\UI\disabled.png
+01/09/04 20:34:23 - Inform: asset (skn_dlg_AreYouSure) filename (assets\gfx\ui\dialogs\dlg_AreYouSure.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\dialogs\dlg_AreYouSure.jpg -> c:\_Puzzle_demo_nopack\assets\gfx\ui\dialogs\dlg_AreYouSure.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_Credits) filename (assets\gfx\ui\dialogs\dlg_Credits.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\dialogs\dlg_Credits.jpg -> c:\_Puzzle_demo_nopack\assets\gfx\ui\dialogs\dlg_Credits.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_Finally_Demo) filename (assets\gfx\ui\dialogs\dlg_Finally.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\dialogs\dlg_Finally.jpg -> c:\_Puzzle_demo_nopack\assets\gfx\ui\dialogs\dlg_Finally.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_Finished) filename (assets\gfx\ui\dialogs\dlg_Finished.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\dialogs\dlg_Finished.jpg -> c:\_Puzzle_demo_nopack\assets\gfx\ui\dialogs\dlg_Finished.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_Game) filename (UI\scn_Game.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: UI\scn_Game.jpg -> c:\_Puzzle_demo_nopack\UI\scn_Game.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_Main) filename (UI\scn_Main.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: UI\scn_Main.jpg -> c:\_Puzzle_demo_nopack\UI\scn_Main.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_MainMenu) filename (assets\gfx\ui\dialogs\dlg_MainMenu.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\dialogs\dlg_MainMenu.jpg -> c:\_Puzzle_demo_nopack\assets\gfx\ui\dialogs\dlg_MainMenu.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_PlayScreen_Puzzle) filename (assets\gfx\ui\dialogs\dlg_GameScreen_Puzzle.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\dialogs\dlg_GameScreen_Puzzle.jpg -> c:\_Puzzle_demo_nopack\assets\gfx\ui\dialogs\dlg_GameScreen_Puzzle.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_PlayScreen_Swapper) filename (assets\gfx\ui\dialogs\dlg_GameScreen_Swapper.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\dialogs\dlg_GameScreen_Swapper.jpg -> c:\_Puzzle_demo_nopack\assets\gfx\ui\dialogs\dlg_GameScreen_Swapper.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_Preview) filename (assets\gfx\ui\dialogs\dlg_Preview.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\dialogs\dlg_Preview.jpg -> c:\_Puzzle_demo_nopack\assets\gfx\ui\dialogs\dlg_Preview.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_Rules_Place) filename (assets\gfx\ui\dialogs\dlg_Rules_Place.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\dialogs\dlg_Rules_Place.jpg -> c:\_Puzzle_demo_nopack\assets\gfx\ui\dialogs\dlg_Rules_Place.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_Rules_Swap) filename (assets\gfx\ui\dialogs\dlg_Rules_Swap.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\dialogs\dlg_Rules_Swap.jpg -> c:\_Puzzle_demo_nopack\assets\gfx\ui\dialogs\dlg_Rules_Swap.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_Splash) filename (Splash.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: Splash.jpg -> c:\_Puzzle_demo_nopack\Splash.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_Upsell_1) filename (assets\gfx\ui\dialogs\dlg_Finally.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\dialogs\dlg_Finally.jpg -> c:\_Puzzle_demo_nopack\assets\gfx\ui\dialogs\dlg_Finally.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_Upsell_2) filename (assets\gfx\ui\dialogs\dlg_Finally.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\dialogs\dlg_Finally.jpg -> c:\_Puzzle_demo_nopack\assets\gfx\ui\dialogs\dlg_Finally.jpg
+01/09/04 20:34:23 - Inform: asset (skn_dlg_Upsell_3) filename (assets\gfx\ui\dialogs\dlg_Finally.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\dialogs\dlg_Finally.jpg -> c:\_Puzzle_demo_nopack\assets\gfx\ui\dialogs\dlg_Finally.jpg
+01/09/04 20:34:23 - Inform: asset (skn_fx_YouDidIt) filename (assets\gfx\game\YouDidIt.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\game\YouDidIt.png -> c:\_Puzzle_demo_nopack\assets\gfx\game\YouDidIt.png
+01/09/04 20:34:23 - Inform: asset (skn_hlt_MainMenu_PakList) filename (assets\gfx\ui\buttons\hlt_PakList_Highlight.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\hlt_PakList_Highlight.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\hlt_PakList_Highlight.png
+01/09/04 20:34:23 - Inform: asset (skn_OptionsScreen) filename (assets\gfx\ui\dialogs\dlg_Options.jpg) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\dialogs\dlg_Options.jpg -> c:\_Puzzle_demo_nopack\assets\gfx\ui\dialogs\dlg_Options.jpg
+01/09/04 20:34:23 - Inform: asset (skn_Radio_Check) filename (UI\buttons\Radio_checked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: UI\buttons\Radio_checked.png -> c:\_Puzzle_demo_nopack\UI\buttons\Radio_checked.png
+01/09/04 20:34:23 - Inform: asset (skn_Radio_Disabled) filename (UI\buttons\Radio_disabled.png) - seems to be valid
+01/09/04 20:34:23 - Inform: UI\buttons\Radio_disabled.png -> c:\_Puzzle_demo_nopack\UI\buttons\Radio_disabled.png
+01/09/04 20:34:23 - Inform: asset (skn_Radio_Uncheck) filename (UI\buttons\Radio_unchecked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: UI\buttons\Radio_unchecked.png -> c:\_Puzzle_demo_nopack\UI\buttons\Radio_unchecked.png
+01/09/04 20:34:23 - Inform: asset (skn_rdo_Preview_Easy_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_Easy_Checked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\rdo_Preview_Easy_Checked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\rdo_Preview_Easy_Checked.png
+01/09/04 20:34:23 - Inform: asset (skn_rdo_Preview_Easy_Disabled) filename (assets\gfx\ui\buttons\rdo_Preview_Easy_Disabled.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\rdo_Preview_Easy_Disabled.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\rdo_Preview_Easy_Disabled.png
+01/09/04 20:34:23 - Inform: asset (skn_rdo_Preview_Easy_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_Easy_Unchecked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\rdo_Preview_Easy_Unchecked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\rdo_Preview_Easy_Unchecked.png
+01/09/04 20:34:23 - Inform: asset (skn_rdo_Preview_Hard_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_Hard_Checked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\rdo_Preview_Hard_Checked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\rdo_Preview_Hard_Checked.png
+01/09/04 20:34:23 - Inform: asset (skn_rdo_Preview_Hard_Disabled) filename (assets\gfx\ui\buttons\rdo_Preview_Hard_Disabled.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\rdo_Preview_Hard_Disabled.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\rdo_Preview_Hard_Disabled.png
+01/09/04 20:34:23 - Inform: asset (skn_rdo_Preview_Hard_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_Hard_Unchecked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\rdo_Preview_Hard_Unchecked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\rdo_Preview_Hard_Unchecked.png
+01/09/04 20:34:23 - Inform: asset (skn_rdo_Preview_Medium_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_Medium_Checked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\rdo_Preview_Medium_Checked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\rdo_Preview_Medium_Checked.png
+01/09/04 20:34:23 - Inform: asset (skn_rdo_Preview_Medium_Disabled) filename (assets\gfx\ui\buttons\rdo_Preview_Medium_Disabled.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\rdo_Preview_Medium_Disabled.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\rdo_Preview_Medium_Disabled.png
+01/09/04 20:34:23 - Inform: asset (skn_rdo_Preview_Medium_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_Medium_Unchecked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\rdo_Preview_Medium_Unchecked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\rdo_Preview_Medium_Unchecked.png
+01/09/04 20:34:23 - Inform: asset (skn_rdo_Preview_PlaceTiles_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Checked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Checked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Checked.png
+01/09/04 20:34:23 - Inform: asset (skn_rdo_Preview_PlaceTiles_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Unchecked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Unchecked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Unchecked.png
+01/09/04 20:34:23 - Inform: asset (skn_rdo_Preview_SwapTiles_Checked) filename (assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Checked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Checked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Checked.png
+01/09/04 20:34:23 - Inform: asset (skn_rdo_Preview_SwapTiles_Unchecked) filename (assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Unchecked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Unchecked.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Unchecked.png
+01/09/04 20:34:23 - Inform: asset (skn_SliderControl) filename (assets\gfx\ui\buttons\sdr_Options.png) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\gfx\ui\buttons\sdr_Options.png -> c:\_Puzzle_demo_nopack\assets\gfx\ui\buttons\sdr_Options.png
+01/09/04 20:34:23 - Inform: asset (skn_Toggle_Check) filename (UI\buttons\Toggle_checked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: UI\buttons\Toggle_checked.png -> c:\_Puzzle_demo_nopack\UI\buttons\Toggle_checked.png
+01/09/04 20:34:23 - Inform: asset (skn_Toggle_Disabled) filename (UI\buttons\Toggle_disabled.png) - seems to be valid
+01/09/04 20:34:23 - Inform: UI\buttons\Toggle_disabled.png -> c:\_Puzzle_demo_nopack\UI\buttons\Toggle_disabled.png
+01/09/04 20:34:23 - Inform: asset (skn_Toggle_Uncheck) filename (UI\buttons\Toggle_unchecked.png) - seems to be valid
+01/09/04 20:34:23 - Inform: UI\buttons\Toggle_unchecked.png -> c:\_Puzzle_demo_nopack\UI\buttons\Toggle_unchecked.png
+01/09/04 20:34:23 - Inform: asset (snd_Button) filename (assets\audio\fx\Button.wav) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\audio\fx\Button.wav -> c:\_Puzzle_demo_nopack\assets\audio\fx\Button.wav
+01/09/04 20:34:23 - Inform: asset (snd_NotHere) filename (assets\audio\fx\NotHere.wav) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\audio\fx\NotHere.wav -> c:\_Puzzle_demo_nopack\assets\audio\fx\NotHere.wav
+01/09/04 20:34:23 - Inform: asset (snd_OnPuzzle) filename (assets\audio\fx\PieceOnPuzzle.wav) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\audio\fx\PieceOnPuzzle.wav -> c:\_Puzzle_demo_nopack\assets\audio\fx\PieceOnPuzzle.wav
+01/09/04 20:34:23 - Inform: asset (snd_Swap) filename (assets\audio\fx\Swap.wav) - seems to be valid
+01/09/04 20:34:23 - Inform: assets\audio\fx\Swap.wav -> c:\_Puzzle_demo_nopack\assets\audio\fx\Swap.wav
+01/09/04 20:34:23 - *Error: 84 file(s) processed - There were errors
+01/09/04 20:34:23 - Inform: assetfilename : Assets_Demo.ini
+01/09/04 20:34:23 - Inform: destination   : c:\_Puzzle_demo
+01/09/04 20:34:23 - Inform: testOnly      : False
+01/09/04 20:34:24 - Inform: to PakFile: assets\fonts\fnt_MenuItems_white.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\fonts\fnt_MenuItems_yellow.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\fonts\fnt_score.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\fonts\fnt_title.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\mouse\def_mouse.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\mouse\over_mouse.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\audio\music\MusicBakery19960617mag.ogg
+01/09/04 20:34:24 - Inform: to PakFile: Assets.ini
+01/09/04 20:34:24 - Inform: to PakFile: assets\assets_ui.ini
+01/09/04 20:34:24 - Inform: to PakFile: assets\dlg\dlg_MainMenu.ini
+01/09/04 20:34:24 - Inform: to PakFile: assets\dlg\dlg_PlayScreen.ini
+01/09/04 20:34:24 - Inform: to PakFile: assets\dlg\dlg_Preview.ini
+01/09/04 20:34:24 - Inform: to PakFile: Assets_Common.ini
+01/09/04 20:34:24 - Inform: to PakFile: Assets_Demo.ini
+01/09/04 20:34:24 - Inform: to PakFile: Assets_Full.ini
+01/09/04 20:34:24 - Inform: to PakFile: AudioAssets.ini
+01/09/04 20:34:24 - Inform: to PakFile: images\placeholder.png
+01/09/04 20:34:24 - Inform: to PakFile: NoArchive
+01/09/04 20:34:24 - Inform: to PakFile: Options.ini
+01/09/04 20:34:24 - Inform: to PakFile: Options_assets.ini
+01/09/04 20:34:24 - Inform: to PakFile: Type
+01/09/04 20:34:24 - Inform: to PakFile: UI\dialogs.ini
+01/09/04 20:34:24 - Inform: to PakFile: UI\Options_dlg.ini
+01/09/04 20:34:24 - Inform: to PakFile: Version.ini
+01/09/04 20:34:24 - Inform: asset (rq_exe) filename (Puzzle.exe) - seems to be valid
+01/09/04 20:34:24 - Inform: Puzzle.exe -> c:\_Puzzle_demo\Puzzle.exe
+01/09/04 20:34:24 - Inform: asset (rq_icon) filename (Icon.ico) - seems to be valid
+01/09/04 20:34:24 - Inform: Icon.ico -> c:\_Puzzle_demo\Icon.ico
+01/09/04 20:34:24 - Inform: asset (rq_Lib_JPG) filename (jpeg.dll) - seems to be valid
+01/09/04 20:34:24 - Inform: jpeg.dll -> c:\_Puzzle_demo\jpeg.dll
+01/09/04 20:34:24 - Inform: asset (rq_Lib_PNG) filename (libpng1.dll) - seems to be valid
+01/09/04 20:34:24 - Inform: libpng1.dll -> c:\_Puzzle_demo\libpng1.dll
+01/09/04 20:34:24 - Inform: asset (rq_Lib_ZLib) filename (zlib.dll) - seems to be valid
+01/09/04 20:34:24 - Inform: zlib.dll -> c:\_Puzzle_demo\zlib.dll
+01/09/04 20:34:24 - Inform: asset (rq_SDL) filename (SDL.dll) - seems to be valid
+01/09/04 20:34:24 - Inform: SDL.dll -> c:\_Puzzle_demo\SDL.dll
+01/09/04 20:34:24 - Inform: asset (rq_SDL_Image) filename (SDL_Image.dll) - seems to be valid
+01/09/04 20:34:24 - Inform: SDL_Image.dll -> c:\_Puzzle_demo\SDL_Image.dll
+01/09/04 20:34:24 - Inform: asset (rq_SDL_Mixer) filename (SDL_Mixer.dll) - seems to be valid
+01/09/04 20:34:24 - Inform: SDL_Mixer.dll -> c:\_Puzzle_demo\SDL_Mixer.dll
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\tgl_Options_ScreenMode_Fullscreen.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\tgl_Options_ScreenMode_Windowed.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\chk_DisplayGrid_Checked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_Preview_Checked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_Preview_Unchecked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Checked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_SpinningTiles_Unchecked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_UseHelper_Checked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_UseHelper_Disabled.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\chk_Preview_UseHelper_Unchecked.png
+01/09/04 20:34:24 - Inform: to PakFile: UI\disabled.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_AreYouSure.jpg
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Credits.jpg
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Finally.jpg
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Finished.jpg
+01/09/04 20:34:24 - Inform: to PakFile: UI\scn_Game.jpg
+01/09/04 20:34:24 - Inform: to PakFile: UI\scn_Main.jpg
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_MainMenu.jpg
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_GameScreen_Puzzle.jpg
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_GameScreen_Swapper.jpg
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Preview.jpg
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Rules_Place.jpg
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Rules_Swap.jpg
+01/09/04 20:34:24 - Inform: asset (skn_dlg_Splash) filename (Splash.jpg) - seems to be valid
+01/09/04 20:34:24 - Inform: Splash.jpg -> c:\_Puzzle_demo\Splash.jpg
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\game\YouDidIt.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\hlt_PakList_Highlight.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\dialogs\dlg_Options.jpg
+01/09/04 20:34:24 - Inform: to PakFile: UI\buttons\Radio_checked.png
+01/09/04 20:34:24 - Inform: to PakFile: UI\buttons\Radio_disabled.png
+01/09/04 20:34:24 - Inform: to PakFile: UI\buttons\Radio_unchecked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Easy_Checked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Easy_Disabled.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Easy_Unchecked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Hard_Checked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Hard_Disabled.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Hard_Unchecked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Medium_Checked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Medium_Disabled.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_Medium_Unchecked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Checked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_PlaceTiles_Unchecked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Checked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\rdo_Preview_SwapTiles_Unchecked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\gfx\ui\buttons\sdr_Options.png
+01/09/04 20:34:24 - Inform: to PakFile: UI\buttons\Toggle_checked.png
+01/09/04 20:34:24 - Inform: to PakFile: UI\buttons\Toggle_disabled.png
+01/09/04 20:34:24 - Inform: to PakFile: UI\buttons\Toggle_unchecked.png
+01/09/04 20:34:24 - Inform: to PakFile: assets\audio\fx\Button.wav
+01/09/04 20:34:24 - Inform: to PakFile: assets\audio\fx\NotHere.wav
+01/09/04 20:34:24 - Inform: to PakFile: assets\audio\fx\PieceOnPuzzle.wav
+01/09/04 20:34:24 - Inform: to PakFile: assets\audio\fx\Swap.wav
+01/09/04 20:34:25 - Inform: 83 file(s) successfully processed
+        1 file(s) copied.
+        1 file(s) copied.
+
+
+
+<h3>Results</h3>
+Organizer - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

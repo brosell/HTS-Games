@@ -1,0 +1,158 @@
+<HTML>
+<HEAD>
+<TITLE>
+Thing.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _Thing_h
+<font color="blue">#define</font> _Thing_h
+
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable<font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4503</font> <font color="maroon">4530</font><font color="black">)</font>
+
+<font color="blue">#include</font> <font color="maroon">"Graphics/SharedRotateSkin.h"</font>
+
+<font color="green">/**
+  Things are entities. This class provide many methods to manage
+  Entities.
+  */</font>
+<font color="blue">class</font> Thing
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Thing<font color="black">(</font><font color="blue">int</font> z, <font color="blue">int</font> id, <font color="blue">bool</font> strikable, <font color="blue">bool</font> visible, <font color="blue">int</font> rotations<font color="black">)</font>;
+  Thing<font color="black">(</font><font color="blue">int</font> z<font color="black">)</font>;
+  virtual ~Thing<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">static</font> <font color="blue">void</font> safeDelete<font color="black">(</font>Thing<font color="black">*</font> thing<font color="black">)</font>;
+
+  <font color="green">/**
+    @return the X coord of the center as an int rounded
+    */</font>
+  <font color="blue">int</font> getX<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">(</font>m_position.x <font color="black">+</font> <font color="maroon">0</font>.<font color="maroon">5</font><font color="black">)</font>; <font color="black">}</font>
+  <font color="green">/**
+    @return the Y coord of the center  as an int rounded
+    */</font>
+  <font color="blue">int</font> getY<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">(</font>m_position.y <font color="black">+</font> <font color="maroon">0</font>.<font color="maroon">5</font><font color="black">)</font>; <font color="black">}</font>
+  <font color="green">/**
+    @return the Z order of this Thing
+    */</font>
+  <font color="blue">int</font> getZ<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_z; <font color="black">}</font>
+
+  <font color="green">/**
+    returns the X coord of the topleft hand corner. It takes into account
+    the current rotation of the image
+    */</font>
+  <font color="blue">int</font> getTopLeftX<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> getX<font color="black">(</font><font color="black">)</font> <font color="black">-</font><font color="black">(</font>getWidth<font color="black">(</font><font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font>; <font color="black">}</font>
+  <font color="green">/**
+    returns the Y coord of the topleft hand corner. It takes into account
+    the current rotation of the image
+    */</font>
+  <font color="blue">int</font> getTopLeftY<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> getY<font color="black">(</font><font color="black">)</font> <font color="black">-</font><font color="black">(</font>getHeight<font color="black">(</font><font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font>; <font color="black">}</font>
+
+  <font color="green">/** returns the width of the current rotation of the image */</font>
+  virtual <font color="blue">int</font> getWidth<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_currentSkin<font color="black">-</font><font color="black">&#62;</font>getWidth<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+  <font color="green">/** returns the height of the current rotation of the image */</font>
+  virtual <font color="blue">int</font> getHeight<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_currentSkin<font color="black">-</font><font color="black">&#62;</font>getHeight<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+
+  <font color="blue">int</font> getId<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> m_id; <font color="black">}</font>
+  <font color="blue">void</font> setId<font color="black">(</font><font color="blue">int</font> i<font color="black">)</font> <font color="black">{</font> m_id <font color="black">=</font> i; <font color="black">}</font>
+
+  <font color="blue">bool</font> isStrikable<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> m_strikable; <font color="black">}</font>
+  <font color="blue">void</font> setStrikable<font color="black">(</font><font color="blue">bool</font> s<font color="black">)</font> <font color="black">{</font> m_strikable <font color="black">=</font> s; <font color="black">}</font>
+
+  <font color="blue">bool</font> isVisible<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> m_visible; <font color="black">}</font>
+  <font color="blue">void</font> setVisible<font color="black">(</font><font color="blue">bool</font> v<font color="black">)</font> <font color="black">{</font> m_visible <font color="black">=</font> v; <font color="black">}</font>
+
+  <font color="green">/**
+    empty implementation of the interface to the tick mechanism. 
+    Probably deprecated in lue of coroutines
+    */</font>
+  virtual <font color="blue">void</font> tick<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  
+  <font color="green">/**
+    draws the current image to the display
+    */</font>
+  virtual <font color="blue">void</font> draw<font color="black">(</font>Display<font color="black">*</font> display, <font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font>;
+
+  <font color="blue">void</font> setPosition<font color="black">(</font>FPoint pos<font color="black">)</font> <font color="black">{</font> m_position <font color="black">=</font> pos; <font color="black">}</font>
+  FPoint getPositionf<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> m_position; <font color="black">}</font>
+  Point getPositioni<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> Point<font color="black">(</font>m_position.x<font color="black">+</font><font color="maroon">0</font>.<font color="maroon">5</font>, m_position.y<font color="black">+</font><font color="maroon">0</font>.<font color="maroon">5</font><font color="black">)</font>; <font color="black">}</font>
+
+  <font color="blue">void</font> setDrawAngle<font color="black">(</font><font color="blue">int</font> a<font color="black">)</font> <font color="black">{</font> m_angle <font color="black">=</font> a; <font color="black">}</font>
+  <font color="blue">int</font> getDrawAngle<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_angle; <font color="black">}</font>
+
+  <font color="green">/**
+  Skin management:
+  needs revamping. A script driven solution is to be developed
+  */</font>
+  <font color="blue">void</font> showSkin<font color="black">(</font>string skinName<font color="black">)</font>;
+  <font color="blue">void</font> setSkin<font color="black">(</font>string skinName, SharedRotateSkin<font color="black">*</font> skin<font color="black">)</font> <font color="black">{</font> m_skins<font color="black">[</font>skinName<font color="black">]</font><font color="black">=</font>skin; <font color="black">}</font>
+  SharedRotateSkin<font color="black">*</font> getCurrentSkin<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_currentSkin; <font color="black">}</font>
+
+  <font color="blue">const</font> CollisionBitMask<font color="black">*</font> getCurrentCollisionBitMask<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+  
+  <font color="green">/**
+    called when this thing is hit by another via checkCollisions
+    */</font>
+  virtual <font color="blue">void</font> hit<font color="black">(</font>Thing<font color="black">&</font> other, Point where<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+
+  <font color="green">/**
+    checks for collision between two Things
+    */</font>
+  <font color="blue">static</font>
+  <font color="blue">bool</font> checkCollision<font color="black">(</font>Thing<font color="black">*</font> thing1, Thing<font color="black">*</font> thing2, Point<font color="black">&</font> p1 <font color="black">=</font> Point<font color="black">(</font><font color="black">)</font>, Point<font color="black">&</font> p2 <font color="black">=</font> Point<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+  <font color="green">/**
+    loops through all instanciated Things and calls its tick method
+    */</font>
+  <font color="blue">static</font>
+  <font color="blue">void</font> tickAll<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">/**
+    checks for collisions between all the things
+    */</font>
+  <font color="blue">static</font>
+  <font color="blue">void</font> checkCollisions<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">/**
+    compiles a list of all the Things within distance units of this Thing
+    */</font>
+  <font color="blue">void</font> getByDistance<font color="black">(</font><font color="blue">int</font> distance, list<font color="black">&#60;</font>Thing<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> aList<font color="black">)</font>;
+  <font color="green">/**
+    determins is thing is withing radius units of this Thing
+    */</font>
+  <font color="blue">bool</font> isThingClose<font color="black">(</font>Thing<font color="black">*</font> thing, <font color="blue">int</font> radius<font color="black">)</font>;
+  <font color="green">/**
+    determins whether the World coord p hits this Thing taking into account
+    the Collision mask
+    */</font>
+  <font color="blue">bool</font> doesPointHit<font color="black">(</font>Point p<font color="black">)</font>;
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> init<font color="black">(</font><font color="black">)</font>;
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">int</font> m_z;
+  <font color="blue">int</font> m_id;
+  <font color="blue">bool</font> m_strikable;
+  <font color="blue">bool</font> m_visible;
+
+  map<font color="black">&#60;</font>string, SharedRotateSkin<font color="black">*</font><font color="black">&#62;</font> m_skins;
+  SharedRotateSkin<font color="black">*</font> m_currentSkin;
+  <font color="blue">int</font> m_rotations;
+
+  FPoint m_position;
+  <font color="blue">int</font> m_angle;
+
+
+  <font color="blue">static</font> set<font color="black">&#60;</font>Thing<font color="black">*</font><font color="black">&#62;</font> s_things;
+  <font color="blue">static</font> list<font color="black">&#60;</font>Thing<font color="black">*</font><font color="black">&#62;</font> s_safeDeleteList;
+  <font color="blue">static</font> <font color="blue">void</font> processSafeDeletes<font color="black">(</font><font color="black">)</font>;
+  
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

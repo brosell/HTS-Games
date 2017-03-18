@@ -1,0 +1,109 @@
+<HTML>
+<HEAD>
+<TITLE>
+FilePackageTestRig.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">//#include "FilePackage.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;iostream.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;unistd.h&#62;</font>
+<font color="green">//using namespace std;</font>
+
+<font color="green">//int main(int argc, char** argv)</font>
+<font color="green">//{</font>
+<font color="green">//  FilePackageWriter fp("c:\\daPack.skpck");</font>
+<font color="green">//  fp.addFile("c:\\test1.txt");</font>
+<font color="green">//  fp.addFile("c:\\test2.txt");</font>
+<font color="green">//</font>
+<font color="green">//  if (fp.compile())</font>
+<font color="green">//  {</font>
+<font color="green">//    cout &#60;&#60; "YEAH!" &#60;&#60; endl;</font>
+<font color="green">//  }</font>
+<font color="green">//  else</font>
+<font color="green">//  {</font>
+<font color="green">//    cout &#60;&#60; "BOO" &#60;&#60; endl;</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//  FilePackageReader fr("c:\\daPack.skpck");</font>
+<font color="green">//  fr.listFiles();</font>
+<font color="green">//</font>
+<font color="green">//  return 0;</font>
+<font color="green">//}</font>
+
+<font color="blue">#include</font> <font color="maroon">"PakFile.h"</font>
+
+<font color="blue">int</font> main<font color="black">(</font><font color="blue">int</font> argc, <font color="blue">char</font><font color="black">*</font><font color="black">*</font> argv<font color="black">)</font>
+<font color="black">{</font>
+  NBULong ul1<font color="black">=</font>NBULong<font color="black">:</font><font color="black">:</font>fromHost<font color="black">(</font><font color="maroon">0x1234abcd</font><font color="black">)</font>;
+
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> hex <font color="black">&#60;</font><font color="black">&#60;</font> ul1.getHostVal<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">" = "</font> <font color="black">&#60;</font><font color="black">&#60;</font> ul1.getNetworkVal<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+
+  NBULong ul2<font color="black">=</font>NBULong<font color="black">:</font><font color="black">:</font>fromNetwork<font color="black">(</font>ul1.getNetworkVal<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> hex <font color="black">&#60;</font><font color="black">&#60;</font> ul2.getHostVal<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">" = "</font> <font color="black">&#60;</font><font color="black">&#60;</font> ul2.getNetworkVal<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> hex <font color="black">&#60;</font><font color="black">&#60;</font> ul1 <font color="black">&#60;</font><font color="black">&#60;</font> endl <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+
+
+
+  PakFile pf<font color="black">(</font><font color="maroon">"./testdir/test.pak"</font>, <font color="blue">false</font><font color="black">)</font>;
+  PakFileElement pfe;
+  pfe.setLocation<font color="black">(</font><font color="maroon">"./testdir/test1.txt"</font><font color="black">)</font>;
+  pfe.setName<font color="black">(</font><font color="maroon">"test1.txt"</font><font color="black">)</font>;
+  pf.push_back<font color="black">(</font>pfe<font color="black">)</font>;
+
+  pfe.setLocation<font color="black">(</font><font color="maroon">"./testdir/test2.txt"</font><font color="black">)</font>;
+  pfe.setName<font color="black">(</font><font color="maroon">"test2.txt"</font><font color="black">)</font>;
+  pf.push_back<font color="black">(</font>pfe<font color="black">)</font>;
+
+  pfe.setLocation<font color="black">(</font><font color="maroon">"./testdir/test3.txt"</font><font color="black">)</font>;
+  pfe.setName<font color="black">(</font><font color="maroon">"test3.txt"</font><font color="black">)</font>;
+  pf.push_back<font color="black">(</font>pfe<font color="black">)</font>;
+
+  pfe.setLocation<font color="black">(</font><font color="maroon">"./testdir/Beyond.zip"</font><font color="black">)</font>;
+  pfe.setName<font color="black">(</font><font color="maroon">"beyond.zip"</font><font color="black">)</font>;
+  pf.push_back<font color="black">(</font>pfe<font color="black">)</font>;
+
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Number added: "</font> <font color="black">&#60;</font><font color="black">&#60;</font> pf.size<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+
+  pf.commit<font color="black">(</font><font color="black">)</font>;
+
+  PakFile pfRead<font color="black">(</font><font color="maroon">"./testdir/test.pak"</font>, <font color="blue">true</font><font color="black">)</font>;
+  pfRead.dump<font color="black">(</font><font color="black">)</font>;
+  pfe.setLocation<font color="black">(</font><font color="maroon">"./testdir/test4.txt"</font><font color="black">)</font>;
+  pfe.setName<font color="black">(</font><font color="maroon">"test4.txt"</font><font color="black">)</font>;
+
+  pfRead.push_back<font color="black">(</font>pfe<font color="black">)</font>;
+
+  pfRead.commit<font color="black">(</font><font color="black">)</font>;
+
+  pfRead.dump<font color="black">(</font><font color="black">)</font>;
+  
+  pfRead.extractAll<font color="black">(</font><font color="black">)</font>;
+
+  unlink<font color="black">(</font><font color="maroon">"test1.txt"</font><font color="black">)</font>;
+  unlink<font color="black">(</font><font color="maroon">"test2.txt"</font><font color="black">)</font>;
+  unlink<font color="black">(</font><font color="maroon">"test3.txt"</font><font color="black">)</font>;
+  unlink<font color="black">(</font><font color="maroon">"test4.txt"</font><font color="black">)</font>;
+  unlink<font color="black">(</font><font color="maroon">"Beyond.zip"</font><font color="black">)</font>;
+
+  <font color="blue">for</font> <font color="black">(</font>Element i<font color="black">=</font>pfRead.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>pfRead.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font><font color="black">(</font> strcmp<font color="black">(</font>i<font color="black">-</font><font color="black">&#62;</font>getName<font color="black">(</font><font color="black">)</font>, <font color="maroon">"test3.txt"</font><font color="black">)</font><font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"********\nerasing "</font> <font color="black">&#60;</font><font color="black">&#60;</font> i<font color="black">-</font><font color="black">&#62;</font>getName<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+      pfRead.erase<font color="black">(</font>i<font color="black">)</font>;
+      <font color="blue">break</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  pfRead.dump<font color="black">(</font><font color="black">)</font>;
+  pfRead.extractAll<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

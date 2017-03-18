@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>
+ErrorCode.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// ErrorCodes.h</font>
+<font color="blue">#ifndef</font> _ERRORCODE_H_
+<font color="blue">#define</font> _ERRORCODE_H_
+
+
+
+<font color="blue">#include</font> <font color="maroon">"stdstring.h"</font>
+
+
+<font color="blue">enum</font> ErrorCodeValue
+<font color="black">{</font> SUCCESS, MyError1, MyError2, MyError3 <font color="black">}</font>;
+
+
+<font color="blue">class</font> ErrorCode
+<font color="black">{</font>
+<font color="blue">private</font><font color="black">:</font>
+  ErrorCodeValue enValue_;
+  <font color="blue">bool</font> <font color="black">*</font> PboResp_;
+
+<font color="blue">public</font><font color="black">:</font>
+  ErrorCode<font color="black">(</font><font color="black">)</font>;
+  ErrorCode<font color="black">(</font><font color="blue">const</font> ErrorCode<font color="black">&</font> _ref<font color="black">)</font>;
+  ErrorCode<font color="black">(</font>ErrorCodeValue _val<font color="black">)</font>;
+  virtual ~ErrorCode<font color="black">(</font><font color="black">)</font>;
+
+  ErrorCode<font color="black">&</font> <font color="blue">operator</font> <font color="black">=</font> <font color="black">(</font><font color="blue">const</font> ErrorCode<font color="black">&</font> _ref<font color="black">)</font>;
+
+  <font color="blue">bool</font> <font color="blue">operator</font> <font color="black">!</font><font color="black">=</font> <font color="black">(</font><font color="blue">const</font> ErrorCode<font color="black">&</font> _ref<font color="black">)</font> <font color="blue">const</font>;
+  <font color="blue">bool</font> <font color="blue">operator</font> <font color="black">=</font><font color="black">=</font> <font color="black">(</font><font color="blue">const</font> ErrorCode<font color="black">&</font> _ref<font color="black">)</font> <font color="blue">const</font>
+        <font color="black">{</font> <font color="blue">return</font> <font color="black">!</font><font color="black">(</font><font color="black">*</font><font color="blue">this</font> <font color="black">!</font><font color="black">=</font> _ref<font color="black">)</font>; <font color="black">}</font>;
+<font color="black">}</font>;
+
+
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

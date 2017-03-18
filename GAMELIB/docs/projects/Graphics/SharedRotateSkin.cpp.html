@@ -1,0 +1,216 @@
+<HTML>
+<HEAD>
+<TITLE>
+SharedRotateSkin.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4503</font> <font color="maroon">4530</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"Graphics/SharedRotateSkin.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Utils.h"</font>
+<font color="blue">#include</font> <font color="maroon">"SDL_rotozoom.h"</font>
+
+SharableRotateSkin<font color="black">:</font><font color="black">:</font>SharableRotateSkin<font color="black">(</font><font color="blue">int</font> rotations, <font color="blue">bool</font> generateCollisionMask<font color="black">)</font><font color="black">:</font>
+m_rotations<font color="black">(</font>rotations<font color="black">)</font>,
+m_generateMasks<font color="black">(</font>generateCollisionMask<font color="black">)</font>,
+m_fps<font color="black">(</font><font color="maroon">15</font><font color="black">)</font>,
+m_references<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_loaded<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+m_forcedW<font color="black">(</font><font color="maroon">-1</font><font color="black">)</font>,
+m_forcedH<font color="black">(</font><font color="maroon">-1</font><font color="black">)</font>
+<font color="black">{</font>
+
+<font color="black">}</font>
+
+SharableRotateSkin<font color="black">:</font><font color="black">:</font>~SharableRotateSkin<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+<font color="blue">#ifdef</font> _DEBUG
+  <font color="blue">if</font> <font color="black">(</font>m_acquired.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"SharableRotateSkin deleted with outstanding children (%08x)"</font>, <font color="blue">this</font><font color="black">)</font>;
+    unload<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="blue">#endif</font>
+<font color="black">}</font>
+
+SharedRotateSkin<font color="black">*</font> SharableRotateSkin<font color="black">:</font><font color="black">:</font>acquire<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>m_loaded<font color="black">)</font>
+  <font color="black">{</font>
+    load<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  m_references<font color="black">+</font><font color="black">+</font>;
+  SharedRotateSkin<font color="black">*</font> ret <font color="black">=</font> <font color="blue">new</font> SharedRotateSkin<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+<font color="blue">#ifdef</font> _DEBUG
+  m_acquired.insert<font color="black">(</font>ret<font color="black">)</font>;
+<font color="blue">#endif</font>
+  logError<font color="black">(</font>Debug, <font color="maroon">"Skin %08x acquired."</font>, ret<font color="black">)</font>;
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+<font color="blue">void</font> SharableRotateSkin<font color="black">:</font><font color="black">:</font>release<font color="black">(</font>SharedRotateSkin<font color="black">*</font> skin<font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>Debug, <font color="maroon">"Skin %08x released."</font>, skin<font color="black">)</font>;
+  lassert<font color="black">(</font>m_references <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>;
+<font color="blue">#ifdef</font> _DEBUG
+  lassert<font color="black">(</font>m_acquired.find<font color="black">(</font>skin<font color="black">)</font> <font color="black">!</font><font color="black">=</font> m_acquired.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  m_acquired.erase<font color="black">(</font>skin<font color="black">)</font>;
+<font color="blue">#endif</font>
+  <font color="blue">if</font> <font color="black">(</font>skin<font color="black">)</font><font color="black">{</font>
+    <font color="blue">delete</font> <font color="black">(</font><font color="black">(</font>SharedRotateSkin<font color="black">*</font><font color="black">)</font>skin<font color="black">)</font>;
+    skin <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+  m_references<font color="black">-</font><font color="black">-</font>;
+  <font color="blue">if</font> <font color="black">(</font>m_references <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    unload<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> SharableRotateSkin<font color="black">:</font><font color="black">:</font>load<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  lassert2<font color="black">(</font>getNumFrames<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font>, <font color="maroon">"loading when loaded?"</font><font color="black">)</font>;
+
+  Display<font color="black">*</font> display <font color="black">=</font> Display<font color="black">:</font><font color="black">:</font>getInstance<font color="black">(</font><font color="black">)</font>;
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>m_filenames.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>m_filenames.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    HTexture texture <font color="black">=</font> <font color="maroon">0</font>;
+    SDL_Surface<font color="black">*</font> img <font color="black">=</font> loadSDLSurface<font color="black">(</font><font color="black">(</font><font color="black">*</font>i<font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>img <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      load<font color="black">(</font>img<font color="black">)</font>;
+      SDL_FreeSurface<font color="black">(</font>img<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  m_loaded <font color="black">=</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> SharableRotateSkin<font color="black">:</font><font color="black">:</font>load<font color="black">(</font>SDL_Surface<font color="black">*</font> orig<font color="black">)</font>
+<font color="black">{</font>
+  Display<font color="black">*</font> display <font color="black">=</font> Display<font color="black">:</font><font color="black">:</font>getInstance<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> r<font color="black">=</font><font color="maroon">0</font>; r<font color="black">&#60;</font>m_rotations; r<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">double</font> angle <font color="black">=</font> r <font color="black">*</font> <font color="black">(</font><font color="black">(</font><font color="maroon">360</font><font color="black">/</font>m_rotations<font color="black">)</font><font color="black">)</font>;
+    SDL_Surface<font color="black">*</font> rotated <font color="black">=</font> rotozoomSurface<font color="black">(</font>orig, <font color="black">-</font>angle, <font color="maroon">1</font>, <font color="maroon">0</font><font color="black">)</font>;
+
+    m_images<font color="black">[</font>r<font color="black">]</font>.push_back<font color="black">(</font>display<font color="black">-</font><font color="black">&#62;</font>prepare<font color="black">(</font>rotated<font color="black">)</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>m_generateMasks<font color="black">)</font>
+    <font color="black">{</font>
+      CollisionBitMask<font color="black">*</font> cbm <font color="black">=</font> <font color="blue">new</font> CollisionBitMask<font color="black">(</font>rotated<font color="black">-</font><font color="black">&#62;</font>pixels, rotated<font color="black">-</font><font color="black">&#62;</font>w, rotated<font color="black">-</font><font color="black">&#62;</font>h<font color="black">)</font>;
+      m_collisionMasks<font color="black">[</font>r<font color="black">]</font>.push_back<font color="black">(</font>cbm<font color="black">)</font>;
+    <font color="black">}</font>
+
+    SDL_FreeSurface<font color="black">(</font>rotated<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> SharableRotateSkin<font color="black">:</font><font color="black">:</font>unload<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  lassert2<font color="black">(</font>getNumFrames<font color="black">(</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font>, <font color="maroon">"already unloaded?"</font><font color="black">)</font>;
+  Display<font color="black">*</font> display <font color="black">=</font> Display<font color="black">:</font><font color="black">:</font>getInstance<font color="black">(</font><font color="black">)</font>;
+  vector<font color="black">&#60;</font>HTexture<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>;
+  <font color="blue">for</font> <font color="black">(</font>c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font><font color="maroon">64</font>; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>m_images<font color="black">[</font>c<font color="black">]</font>.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>m_images<font color="black">[</font>c<font color="black">]</font>.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      display<font color="black">-</font><font color="black">&#62;</font>release<font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+    <font color="black">}</font>
+    m_images<font color="black">[</font>c<font color="black">]</font>.clear<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  vector<font color="black">&#60;</font>CollisionBitMask<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator ci;
+  <font color="blue">for</font> <font color="black">(</font>c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font><font color="maroon">64</font>; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">for</font> <font color="black">(</font>ci<font color="black">=</font>m_collisionMasks<font color="black">[</font>c<font color="black">]</font>.begin<font color="black">(</font><font color="black">)</font>; ci<font color="black">!</font><font color="black">=</font>m_collisionMasks<font color="black">[</font>c<font color="black">]</font>.end<font color="black">(</font><font color="black">)</font>; ci<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">delete</font> <font color="black">(</font><font color="black">*</font>ci<font color="black">)</font>;
+    <font color="black">}</font>
+    m_collisionMasks<font color="black">[</font>c<font color="black">]</font>.clear<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  m_loaded <font color="black">=</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+HTexture SharableRotateSkin<font color="black">:</font><font color="black">:</font>getFrame<font color="black">(</font><font color="blue">int</font> r, <font color="blue">int</font> f<font color="black">)</font>
+<font color="black">{</font>
+  lassert<font color="black">(</font>f <font color="black">&#60;</font> getNumFrames<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  lassert<font color="black">(</font>r <font color="black">&#60;</font> m_rotations<font color="black">)</font>;
+  <font color="blue">return</font> m_images<font color="black">[</font>r<font color="black">]</font><font color="black">[</font>f<font color="black">]</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> SharableRotateSkin<font color="black">:</font><font color="black">:</font>addImage<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename, <font color="blue">int</font> count<font color="black">)</font>
+<font color="black">{</font>
+  lassert2<font color="black">(</font>count<font color="black">&#62;</font><font color="maroon">0</font>, <font color="maroon">"adding 0 frames?"</font><font color="black">)</font>;
+  <font color="blue">for</font><font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>count; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_filenames.push_back<font color="black">(</font>filename<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+SharedRotateSkin<font color="black">:</font><font color="black">:</font>SharedRotateSkin<font color="black">(</font>SharableRotateSkin<font color="black">*</font> parent<font color="black">)</font><font color="black">:</font>
+m_parent<font color="black">(</font>parent<font color="black">)</font>,
+m_numFrames<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_currentFrame<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_frameTimer<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_fps<font color="black">(</font><font color="maroon">15</font><font color="black">)</font>,
+m_currentRotation<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>
+<font color="black">{</font>
+  m_fps <font color="black">=</font> parent<font color="black">-</font><font color="black">&#62;</font>getFPS<font color="black">(</font><font color="black">)</font>;
+  m_numFrames <font color="black">=</font> parent<font color="black">-</font><font color="black">&#62;</font>getNumFrames<font color="black">(</font><font color="black">)</font>;
+
+  reset<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+SharedRotateSkin<font color="black">:</font><font color="black">:</font>~SharedRotateSkin<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_frameTimer <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    Timer<font color="black">:</font><font color="black">:</font>destroy<font color="black">(</font>m_frameTimer<font color="black">)</font>;
+    m_frameTimer <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+HTexture SharedRotateSkin<font color="black">:</font><font color="black">:</font>currentFrame<font color="black">(</font><font color="black">)</font> 
+<font color="black">{</font> 
+  <font color="blue">return</font> m_parent<font color="black">-</font><font color="black">&#62;</font>getFrame<font color="black">(</font>m_currentRotation, m_currentFrame<font color="black">)</font>; 
+<font color="black">}</font>
+
+CollisionBitMask<font color="black">*</font> SharedRotateSkin<font color="black">:</font><font color="black">:</font>currentCollisionMask<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> m_parent<font color="black">-</font><font color="black">&#62;</font>getCollisionMask<font color="black">(</font>m_currentRotation, m_currentFrame<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> SharedRotateSkin<font color="black">:</font><font color="black">:</font>reset<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  m_currentFrame <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="blue">if</font> <font color="black">(</font>m_fps <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>m_frameTimer <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      Timer<font color="black">:</font><font color="black">:</font>destroy<font color="black">(</font>m_frameTimer<font color="black">)</font>;
+      m_frameTimer <font color="black">=</font> <font color="maroon">0</font>;
+    <font color="black">}</font>
+    m_frameTimer <font color="black">=</font> Timer<font color="black">:</font><font color="black">:</font>create<font color="black">(</font><font color="maroon">"SharedRotateSkin"</font>, <font color="maroon">-1</font>, <font color="maroon">1000</font><font color="black">/</font>m_fps, <font color="blue">this</font>, <font color="maroon">0</font>, <font color="blue">true</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> SharedRotateSkin<font color="black">:</font><font color="black">:</font>timeout<font color="black">(</font>TimerEvent<font color="black">*</font> ev<font color="black">)</font>
+<font color="black">{</font>
+  m_currentFrame<font color="black">+</font><font color="black">+</font>;
+  <font color="blue">if</font> <font color="black">(</font>m_currentFrame <font color="black">&#62;</font><font color="black">=</font> m_numFrames<font color="black">)</font>
+  <font color="black">{</font>
+    skinLooped<font color="black">(</font><font color="black">)</font>;
+    m_currentFrame <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> SharedRotateSkin<font color="black">:</font><font color="black">:</font>setAngle<font color="black">(</font><font color="blue">int</font> a<font color="black">)</font> 
+<font color="black">{</font> 
+  m_currentRotation <font color="black">=</font> <font color="black">(</font><font color="black">(</font><font color="blue">float</font><font color="black">)</font>a<font color="black">/</font><font color="maroon">360</font>.<font color="maroon">0</font><font color="black">)</font><font color="black">*</font>m_parent<font color="black">-</font><font color="black">&#62;</font>getNumRotations<font color="black">(</font><font color="black">)</font>; 
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,84 @@
+<HTML>
+<HEAD>
+<TITLE>
+StraitLineMotion.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _StraitLineMotion_h
+<font color="blue">#define</font> _StraitLineMotion_h
+
+<font color="blue">#include</font> <font color="maroon">"Motion.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;math.h&#62;</font>
+
+<font color="blue">#include</font> <font color="maroon">"Misc/2dVector.h"</font>
+
+<font color="blue">class</font> StraitLineMotion<font color="black">:</font> <font color="blue">public</font> Motion
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  StraitLineMotion<font color="black">(</font><font color="blue">float</font> x, <font color="blue">float</font> y, <font color="blue">int</font> w, <font color="blue">int</font> h, <font color="blue">float</font> vx, <font color="blue">float</font> vy, <font color="blue">float</font> vel<font color="black">)</font> <font color="green">// goemetric vector and velocity</font>
+    <font color="black">:</font>Motion<font color="black">(</font>x, y, w, h<font color="black">)</font>
+  <font color="black">{</font>
+    setVector<font color="black">(</font>vx, vy, vel<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> setVector<font color="black">(</font><font color="blue">float</font> vx, <font color="blue">float</font> vy, <font color="blue">float</font> vel<font color="black">)</font>
+  <font color="black">{</font>
+    m_vx<font color="black">=</font>vx;
+    m_vy<font color="black">=</font>vy;
+    m_vel<font color="black">=</font>vel;
+    makeUnitVector<font color="black">(</font>vx, vy, m_uvx, m_uvy<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> setVector<font color="black">(</font><font color="blue">float</font> vx, <font color="blue">float</font> vy<font color="black">)</font>
+  <font color="black">{</font>
+    setVector<font color="black">(</font>vx, vy, m_vel<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> setXVector<font color="black">(</font><font color="blue">float</font> vx<font color="black">)</font>
+  <font color="black">{</font>
+    m_vx<font color="black">=</font>vx;
+    makeUnitVector<font color="black">(</font>vx, m_vy, m_uvx, m_uvy<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> incVelocity<font color="black">(</font><font color="blue">int</font> v<font color="black">)</font>
+  <font color="black">{</font>
+    m_vel<font color="black">+</font><font color="black">=</font>v;
+    setVector<font color="black">(</font>m_vx, m_vy, m_vel<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> tickAndMove<font color="black">(</font><font color="blue">int</font><font color="black">&</font> retX, <font color="blue">int</font><font color="black">&</font> retY<font color="black">)</font>;
+
+
+  <font color="blue">void</font> bounceVirtSurface<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    setVector<font color="black">(</font><font color="black">-</font>m_vx, m_vy, m_vel<font color="black">)</font>;
+  <font color="black">}</font>
+  
+  <font color="blue">void</font> bounceHorizSurface<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    setVector<font color="black">(</font>m_vx, <font color="black">-</font>m_vy, m_vel<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> makeUnitVector<font color="black">(</font><font color="blue">float</font> vx, <font color="blue">float</font> vy, <font color="blue">float</font><font color="black">&</font> uvx, <font color="blue">float</font><font color="black">&</font> uvy<font color="black">)</font>;
+
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">float</font> m_vx;
+  <font color="blue">float</font> m_vy;
+  <font color="blue">float</font> m_vel;
+
+  <font color="blue">float</font> m_length;
+
+  <font color="blue">float</font> m_uvx;
+  <font color="blue">float</font> m_uvy;
+
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

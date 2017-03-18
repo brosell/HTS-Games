@@ -1,0 +1,32 @@
+<HTML>
+<HEAD>
+<TITLE>
+2dVector.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+
+<font color="green">/* google for Bouncing on Angles in groups*/</font>
+
+<font color="blue">#include</font> <font color="maroon">"2dVector.h"</font>
+
+Vector reflection<font color="black">(</font>Vector A, Line l<font color="black">)</font>
+<font color="black">{</font>
+  Vector P<font color="black">(</font>l.p2.x <font color="black">-</font>l.p1.x, l.p2.y <font color="black">-</font>l.p1.y<font color="black">)</font>;
+  <font color="blue">return</font> reflection<font color="black">(</font>A, P<font color="black">)</font>;
+<font color="black">}</font>
+
+Vector reflection<font color="black">(</font>Vector A, Vector P<font color="black">)</font>
+<font color="black">{</font>
+  Vector N <font color="black">=</font> P.normal<font color="black">(</font><font color="black">)</font>;
+
+  Vector B <font color="black">=</font> N.multiply<font color="black">(</font><font color="maroon">2</font><font color="black">*</font><font color="black">(</font>A.negate<font color="black">(</font><font color="black">)</font>.dotProduct<font color="black">(</font>N<font color="black">)</font><font color="black">)</font><font color="black">)</font>.add<font color="black">(</font>A<font color="black">)</font>;
+  
+  <font color="blue">return</font> B;
+<font color="black">}</font>
+
+
+</PRE>
+</BODY>
+</HTML>

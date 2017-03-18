@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<TITLE>
+ThingCollection.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _ThingCollection_h
+<font color="blue">#define</font> _ThingCollection_h
+
+<font color="blue">class</font> Thing;
+<font color="blue">struct</font> Rect;
+
+<font color="blue">const</font> <font color="blue">int</font> MAX_ELEMS <font color="black">=</font> <font color="maroon">4096</font>;
+<font color="blue">const</font> <font color="blue">int</font> A_SIZE <font color="black">=</font> MAX_ELEMS <font color="black">*</font> <font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font>;
+
+<font color="blue">class</font> ThingCollection
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  ThingCollection<font color="black">(</font><font color="black">)</font>;
+  ~ThingCollection<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">bool</font> add<font color="black">(</font>Thing<font color="black">*</font> thing<font color="black">)</font>;
+  <font color="blue">void</font> remove<font color="black">(</font>Thing<font color="black">*</font> thing<font color="black">)</font>;
+  <font color="blue">void</font> clear<font color="black">(</font><font color="black">)</font>;
+  
+  
+  <font color="blue">int</font> getByRect<font color="black">(</font>Rect<font color="black">*</font> r, Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> max, <font color="blue">int</font> minZ <font color="black">=</font> <font color="maroon">0</font>, <font color="blue">int</font> maxZ <font color="black">=</font> <font color="maroon">15</font><font color="black">)</font>;
+  <font color="blue">int</font> getByRectSortX<font color="black">(</font>Rect<font color="black">*</font> r, Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> max, <font color="blue">int</font> minZ <font color="black">=</font> <font color="maroon">0</font>, <font color="blue">int</font> maxZ <font color="black">=</font> <font color="maroon">15</font><font color="black">)</font>;
+  <font color="blue">int</font> getByX<font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> max<font color="black">)</font>;
+  <font color="blue">int</font> getByY<font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> max<font color="black">)</font>;
+  <font color="blue">int</font> getByZ<font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> max<font color="black">)</font>;
+
+  <font color="blue">void</font> sort<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">int</font> count<font color="black">(</font><font color="black">)</font>;
+
+  
+  <font color="blue">static</font> <font color="blue">void</font> sortByX<font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> num<font color="black">)</font>;
+  <font color="blue">static</font> <font color="blue">void</font> sortByY<font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> num<font color="black">)</font>;
+  <font color="blue">static</font> <font color="blue">void</font> sortByZ<font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> num<font color="black">)</font>;
+
+  <font color="blue">static</font> <font color="blue">const</font> <font color="blue">int</font> getMaxElems<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> MAX_ELEMS; <font color="black">}</font>
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> compress<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> sortX<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">int</font> get<font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font> dest, <font color="blue">const</font> Thing<font color="black">*</font><font color="black">*</font> src, <font color="blue">int</font> max<font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  Thing<font color="black">*</font> things<font color="black">[</font>MAX_ELEMS<font color="black">]</font>;
+  Thing<font color="black">*</font> thingsByZ<font color="black">[</font>MAX_ELEMS<font color="black">]</font>;
+  Thing<font color="black">*</font> thingsByX<font color="black">[</font>MAX_ELEMS<font color="black">]</font>;
+  Thing<font color="black">*</font> thingsByY<font color="black">[</font>MAX_ELEMS<font color="black">]</font>;
+
+  Thing<font color="black">*</font> workArray<font color="black">[</font>MAX_ELEMS<font color="black">]</font>;
+  
+  <font color="blue">static</font> <font color="blue">int</font> sortZ<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> one, <font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> two<font color="black">)</font>;
+  <font color="blue">static</font> <font color="blue">int</font> sortX<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> one, <font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> two<font color="black">)</font>;
+  <font color="blue">static</font> <font color="blue">int</font> sortY<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> one, <font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> two<font color="black">)</font>;
+
+  <font color="blue">int</font> m_count;
+<font color="black">}</font>;
+
+<font color="blue">#ifndef</font> min
+<font color="blue">#define</font> min<font color="black">(</font>x,y<font color="black">)</font> <font color="black">(</font>x<font color="black">&#60;</font>y?x<font color="black">:</font>y<font color="black">)</font>
+<font color="blue">#endif</font>
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,64 @@
+<HTML>
+<HEAD>
+<TITLE>
+SDLDisplay.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> SDLDisplay_h
+<font color="blue">#define</font> SDLDisplay_h
+
+<font color="blue">#include</font> <font color="maroon">"Display.h"</font>
+
+<font color="blue">class</font> SDLDisplay<font color="black">:</font> <font color="blue">public</font> Display
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  SDLDisplay<font color="black">(</font><font color="blue">int</font> width, <font color="blue">int</font> height, <font color="blue">int</font> bpp, Uint32 flags<font color="black">)</font>;
+  ~SDLDisplay<font color="black">(</font><font color="black">)</font>;
+  virtual <font color="blue">void</font> clear<font color="black">(</font><font color="black">)</font>;
+  virtual <font color="blue">void</font> flip<font color="black">(</font><font color="black">)</font>;
+
+  virtual SDL_Surface<font color="black">*</font> getSDLSurface<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_dblBuf; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> blit<font color="black">(</font>HTexture textureId, <font color="blue">int</font> destX, <font color="blue">int</font> destY<font color="black">)</font>;
+  virtual <font color="blue">void</font> setClipRectPeer<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font>
+  <font color="black">{</font>
+    SDL_Rect r;
+    r.x <font color="black">=</font> x;
+    r.y <font color="black">=</font> y;
+    r.w <font color="black">=</font> w;
+    r.h <font color="black">=</font> h;
+
+    SDL_SetClipRect<font color="black">(</font>m_surface, <font color="black">&</font>r<font color="black">)</font>;
+  <font color="black">}</font>
+
+  virtual <font color="blue">bool</font> setWindowed<font color="black">(</font><font color="blue">bool</font> w<font color="black">)</font>;
+  virtual <font color="blue">bool</font> isWindowed<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">(</font>m_surface<font color="black">-</font><font color="black">&#62;</font>flags <font color="black">&</font> SDL_FULLSCREEN<font color="black">)</font> <font color="black">!</font><font color="black">=</font> SDL_FULLSCREEN; <font color="black">}</font>
+  <font color="green">// drawing primitives //////</font>
+  virtual <font color="blue">void</font> drawVLine<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> h, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font>;
+  virtual <font color="blue">void</font> drawHLine<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> w, <font color="blue">int</font> y, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font>;
+  virtual <font color="blue">void</font> fillRect<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> w, <font color="blue">int</font> h, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font>;
+  <font color="green">////////////////////////////</font>
+
+  virtual <font color="blue">void</font> drawLine<font color="black">(</font><font color="blue">int</font> x1, <font color="blue">int</font> y1, <font color="blue">int</font> x2, <font color="blue">int</font> y2, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font>;
+
+  virtual <font color="blue">void</font> reportTextureInfo<font color="black">(</font><font color="black">)</font>;
+
+<font color="blue">protected</font><font color="black">:</font>
+  virtual HTexture loadTexture<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename<font color="black">)</font>;
+  virtual HTexture loadTexture<font color="black">(</font>SDL_Surface<font color="black">*</font> surface<font color="black">)</font>;
+  virtual <font color="blue">void</font> freeTexture<font color="black">(</font>HTexture textureId<font color="black">)</font>;
+
+  <font color="blue">bool</font> isDoubleBuffered<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_dblBuf <font color="black">!</font><font color="black">=</font> m_surface; <font color="black">}</font>
+<font color="blue">private</font><font color="black">:</font>
+  SDL_Surface<font color="black">*</font> m_dblBuf;
+  Uint32 m_colorKey;
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

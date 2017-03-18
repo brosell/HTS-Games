@@ -1,0 +1,15 @@
+<standard header>
+
+<GameLibGUI>
+	<DialogBox name = "name">
+		<Position x="x" y="y" w="w" h="h" />
+
+		<Button type="Highlight" name = "name">
+			<Position x="x" y="y" w="w" h="h" />
+			<HighlightGraphic filename="filename.bmp" />
+			<MouseOverSound filename="filename.wav" />
+			<MouseClickSound filename="filename.wav" />
+			<!-- Action scriptObject="nameOfInstance" / -->
+		</Button>
+	</DialogBox>
+</GameLibGUI>

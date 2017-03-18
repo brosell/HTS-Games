@@ -1,0 +1,67 @@
+<HTML>
+<HEAD>
+<TITLE>
+UISystem.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _UISystem_h
+<font color="blue">#define</font> _UISystem_h
+
+<font color="blue">#include</font> <font color="maroon">"UI/NewEventModel.h"</font>
+<font color="blue">#include</font> <font color="maroon">"UI/Container.h"</font>
+<font color="blue">#include</font> <font color="maroon">"UI/DialogBox.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;deque&#62;</font>
+<font color="blue">using</font> std<font color="black">:</font><font color="black">:</font>deque;
+
+<font color="blue">class</font> UISystem<font color="black">:</font> <font color="blue">public</font> Container
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  UISystem<font color="black">(</font><font color="black">)</font>;
+  initialize<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> draw<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>;
+
+  <font color="green">/** 
+    * Many event handlers to be overridden.
+    */</font>
+  virtual <font color="blue">void</font> onMousePress<font color="black">(</font>MousePressEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onMouseRelease<font color="black">(</font>MouseReleaseEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onMouseClick<font color="black">(</font>MouseClickEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onMouseDblClick<font color="black">(</font>MouseDblClickEvent<font color="black">*</font> event<font color="black">)</font>;
+  
+  virtual <font color="blue">void</font> onMouseMove<font color="black">(</font>MouseMoveEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onMouseEnter<font color="black">(</font>MouseEnterEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onMouseExit<font color="black">(</font>MouseExitEvent<font color="black">*</font> event<font color="black">)</font>;
+
+  virtual <font color="blue">void</font> onKeyPress<font color="black">(</font>KeyPressEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onKeyRelease<font color="black">(</font>KeyReleaseEvent<font color="black">*</font> event<font color="black">)</font>;
+
+  <font color="green">/**
+    * set the First Chance delegate if you want to see events before
+    * anything else.
+    */</font>
+  <font color="blue">void</font> setFirstChanceDelegate<font color="black">(</font>Delegate<font color="black">*</font> d<font color="black">)</font> <font color="black">{</font> m_firstChanceDelegate <font color="black">=</font> d; <font color="black">}</font>
+
+  <font color="blue">void</font> pushModal<font color="black">(</font>DialogBox<font color="black">*</font> cont<font color="black">)</font>;
+  <font color="blue">void</font> popModal<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">bool</font> doModalEvent<font color="black">(</font>Message<font color="black">*</font> event<font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> m_showing;
+
+  Delegate<font color="black">*</font> m_firstChanceDelegate;
+
+  UIThing<font color="black">*</font> m_lastFocus;
+
+  deque<font color="black">&#60;</font>DialogBox<font color="black">*</font><font color="black">&#62;</font> m_modalStack;
+
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<TITLE>
+FileUtils.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/*
+
+$Log: FileUtils.h,v $
+Revision 1.1  2003-09-08 11:26:43-04  hey_now
+&#60;&#62;
+
+Revision 1.0  2003-01-23 21:22:59-05  hey_now
+Initial revision
+
+ * 
+ *    Rev 1.4   31 May 2000 14:08:14   BRosell
+ * added createTextFile()
+ * 
+ *    Rev 1.3   10 Apr 2000 09:49:34   BRosell
+ * fixes
+ * 
+ *    Rev 1.2   27 Mar 2000 08:44:40   BRosell
+ * Added dirExists() and makeDir()
+ * 
+ *    Rev 1.1   Nov 17 1999 14:41:56   BRosell
+ * code cleanup
+
+*/</font>
+
+<font color="blue">#ifndef</font> _FILEUTILS_H_
+<font color="blue">#define</font> _FILEUTILS_H_
+
+<font color="blue">#include</font> <font color="maroon">&#60;stdio.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;windows.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">"StdString.h"</font>
+
+FILE<font color="black">*</font> fileExclusiveOpen<font color="black">(</font><font color="blue">char</font><font color="black">*</font> filename, <font color="blue">char</font><font color="black">*</font> mode<font color="black">=</font><font color="maroon">"a+"</font>, BOOL report<font color="black">=</font>TRUE<font color="black">)</font>;
+<font color="blue">void</font> fileExclusiveClose<font color="black">(</font>FILE<font color="black">*</font> file<font color="black">)</font>;
+<font color="blue">void</font> fileExclusiveUnlock<font color="black">(</font><font color="blue">int</font> handle<font color="black">)</font>;
+<font color="blue">int</font> fileExclusiveLock<font color="black">(</font><font color="blue">char</font><font color="black">*</font> filename, BOOL report<font color="black">=</font>TRUE<font color="black">)</font>;
+
+<font color="blue">void</font> makeTextFile<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename, <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> contents, <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> delims<font color="black">=</font><font color="maroon">"\r\n \t\v"</font><font color="black">)</font>;
+
+
+<font color="blue">bool</font> makeDir<font color="black">(</font>CStdString dir<font color="black">)</font>;
+<font color="blue">bool</font> dirExists<font color="black">(</font>CStdString d<font color="black">)</font>;
+<font color="blue">bool</font> fileExists<font color="black">(</font>CStdString d<font color="black">)</font>;
+
+<font color="blue">int</font> fileSize<font color="black">(</font>CStdString file<font color="black">)</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

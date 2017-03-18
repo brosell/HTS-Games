@@ -1,0 +1,90 @@
+<HTML>
+<HEAD>
+<TITLE>
+ObjectCache.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> ObjectCache_h
+<font color="blue">#define</font> ObjectCache_h
+
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;list&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;set&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">class</font> HasReclaim
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">template</font> <font color="black">&#60;</font>typename Kind<font color="black">&#62;</font>
+  <font color="blue">static</font> <font color="blue">void</font> reclaim<font color="black">(</font>Kind<font color="black">*</font> k<font color="black">)</font> <font color="black">{</font> k<font color="black">-</font><font color="black">&#62;</font>reclaim<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">class</font> NoReclaim
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">static</font> <font color="blue">void</font> reclaim<font color="black">(</font><font color="blue">void</font><font color="black">*</font> k<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font>; <font color="black">}</font>
+<font color="black">}</font>;
+
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename Kind, typename Reclaim <font color="black">=</font> NoReclaim<font color="black">&#62;</font>
+<font color="blue">class</font> ObjectCache
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  ObjectCache<font color="black">(</font>size_t initialSize <font color="black">=</font> <font color="maroon">32</font>, size_t hardLimit <font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font><font color="black">:</font> m_size<font color="black">(</font>initialSize<font color="black">)</font>, m_hardLimit<font color="black">(</font>hardLimit<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>m_size; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      Kind<font color="black">*</font> k <font color="black">=</font> <font color="blue">new</font> Kind;
+      Reclaim<font color="black">:</font><font color="black">:</font>reclaim<font color="black">(</font>k<font color="black">)</font>;
+      m_available.push_back<font color="black">(</font>k<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  Kind<font color="black">*</font> acquire<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>m_hardLimit <font color="black">!</font><font color="black">=</font> <font color="maroon">-1</font> <font color="black">&</font><font color="black">&</font> m_size <font color="black">&#62;</font><font color="black">=</font> m_hardLimit<font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="maroon">0</font>;
+    <font color="black">}</font>
+
+    Kind<font color="black">*</font> k <font color="black">=</font> <font color="maroon">0</font>;
+
+    <font color="blue">if</font> <font color="black">(</font>m_available.size<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      m_size<font color="black">+</font><font color="black">+</font>;
+      k <font color="black">=</font> <font color="blue">new</font> Kind;
+      Reclaim<font color="black">:</font><font color="black">:</font>reclaim<font color="black">(</font>k<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+      k <font color="black">=</font> m_available.front<font color="black">(</font><font color="black">)</font>;
+      lassert<font color="black">(</font>m_inUse.find<font color="black">(</font>k<font color="black">)</font> <font color="black">=</font><font color="black">=</font> m_inUse.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      m_available.pop_front<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    m_inUse.insert<font color="black">(</font>k<font color="black">)</font>;
+    <font color="blue">return</font> k;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> release<font color="black">(</font>Kind<font color="black">*</font> k<font color="black">)</font>
+  <font color="black">{</font>
+    lassert<font color="black">(</font>m_inUse.find<font color="black">(</font>k<font color="black">)</font> <font color="black">!</font><font color="black">=</font> m_inUse.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    m_inUse.erase<font color="black">(</font>k<font color="black">)</font>;
+    Reclaim<font color="black">:</font><font color="black">:</font>reclaim<font color="black">(</font>k<font color="black">)</font>;
+    m_available.push_back<font color="black">(</font>k<font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="blue">private</font><font color="black">:</font>
+  size_t m_hardLimit;
+  size_t m_size;
+  list<font color="black">&#60;</font>Kind<font color="black">*</font><font color="black">&#62;</font> m_available;
+  set<font color="black">&#60;</font>Kind<font color="black">*</font><font color="black">&#62;</font> m_inUse;
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

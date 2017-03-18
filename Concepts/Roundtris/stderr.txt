@@ -1,0 +1,4 @@
+09/10/03 19:19:33 - Inform: SDLDisplay created.
+09/10/03 19:19:34 - Inform: loading Assets.ini from disk
+09/10/03 19:19:34 - Inform: AssetManager::loadSkin(skn_ConsoleBackground)
+09/10/03 19:19:34 - Inform: loading images\Console.jpg from disk

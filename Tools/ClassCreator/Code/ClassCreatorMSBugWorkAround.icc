@@ -1,0 +1,79 @@
+/* ****************************************************************************
+ *
+ *  ClassCreatorMSBugWorkAround.icc
+ *  Created by John F. Hubbard, on Sun Aug 27 2000, 19:30:28 PST
+ *
+ *  Copyright (c) 2000, ATD Azad Technology Development Corporation
+ *
+ *            The Reliable Software Outsource Resource
+ *        You hire us, we do it for you, and we do it right.
+ *
+ *                       www.azadtech.com
+ *
+ *  Permission is granted to use this code without restriction,
+ *  as long as this copyright notice appears in all source files.
+ *
+ *  File Contents: Alternate implementation of part of the ClassCreator class.
+ *  This is an inferior method of coding, but is the only way to work around
+ *  yet another Microsoft compiler bug.  In this case, the Microsoft bug report
+ *  is: Q240871: "Explicitly Specified Template Functions Not Overloaded
+ *  Correctly"
+ *
+ *  Reference: http://support.microsoft.com/support/kb/articles/Q240/8/71.ASP
+ *
+ *  Please see ClassCreator.h for full documentation of this class.
+ *
+ * %version: 2.28 %
+ * %date_modified: Wed Nov 15 19:32:30 2000 %
+ * %created_by: jhubbard %
+ *
+ *************************************************************************** */
+
+#ifdef WIN32
+// Work around for yet another Microsoft compiler bug: MSDN Article Q240871.
+void
+ClassCreator::GenerateCode() const throw (std::string)
+{
+	{
+		HeaderFileGen gen(mCommands);
+		GenerateFile(gen);
+	}
+	{
+		ImplFileGen gen(mCommands);
+		GenerateFile(gen);
+	}
+	if (mCommands.IccFile())
+	{
+		InlineFileGen gen(mCommands);
+		GenerateFile(gen);
+	}
+	{
+		MakefileGen gen(mCommands);
+		GenerateFile(gen);
+	}
+	{
+		UnitTestFileGen gen(mCommands);
+		GenerateFile(gen);
+	}
+}
+
+// Work around for yet another Microsoft compiler bug: MSDN Article Q240871.
+template<typename T>
+void ClassCreator::GenerateFile(T& generator) const
+{
+	using namespace std;
+
+	generator.GenCommentHeader();
+	generator.GenPreface();
+
+	tools::PackedString objClassList (mCommands.GetClassList());
+	for (list<string>::const_iterator it = objClassList.GetList().begin();
+		 it != objClassList.GetList().end();
+		 ++it)
+	{
+		generator.GenCodeBody(*it);	 // generate each class.
+	}
+	generator.GenEpilog();
+}
+
+#endif // #ifdef WIN32

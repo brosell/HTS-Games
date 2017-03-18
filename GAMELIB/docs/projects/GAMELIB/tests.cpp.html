@@ -1,0 +1,192 @@
+<HTML>
+<HEAD>
+<TITLE>
+tests.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"Misc/GameMath.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+
+<font color="blue">void</font> testOverlapping<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="black">{</font> <font color="green">// 1</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">2</font>, <font color="maroon">2</font>, <font color="maroon">4</font>, <font color="maroon">3</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">1</font>, <font color="maroon">1</font>, <font color="maroon">6</font>, <font color="maroon">6</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>t<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">4</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">3</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="black">{</font> <font color="green">// 2</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">1</font>, <font color="maroon">1</font>, <font color="maroon">6</font>, <font color="maroon">6</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">2</font>, <font color="maroon">2</font>, <font color="maroon">4</font>, <font color="maroon">3</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>t<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">4</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">3</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="black">{</font> <font color="green">//3</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">2</font>, <font color="maroon">3</font>, <font color="maroon">7</font>, <font color="maroon">7</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">4</font>, <font color="maroon">1</font>, <font color="maroon">2</font>, <font color="maroon">4</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>t<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="black">{</font> <font color="green">//4</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">2</font>, <font color="maroon">3</font>, <font color="maroon">6</font>, <font color="maroon">6</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">6</font>, <font color="maroon">5</font>, <font color="maroon">4</font>, <font color="maroon">2</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+
+  <font color="black">{</font> <font color="green">//5</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">2</font>, <font color="maroon">3</font>, <font color="maroon">8</font>, <font color="maroon">6</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">5</font>, <font color="maroon">7</font>, <font color="maroon">2</font>, <font color="maroon">4</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="black">{</font> <font color="green">//6</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">3</font>, <font color="maroon">3</font>, <font color="maroon">6</font>, <font color="maroon">5</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">2</font>, <font color="maroon">4</font>, <font color="maroon">3</font>, <font color="maroon">2</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="black">{</font> <font color="green">//7</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">3</font>, <font color="maroon">2</font>, <font color="maroon">5</font>, <font color="maroon">5</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">2</font>, <font color="maroon">1</font>, <font color="maroon">3</font>, <font color="maroon">3</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="black">{</font> <font color="green">//8</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">3</font>, <font color="maroon">2</font>, <font color="maroon">5</font>, <font color="maroon">5</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">7</font>, <font color="maroon">1</font>, <font color="maroon">3</font>, <font color="maroon">3</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="black">{</font> <font color="green">//9</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">2</font>, <font color="maroon">1</font>, <font color="maroon">4</font>, <font color="maroon">5</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">4</font>, <font color="maroon">4</font>, <font color="maroon">4</font>, <font color="maroon">4</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="black">{</font> <font color="green">//10</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">4</font>, <font color="maroon">1</font>, <font color="maroon">4</font>, <font color="maroon">4</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">3</font>, <font color="maroon">4</font>, <font color="maroon">4</font>, <font color="maroon">3</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">3</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="black">{</font> <font color="green">//11</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">3</font>, <font color="maroon">3</font>, <font color="maroon">6</font>, <font color="maroon">4</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">5</font>, <font color="maroon">2</font>, <font color="maroon">2</font>, <font color="maroon">8</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">4</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="black">{</font> <font color="green">//12</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">3</font>, <font color="maroon">1</font>, <font color="maroon">4</font>, <font color="maroon">6</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">1</font>, <font color="maroon">3</font>, <font color="maroon">9</font>, <font color="maroon">2</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">4</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="black">{</font> <font color="green">// 13</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">3</font>, <font color="maroon">2</font>, <font color="maroon">4</font>, <font color="maroon">4</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">1</font>, <font color="maroon">1</font>, <font color="maroon">9</font>, <font color="maroon">2</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">4</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="black">{</font> <font color="green">// 14</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">3</font>, <font color="maroon">2</font>, <font color="maroon">4</font>, <font color="maroon">4</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">2</font>, <font color="maroon">5</font>, <font color="maroon">7</font>, <font color="maroon">2</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">4</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="black">{</font> <font color="green">//15</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">3</font>, <font color="maroon">2</font>, <font color="maroon">3</font>, <font color="maroon">3</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">2</font>, <font color="maroon">1</font>, <font color="maroon">2</font>, <font color="maroon">5</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">3</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="black">{</font> <font color="green">//16</font>
+    Rect overlappee<font color="black">(</font><font color="maroon">2</font>, <font color="maroon">2</font>, <font color="maroon">3</font>, <font color="maroon">4</font><font color="black">)</font>;
+    Rect overlapper<font color="black">(</font><font color="maroon">3</font>, <font color="maroon">1</font>, <font color="maroon">3</font>, <font color="maroon">8</font><font color="black">)</font>;
+    <font color="blue">bool</font> t<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    Rect overlap <font color="black">=</font> Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>overlapper, <font color="black">&</font>overlappee<font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.x<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.y<font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.w<font color="black">=</font><font color="black">=</font><font color="maroon">2</font><font color="black">)</font>;
+    lassert<font color="black">(</font>overlap.h<font color="black">=</font><font color="black">=</font><font color="maroon">4</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

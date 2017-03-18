@@ -1,0 +1,62 @@
+<HTML>
+<HEAD>
+<TITLE>
+Token.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Token.h: interface for the CToken class.</font>
+<font color="green">//</font>
+<font color="green">//</font>
+<font color="green">//  MFC Simple CString Tokenizer (Version 1)</font>
+<font color="green">//  </font>
+<font color="green">//  Written by Richard Case (case@dcs.kcl.ac.uk)</font>
+<font color="green">//  Copyright (c) 1999</font>
+<font color="green">//</font>
+<font color="green">// This code may be used in compiled form in any way you desire. This</font>
+<font color="green">// file may be redistributed unmodified by any means PROVIDING it is </font>
+<font color="green">// not sold for profit without the authors written consent, and </font>
+<font color="green">// providing that this notice and the authors name and all copyright </font>
+<font color="green">// notices remains intact. </font>
+<font color="green">//</font>
+<font color="green">// This file is provided "as is" with no expressed or implied warranty.</font>
+<font color="green">// The author accepts no liability for any damage/loss of business that</font>
+<font color="green">// this product may cause.</font>
+<font color="green">//</font>
+<font color="green">// Expect bugs!</font>
+<font color="green">// </font>
+<font color="green">// Please use and enjoy. Please let me know of any bugs/mods/improvements </font>
+<font color="green">// that you have found/implemented and I will fix/incorporate them into this</font>
+<font color="green">// file. </font>
+<font color="green">//</font>
+<font color="green">//</font>
+<font color="green">//////////////////////////////////////////////////////////////////////</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_TOKEN_H__7CEAEBEE_D15D_11D2_9CA9_444553540000__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_TOKEN_H__7CEAEBEE_D15D_11D2_9CA9_444553540000__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">"StdString.h"</font>
+
+<font color="blue">class</font> CToken
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+    virtual CStdString nextToken<font color="black">(</font><font color="black">)</font>; <font color="green">// Returns the next token</font>
+    virtual <font color="blue">bool</font> hasMoreTokens<font color="black">(</font><font color="black">)</font>;               <font color="green">// Do we have any more tokens to retrieve</font>
+    <font color="blue">void</font> SetToken<font color="black">(</font>CStdString tok<font color="black">)</font> <font color="black">{</font> m_strToken <font color="black">=</font> tok; <font color="black">}</font>;
+    CToken<font color="black">(</font>CStdString str, CStdString delims<font color="black">)</font>;
+    virtual ~CToken<font color="black">(</font><font color="black">)</font>;
+
+<font color="blue">protected</font><font color="black">:</font>
+    CStdString m_strToToken;    <font color="green">// The  original string to tokenize</font>
+    CStdString m_strLeft;       <font color="green">// The string we have left after taking tokens out</font>
+    CStdString m_strToken;      <font color="green">// What is the value to tokenize on?</font>
+    <font color="blue">bool</font>    m_bFoundAny;    <font color="green">// Have we found any tokens</font>
+    <font color="blue">bool</font>    m_bFinalToken;  <font color="green">// There might be one last token?</font>
+<font color="black">}</font>;
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_TOKEN_H__7CEAEBEE_D15D_11D2_9CA9_444553540000__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

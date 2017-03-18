@@ -1,0 +1,125 @@
+<HTML>
+<HEAD>
+<TITLE>
+StringTokenizer.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/*
+  StringTokenizer.cpp - class that implements a String Tokenizer
+
+---------------------------------------------------
+        Revision History
+---------------------------------------------------
+
+$Log: StringTokenizer.cpp,v $
+Revision 1.1  2003-09-09 23:11:25-04  hey_now
+&#60;&#62;
+
+Revision 1.0  2003-01-23 21:23:01-05  hey_now
+Initial revision
+
+   
+      Rev 1.6   25 Jun 2001 10:07:08   BRosell
+   Smarter
+   
+      Rev 1.5   05 May 2000 14:49:54   BRosell
+   continued development
+   
+      Rev 1.4   21 Mar 2000 15:41:22   BRosell
+   The great const
+   
+      Rev 1.3   04 Feb 2000 14:28:22   BRosell
+   Changed malloc to new and free to delete
+   
+      Rev 1.2   Sep 13 1999 17:06:08   BRosell
+   made some fixes to trim()
+   
+      Rev 1.1   30 Jun 1999 11:32:38   BRosell
+   added Logging
+
+*/</font>
+
+<font color="blue">#include</font> <font color="maroon">"StringTokenizer.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;string.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+
+StringTokenizer<font color="black">:</font><font color="black">:</font>StringTokenizer<font color="black">(</font>CStdString str, CStdString delims<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">char</font><font color="black">*</font> tok <font color="black">=</font> strtok<font color="black">(</font>str.Buffer<font color="black">(</font><font color="black">)</font>, delims<font color="black">)</font>;
+  <font color="blue">while</font> <font color="black">(</font>tok <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_tokens.push_back<font color="black">(</font>tok<font color="black">)</font>;
+    tok <font color="black">=</font> strtok<font color="black">(</font><font color="maroon">0</font>, delims<font color="black">)</font>;
+  <font color="black">}</font>
+  str.BufferRel<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+StringTokenizer<font color="black">:</font><font color="black">:</font>~StringTokenizer<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+<font color="black">}</font>
+
+
+<font color="blue">bool</font> StringTokenizer<font color="black">:</font><font color="black">:</font>hasMoreTokens<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> <font color="black">(</font>m_tokens.size<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">int</font> StringTokenizer<font color="black">:</font><font color="black">:</font>countTokens<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> m_tokens.size<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+CStdString StringTokenizer<font color="black">:</font><font color="black">:</font>nextToken<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  lassert<font color="black">(</font>hasMoreTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  string ret <font color="black">=</font> m_tokens.front<font color="black">(</font><font color="black">)</font>;
+  m_tokens.pop_front<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+
+<font color="blue">char</font><font color="black">*</font> trim<font color="black">(</font><font color="blue">char</font><font color="black">*</font> str<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>;
+    <font color="blue">int</font> l<font color="black">=</font>strlen<font color="black">(</font>str<font color="black">)</font>;
+    <font color="blue">char</font><font color="black">*</font> s<font color="black">=</font>str;
+    <font color="blue">char</font><font color="black">*</font> t;
+
+    <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">2048</font><font color="black">]</font>;
+
+    <font color="blue">if</font> <font color="black">(</font>strlen<font color="black">(</font>str<font color="black">)</font><font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>
+        <font color="blue">return</font> str;
+
+    <font color="blue">while</font> <font color="black">(</font> strchr<font color="black">(</font><font color="maroon">" \n\t\v\r"</font>, <font color="black">*</font>s<font color="black">)</font> <font color="black">!</font><font color="black">=</font> NULL <font color="black">|</font><font color="black">|</font> <font color="black">*</font>s<font color="black">=</font><font color="black">=</font><font color="maroon">0</font> <font color="black">)</font>
+        s<font color="black">+</font><font color="black">+</font>;
+
+    strcpy<font color="black">(</font>buf,s<font color="black">)</font>;
+
+    t<font color="black">=</font>buf<font color="black">+</font>strlen<font color="black">(</font>buf<font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font>t<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+        strcpy<font color="black">(</font>str,buf<font color="black">)</font>;
+        <font color="blue">return</font> str;
+    <font color="black">}</font>
+
+
+    <font color="blue">while</font> <font color="black">(</font> strchr<font color="black">(</font><font color="maroon">" \n\t\v\r\0"</font>, <font color="black">*</font>t<font color="black">)</font> <font color="black">!</font><font color="black">=</font> NULL <font color="black">)</font>
+        t<font color="black">-</font><font color="black">-</font>;
+
+    <font color="black">*</font><font color="black">(</font><font color="black">+</font><font color="black">+</font>t<font color="black">)</font><font color="black">=</font><font color="maroon">'\0'</font>;
+
+    strcpy<font color="black">(</font>str,buf<font color="black">)</font>;
+    
+    <font color="blue">return</font> str;
+<font color="black">}</font>
+
+
+</PRE>
+</BODY>
+</HTML>

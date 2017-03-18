@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>
+ToggleButton.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> ToggleButton_h
+<font color="blue">#define</font> ToggleButton_h
+
+<font color="blue">#include</font> <font color="maroon">"UI/Button.h"</font>
+
+<font color="blue">class</font> ToggleButton<font color="black">:</font> <font color="blue">public</font> Button
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  ToggleButton<font color="black">(</font><font color="black">)</font>;
+  ~ToggleButton<font color="black">(</font><font color="black">)</font>;
+  virtual <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>;
+
+  <font color="blue">bool</font> isChecked<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_isChecked; <font color="black">}</font>
+  <font color="blue">void</font> setChecked<font color="black">(</font><font color="blue">bool</font> c<font color="black">)</font> <font color="black">{</font> m_isChecked <font color="black">=</font> c; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> onMouseClick<font color="black">(</font>MouseClickEvent<font color="black">*</font> event<font color="black">)</font>;
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> createButton<font color="black">(</font><font color="black">)</font>;
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> m_isChecked;
+  HTexture m_unchecked;
+  HTexture m_checked;
+  string m_highlight;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

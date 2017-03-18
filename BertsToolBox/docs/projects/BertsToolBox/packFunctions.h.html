@@ -1,0 +1,140 @@
+<HTML>
+<HEAD>
+<TITLE>
+packFunctions.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> PackFunctions_h
+<font color="blue">#define</font> PackFunctions_h
+
+<font color="blue">#include</font> <font color="maroon">"ipc.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;memory.h&#62;</font>
+
+UQUADBYTE unpackQuadByte<font color="black">(</font>UBYTE<font color="black">*</font> payload<font color="black">)</font>;
+<font color="blue">void</font> packQuadByte<font color="black">(</font>UQUADBYTE qb, UBYTE<font color="black">*</font> payload<font color="black">)</font>;
+
+UDBLBYTE unpackDblByte<font color="black">(</font>UBYTE<font color="black">*</font> payload<font color="black">)</font>;
+<font color="blue">void</font> packDblByte<font color="black">(</font>UDBLBYTE seqNum, UBYTE<font color="black">*</font> payload<font color="black">)</font>;
+
+
+<font color="blue">inline</font> <font color="blue">void</font> setSeqNum<font color="black">(</font>UBYTE<font color="black">*</font> msg, UQUADBYTE seqNum<font color="black">)</font>
+<font color="black">{</font>
+  packQuadByte<font color="black">(</font>seqNum, <font color="black">&</font><font color="black">(</font>msg<font color="black">[</font>SEQNUM_OFFSET<font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font> UQUADBYTE getSeqNum<font color="black">(</font>UBYTE<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> unpackQuadByte<font color="black">(</font><font color="black">&</font><font color="black">(</font>msg<font color="black">[</font>SEQNUM_OFFSET<font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font> <font color="blue">void</font> setType<font color="black">(</font>UBYTE<font color="black">*</font> msg, UDBLBYTE type<font color="black">)</font>
+<font color="black">{</font>
+  packDblByte<font color="black">(</font>type, <font color="black">&</font><font color="black">(</font>msg<font color="black">[</font>TYPE_OFFSET<font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font> UDBLBYTE getType<font color="black">(</font>UBYTE<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> unpackDblByte<font color="black">(</font><font color="black">&</font><font color="black">(</font>msg<font color="black">[</font>TYPE_OFFSET<font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font> <font color="blue">void</font> setSize<font color="black">(</font>UBYTE<font color="black">*</font> msg, UDBLBYTE size<font color="black">)</font>
+<font color="black">{</font>
+  packDblByte<font color="black">(</font>size, <font color="black">&</font><font color="black">(</font>msg<font color="black">[</font>SIZE_OFFSET<font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font> UDBLBYTE getSize<font color="black">(</font>UBYTE<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> unpackDblByte<font color="black">(</font><font color="black">&</font><font color="black">(</font>msg<font color="black">[</font>SIZE_OFFSET<font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font> UDBLBYTE getDataSize<font color="black">(</font>UBYTE<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> getSize<font color="black">(</font>msg<font color="black">)</font> <font color="black">-</font>HEADER_SIZE;
+<font color="black">}</font>
+
+<font color="blue">inline</font> <font color="blue">void</font> setData<font color="black">(</font>UBYTE<font color="black">*</font> msg, UBYTE<font color="black">*</font> data<font color="black">)</font>
+<font color="black">{</font>
+  memcpy<font color="black">(</font><font color="black">&</font><font color="black">(</font>msg<font color="black">[</font>DATA_OFFSET<font color="black">]</font><font color="black">)</font>, data, getDataSize<font color="black">(</font>msg<font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font> <font color="blue">void</font> getData<font color="black">(</font>UBYTE<font color="black">*</font> msg, UBYTE<font color="black">*</font> data<font color="black">)</font>
+<font color="black">{</font>
+  memcpy<font color="black">(</font>data, <font color="black">&</font><font color="black">(</font>msg<font color="black">[</font>DATA_OFFSET<font color="black">]</font><font color="black">)</font>, getDataSize<font color="black">(</font>msg<font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font> UBYTE<font color="black">*</font> getDataPtr<font color="black">(</font>UBYTE<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> <font color="black">&</font><font color="black">(</font>msg<font color="black">[</font>DATA_OFFSET<font color="black">]</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">inline</font> UBYTE getAckDataSize<font color="black">(</font>UBYTE<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> getSize<font color="black">(</font>msg<font color="black">)</font> <font color="black">-</font><font color="black">(</font>HEADER_SIZE <font color="black">+</font> STATUS_SIZE<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font> <font color="blue">void</font> setAckData<font color="black">(</font>UBYTE<font color="black">*</font> msg, UBYTE<font color="black">*</font> data<font color="black">)</font>
+<font color="black">{</font>
+  memcpy<font color="black">(</font><font color="black">&</font><font color="black">(</font>msg<font color="black">[</font>ACK_DATA_OFFSET<font color="black">]</font><font color="black">)</font>, data, getAckDataSize<font color="black">(</font>msg<font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font> <font color="blue">void</font> getAckData<font color="black">(</font>UBYTE<font color="black">*</font> msg, UBYTE<font color="black">*</font> data<font color="black">)</font>
+<font color="black">{</font>
+  memcpy<font color="black">(</font>data, <font color="black">&</font><font color="black">(</font>msg<font color="black">[</font>ACK_DATA_OFFSET<font color="black">]</font><font color="black">)</font>, getAckDataSize<font color="black">(</font>msg<font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font> UBYTE<font color="black">*</font> getAckDataPtr<font color="black">(</font>UBYTE<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> <font color="black">&</font><font color="black">(</font>msg<font color="black">[</font>ACK_DATA_OFFSET<font color="black">]</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font> <font color="blue">void</font> setStatus<font color="black">(</font>UBYTE<font color="black">*</font> msg, UDBLBYTE status<font color="black">)</font>
+<font color="black">{</font>
+  packDblByte<font color="black">(</font>status, <font color="black">&</font><font color="black">(</font>msg<font color="black">[</font>STATUS_OFFSET<font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font> UDBLBYTE getStatus<font color="black">(</font>UBYTE<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> unpackDblByte<font color="black">(</font><font color="black">&</font><font color="black">(</font>msg<font color="black">[</font>STATUS_OFFSET<font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">inline</font> UBYTE<font color="black">*</font> newMsg<font color="black">(</font>UDBLBYTE type, UDBLBYTE dataSize<font color="black">)</font>
+<font color="black">{</font>
+  UBYTE<font color="black">*</font> msg <font color="black">=</font> <font color="blue">new</font> UBYTE<font color="black">[</font>dataSize <font color="black">+</font> HEADER_SIZE<font color="black">]</font>;
+  setType<font color="black">(</font>msg, type<font color="black">)</font>;
+  setSize<font color="black">(</font>msg, dataSize <font color="black">+</font> HEADER_SIZE<font color="black">)</font>;
+  <font color="blue">return</font> msg;
+<font color="black">}</font>
+
+<font color="blue">inline</font> UBYTE<font color="black">*</font> makeAck<font color="black">(</font>UBYTE<font color="black">*</font> msg, UDBLBYTE status, UBYTE extraData <font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> ackSize <font color="black">=</font> HEADER_SIZE <font color="black">+</font> STATUS_SIZE <font color="black">+</font> extraData;
+  UBYTE<font color="black">*</font> ack <font color="black">=</font> <font color="blue">new</font> UBYTE<font color="black">[</font>ackSize<font color="black">]</font>;
+  setSize<font color="black">(</font>ack, ackSize<font color="black">)</font>;
+  setType<font color="black">(</font>ack, getType<font color="black">(</font>msg<font color="black">)</font> <font color="black">|</font> ACK_BIT<font color="black">)</font>; <font color="green">// set MSB</font>
+  setSeqNum<font color="black">(</font>ack, getSeqNum<font color="black">(</font>msg<font color="black">)</font><font color="black">)</font>;
+  setStatus<font color="black">(</font>ack, status<font color="black">)</font>;
+  <font color="blue">return</font> ack; 
+<font color="black">}</font>
+
+<font color="blue">inline</font> UBYTE<font color="black">*</font> copyMsg<font color="black">(</font>UBYTE<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> size <font color="black">=</font> getSize<font color="black">(</font>msg<font color="black">)</font>;
+  UBYTE<font color="black">*</font> ret <font color="black">=</font> <font color="blue">new</font> UBYTE<font color="black">[</font>size<font color="black">]</font>;
+  memcpy<font color="black">(</font>ret, msg, size<font color="black">)</font>;
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+<font color="blue">inline</font> 
+<font color="blue">bool</font> isAck<font color="black">(</font>UBYTE<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> <font color="black">(</font><font color="black">(</font>getType<font color="black">(</font>msg<font color="black">)</font> <font color="black">&</font> ACK_BIT<font color="black">)</font> <font color="black">=</font><font color="black">=</font> ACK_BIT<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

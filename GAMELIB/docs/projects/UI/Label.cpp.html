@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<TITLE>
+Label.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4503</font> <font color="maroon">4530</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"Label.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"SDL_gfxPrimitives.h"</font>
+
+<font color="blue">void</font> Label<font color="black">:</font><font color="black">:</font>paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>
+<font color="black">{</font>
+  Rect r <font color="black">=</font> getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">int</font> dx, dy;
+  
+  <font color="blue">switch</font><font color="black">(</font>m_vertJust<font color="black">)</font>
+  <font color="black">{</font>
+  <font color="blue">case</font> JUST_TOP<font color="black">:</font>
+    dy <font color="black">=</font> r.y;
+    <font color="blue">break</font>;
+  <font color="blue">case</font> JUST_BOTTOM<font color="black">:</font>
+    dy <font color="black">=</font> <font color="black">(</font>r.y<font color="black">+</font>r.h<font color="black">)</font> <font color="black">-</font>getFont<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>getFontHeight<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">break</font>;
+  <font color="blue">case</font> JUST_MIDDLE<font color="black">:</font>
+    dy <font color="black">=</font> <font color="black">(</font>r.y<font color="black">+</font><font color="black">(</font>r.h<font color="black">/</font><font color="maroon">2</font><font color="black">)</font><font color="black">)</font> <font color="black">-</font><font color="black">(</font>getFont<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>getFontHeight<font color="black">(</font><font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+    <font color="blue">break</font>;
+  <font color="blue">default</font><font color="black">:</font>
+    lassert<font color="black">(</font><font color="blue">false</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">switch</font><font color="black">(</font>m_horizJust<font color="black">)</font>
+  <font color="black">{</font>
+  <font color="blue">case</font> JUST_LEFT<font color="black">:</font>
+    dx <font color="black">=</font> r.x;
+    <font color="blue">break</font>;
+  <font color="blue">case</font> JUST_RIGHT<font color="black">:</font>
+    dx <font color="black">=</font> <font color="black">(</font>r.x<font color="black">+</font>r.w<font color="black">)</font> <font color="black">-</font><font color="black">(</font>getFont<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>getTextWidth<font color="black">(</font>m_text<font color="black">)</font><font color="black">)</font>;
+    <font color="blue">break</font>;
+  <font color="blue">case</font> JUST_CENTER<font color="black">:</font>
+    dx <font color="black">=</font> <font color="black">(</font>r.x<font color="black">+</font><font color="black">(</font>r.w<font color="black">/</font><font color="maroon">2</font><font color="black">)</font><font color="black">)</font> <font color="black">-</font><font color="black">(</font>getFont<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>getTextWidth<font color="black">(</font>m_text<font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+    <font color="blue">break</font>;
+  <font color="blue">default</font><font color="black">:</font>
+    lassert<font color="black">(</font><font color="blue">false</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  getFont<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>drawLine<font color="black">(</font>surface, m_text, dx, dy<font color="black">)</font>;
+<font color="black">}</font>
+
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,769 @@
+<HTML>
+<HEAD>
+<TITLE>
+AssetManager.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4503</font> <font color="maroon">4786</font> <font color="maroon">4530</font><font color="black">)</font>
+
+<font color="blue">#include</font> <font color="maroon">"AssetManager.h"</font>
+<font color="blue">#include</font> <font color="maroon">"FileUtils.h"</font>
+<font color="blue">#include</font> <font color="maroon">"FileManager.h"</font>
+<font color="blue">#include</font> <font color="maroon">"StdString.h"</font>
+<font color="blue">#include</font> <font color="maroon">"StringTokenizer.h"</font>
+
+AssetManager<font color="black">:</font><font color="black">:</font>AssetManager<font color="black">(</font>string assetIniFn<font color="black">)</font>
+<font color="black">{</font>
+  m_ini <font color="black">=</font> <font color="blue">new</font> IniFile<font color="black">(</font>assetIniFn<font color="black">)</font>;
+  m_ini<font color="black">-</font><font color="black">&#62;</font>read<font color="black">(</font><font color="black">)</font>;
+  load<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+AssetManager<font color="black">:</font><font color="black">:</font>~AssetManager<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  unload<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">delete</font> m_ini;
+<font color="black">}</font>
+
+<font color="blue">void</font> AssetManager<font color="black">:</font><font color="black">:</font>setAssetFn<font color="black">(</font>string fn<font color="black">)</font>
+<font color="black">{</font>
+  unload<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>m_ini <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">delete</font> m_ini;
+    m_ini <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+  m_ini <font color="black">=</font> <font color="blue">new</font> IniFile<font color="black">(</font>fn<font color="black">)</font>;
+  m_ini<font color="black">-</font><font color="black">&#62;</font>read<font color="black">(</font><font color="black">)</font>;
+  load<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> AssetManager<font color="black">:</font><font color="black">:</font>load<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  map<font color="black">&#60;</font>string, map<font color="black">&#60;</font>string, string<font color="black">&#62;</font> <font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  <font color="blue">for</font> <font color="black">(</font>pair <font color="black">=</font> m_ini<font color="black">-</font><font color="black">&#62;</font>begin<font color="black">(</font><font color="black">)</font>; pair<font color="black">!</font><font color="black">=</font>m_ini<font color="black">-</font><font color="black">&#62;</font>end<font color="black">(</font><font color="black">)</font>; pair<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    Asset<font color="black">*</font> asset <font color="black">=</font> <font color="blue">new</font> Asset;
+    asset<font color="black">-</font><font color="black">&#62;</font>asset <font color="black">=</font> <font color="maroon">0</font>;
+    asset<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font> UNDEF;
+    asset<font color="black">-</font><font color="black">&#62;</font>used <font color="black">=</font> <font color="blue">false</font>;
+    asset<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font> <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>first;
+    m_assetMap<font color="black">[</font>asset<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font><font color="black">]</font> <font color="black">=</font> asset;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">bool</font> AssetManager<font color="black">:</font><font color="black">:</font>verify<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font> missingFiles;
+
+  map<font color="black">&#60;</font>string, map<font color="black">&#60;</font>string, string<font color="black">&#62;</font> <font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  <font color="blue">for</font> <font color="black">(</font>pair <font color="black">=</font> m_ini<font color="black">-</font><font color="black">&#62;</font>begin<font color="black">(</font><font color="black">)</font>; pair<font color="black">!</font><font color="black">=</font>m_ini<font color="black">-</font><font color="black">&#62;</font>end<font color="black">(</font><font color="black">)</font>; pair<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    string assetName <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>first;
+    <font color="blue">if</font> <font color="black">(</font>assetName <font color="black">=</font><font color="black">=</font> <font color="maroon">"Includes"</font> <font color="black">|</font><font color="black">|</font> assetName <font color="black">=</font><font color="black">=</font> <font color="maroon">"None"</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">continue</font>;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font><font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font><font color="maroon">"Type"</font><font color="black">]</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">"Skin"</font> <font color="black">|</font><font color="black">|</font>
+      <font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font><font color="maroon">"Type"</font><font color="black">]</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">"RotateSkin"</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="green">// we have to iterate over the frames</font>
+      <font color="blue">int</font> frameCount <font color="black">=</font> m_ini<font color="black">-</font><font color="black">&#62;</font>getInt<font color="black">(</font>assetName, <font color="maroon">"Frames"</font><font color="black">)</font>;
+      <font color="blue">if</font> <font color="black">(</font>frameCount <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+        frameCount <font color="black">=</font> <font color="maroon">1</font>;
+      
+      <font color="blue">char</font> fn<font color="black">[</font><font color="maroon">255</font><font color="black">]</font>;
+      <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">1</font>; c<font color="black">&#60;</font><font color="black">=</font>frameCount; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+      <font color="black">{</font>
+        sprintf<font color="black">(</font>fn, <font color="maroon">"Frame%02d"</font>, c<font color="black">)</font>;
+        string frameFn <font color="black">=</font> <font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font>fn<font color="black">]</font>;
+        <font color="blue">if</font> <font color="black">(</font>frameFn <font color="black">!</font><font color="black">=</font> <font color="maroon">""</font><font color="black">)</font>
+        <font color="black">{</font>
+          <font color="blue">if</font><font color="black">(</font><font color="black">!</font>fm_fileExists<font color="black">(</font>frameFn<font color="black">)</font><font color="black">)</font>
+          <font color="black">{</font>
+            missingFiles.push_back<font color="black">(</font>frameFn<font color="black">)</font>;
+          <font color="black">}</font>
+        <font color="black">}</font>
+        <font color="blue">else</font>
+        <font color="black">{</font>
+          <font color="green">// it's OK, blank frames are OK</font>
+        <font color="black">}</font>
+      <font color="black">}</font>
+      
+    <font color="black">}</font>
+    <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font><font color="maroon">"Type"</font><font color="black">]</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">"Text"</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="green">// just skip this one because text is stored in the assets.ini</font>
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+      <font color="blue">if</font><font color="black">(</font><font color="black">!</font>fm_fileExists<font color="black">(</font><font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font><font color="maroon">"Filename"</font><font color="black">]</font><font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        missingFiles.push_back<font color="black">(</font><font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font><font color="maroon">"Filename"</font><font color="black">]</font><font color="black">)</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>missingFiles.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>missingFiles.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Required file missing (%s)"</font>, <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">return</font> <font color="black">(</font>missingFiles.size<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> AssetManager<font color="black">:</font><font color="black">:</font>load2<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  Asset<font color="black">*</font> asset <font color="black">=</font> load<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>asset <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_assetMap<font color="black">[</font>asset<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font><font color="black">]</font> <font color="black">=</font> asset;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+Asset<font color="black">*</font> AssetManager<font color="black">:</font><font color="black">:</font>load<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  string type <font color="black">=</font> <font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font><font color="maroon">"Type"</font><font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"SoundEffect"</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> loadSoundEffect<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"Music"</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> loadMusic<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"Skin"</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> loadSkin<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"RotateSkin"</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> loadRotateSkin<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"Font"</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> loadFont<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"Texture"</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> loadTexture<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"Relevant"</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">// kinda like a remark. makes sure files get where they belong</font>
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> <font color="maroon">"Text"</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> loadText<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Unknown asset type(%s) for %s"</font>, type.c_str<font color="black">(</font><font color="black">)</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+Asset<font color="black">*</font> AssetManager<font color="black">:</font><font color="black">:</font>loadText<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>Debug, <font color="maroon">"AssetManager::loadText(%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  
+  Asset<font color="black">*</font> a <font color="black">=</font> m_assetMap<font color="black">[</font>assetName<font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>a<font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Asset not found (%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  <font color="blue">int</font> lines <font color="black">=</font> m_ini<font color="black">-</font><font color="black">&#62;</font>getInt<font color="black">(</font>assetName, <font color="maroon">"Lines"</font><font color="black">)</font>;
+
+  string<font color="black">*</font> asstr <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="blue">if</font> <font color="black">(</font>lines <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    asstr <font color="black">=</font> <font color="blue">new</font> string;
+    a<font color="black">-</font><font color="black">&#62;</font>asset <font color="black">=</font> asstr;
+    a<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font> <font color="black">=</font> assetName;
+    a<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font> TEXT;
+    a<font color="black">-</font><font color="black">&#62;</font>used <font color="black">=</font> <font color="blue">false</font>;
+
+    CStdString lineStr;
+    CStdString value;
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>lines; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      lineStr.Format<font color="black">(</font><font color="maroon">"Line%02d"</font>, c<font color="black">+</font><font color="maroon">1</font><font color="black">)</font>;
+      value.Format<font color="black">(</font><font color="maroon">"%s\n"</font>, <font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font>lineStr<font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      <font color="black">(</font><font color="black">*</font>asstr<font color="black">)</font> <font color="black">=</font> <font color="black">(</font><font color="black">*</font>asstr<font color="black">)</font> <font color="black">+</font> value;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">return</font> a;
+<font color="black">}</font>
+
+Asset<font color="black">*</font> AssetManager<font color="black">:</font><font color="black">:</font>loadSoundEffect<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>Debug, <font color="maroon">"AssetManager::loadSoundEffect(%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+  Asset<font color="black">*</font> a <font color="black">=</font> m_assetMap<font color="black">[</font>assetName<font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>a<font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Asset not found (%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  string fn <font color="black">=</font> <font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font><font color="maroon">"Filename"</font><font color="black">]</font>;
+  string group <font color="black">=</font> <font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font><font color="maroon">"Group"</font><font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font>fm_fileExists<font color="black">(</font>fn<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    SoundEffect<font color="black">*</font> se <font color="black">=</font> <font color="blue">new</font> SoundEffect<font color="black">(</font>group, fn<font color="black">)</font>;
+    a<font color="black">-</font><font color="black">&#62;</font>asset <font color="black">=</font> se;
+    a<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font> <font color="black">=</font> assetName;
+    a<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font> SOUND_EFFECT;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"AssetManager::loadSoundEffect(%s) file not found (%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font>, fn.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">return</font> a;
+<font color="black">}</font>
+
+Asset<font color="black">*</font> AssetManager<font color="black">:</font><font color="black">:</font>loadMusic<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>Debug, <font color="maroon">"AssetManager::loadMusic(%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+  Asset<font color="black">*</font> a <font color="black">=</font> m_assetMap<font color="black">[</font>assetName<font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>a<font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Asset not found (%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  string fn <font color="black">=</font> <font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font><font color="maroon">"Filename"</font><font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font>fm_fileExists<font color="black">(</font>fn<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    Music<font color="black">*</font> mus <font color="black">=</font> <font color="blue">new</font> Music<font color="black">(</font>fn<font color="black">)</font>;
+    a<font color="black">-</font><font color="black">&#62;</font>asset <font color="black">=</font> mus;
+    a<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font> <font color="black">=</font> assetName;
+    a<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font> MUSIC;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"AssetManager::loadMusic(%s) file not found (%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font>, fn.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> a;
+<font color="black">}</font>
+
+Asset<font color="black">*</font> AssetManager<font color="black">:</font><font color="black">:</font>loadSkin<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>Debug, <font color="maroon">"AssetManager::loadSkin(%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  Asset<font color="black">*</font> a <font color="black">=</font> m_assetMap<font color="black">[</font>assetName<font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>a<font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Asset not found (%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  <font color="blue">bool</font> mask <font color="black">=</font> m_ini<font color="black">-</font><font color="black">&#62;</font>getInt<font color="black">(</font>assetName, <font color="maroon">"UseMask"</font><font color="black">)</font>;
+  
+  SharableSkin<font color="black">*</font> skin <font color="black">=</font> <font color="blue">new</font> SharableSkin<font color="black">(</font>mask<font color="black">)</font>;
+  <font color="blue">int</font> fps <font color="black">=</font> m_ini<font color="black">-</font><font color="black">&#62;</font>getInt<font color="black">(</font>assetName, <font color="maroon">"FPS"</font><font color="black">)</font>;
+<font color="green">//  if (fps == 0)</font>
+<font color="green">//    fps = 15;</font>
+
+  skin<font color="black">-</font><font color="black">&#62;</font>setFPS<font color="black">(</font>fps<font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>assetName <font color="black">=</font><font color="black">=</font> <font color="maroon">"skn_transparentBackground"</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> rrr<font color="black">=</font><font color="maroon">0</font>;
+  <font color="black">}</font>
+  Point forcedSize <font color="black">=</font> getPointAttribute<font color="black">(</font>assetName, <font color="maroon">"ForcedSize"</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>forcedSize.x <font color="black">&#62;</font> <font color="maroon">0</font> <font color="black">&</font><font color="black">&</font> forcedSize.y <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    skin<font color="black">-</font><font color="black">&#62;</font>forceSize<font color="black">(</font>forcedSize.x, forcedSize.y<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    skin<font color="black">-</font><font color="black">&#62;</font>forceSize<font color="black">(</font><font color="maroon">-1</font>, <font color="maroon">-1</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">int</font> frameCount <font color="black">=</font> m_ini<font color="black">-</font><font color="black">&#62;</font>getInt<font color="black">(</font>assetName, <font color="maroon">"Frames"</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>frameCount <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    frameCount <font color="black">=</font> <font color="maroon">1</font>;
+
+  <font color="blue">char</font> fn<font color="black">[</font><font color="maroon">255</font><font color="black">]</font>;
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">1</font>; c<font color="black">&#60;</font><font color="black">=</font>frameCount; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    sprintf<font color="black">(</font>fn, <font color="maroon">"Frame%02d"</font>, c<font color="black">)</font>;
+    string frameFn <font color="black">=</font> <font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font>fn<font color="black">]</font>;
+    <font color="blue">if</font> <font color="black">(</font>frameFn <font color="black">!</font><font color="black">=</font> <font color="maroon">""</font><font color="black">)</font>
+    <font color="black">{</font>
+      skin<font color="black">-</font><font color="black">&#62;</font>addImage<font color="black">(</font>frameFn.c_str<font color="black">(</font><font color="black">)</font>, <font color="maroon">1</font><font color="black">)</font>;
+    <font color="black">}</font>
+<font color="green">//    else</font>
+<font color="green">//    {</font>
+<font color="green">//      skin-&#62;addImage((HTexture)0, 1);</font>
+<font color="green">//    }</font>
+  <font color="black">}</font>
+
+  a<font color="black">-</font><font color="black">&#62;</font>asset <font color="black">=</font> skin;
+  a<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font> <font color="black">=</font> assetName;
+  a<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font> SKIN;
+
+  <font color="blue">return</font> a;
+<font color="black">}</font>
+
+Asset<font color="black">*</font> AssetManager<font color="black">:</font><font color="black">:</font>loadRotateSkin<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  Asset<font color="black">*</font> a <font color="black">=</font> m_assetMap<font color="black">[</font>assetName<font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>a<font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Asset not found (%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+  
+  <font color="blue">int</font> rotations <font color="black">=</font> m_ini<font color="black">-</font><font color="black">&#62;</font>getInt<font color="black">(</font>assetName, <font color="maroon">"Rotations"</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>rotations <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    rotations <font color="black">=</font> <font color="maroon">1</font>;
+
+  <font color="blue">bool</font> mask <font color="black">=</font> m_ini<font color="black">-</font><font color="black">&#62;</font>getInt<font color="black">(</font>assetName, <font color="maroon">"UseMask"</font><font color="black">)</font>;
+
+  SharableRotateSkin<font color="black">*</font> skin <font color="black">=</font> <font color="blue">new</font> SharableRotateSkin<font color="black">(</font>rotations, mask<font color="black">)</font>;
+
+  <font color="blue">int</font> fps <font color="black">=</font> m_ini<font color="black">-</font><font color="black">&#62;</font>getInt<font color="black">(</font>assetName, <font color="maroon">"FPS"</font><font color="black">)</font>;
+<font color="green">//  if (fps == 0)</font>
+<font color="green">//    fps = 15;</font>
+
+  skin<font color="black">-</font><font color="black">&#62;</font>setFPS<font color="black">(</font>fps<font color="black">)</font>;
+
+  <font color="blue">int</font> frameCount <font color="black">=</font> m_ini<font color="black">-</font><font color="black">&#62;</font>getInt<font color="black">(</font>assetName, <font color="maroon">"Frames"</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>frameCount <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    frameCount <font color="black">=</font> <font color="maroon">1</font>;
+
+  <font color="blue">char</font> fn<font color="black">[</font><font color="maroon">255</font><font color="black">]</font>;
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">1</font>; c<font color="black">&#60;</font><font color="black">=</font>frameCount; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    sprintf<font color="black">(</font>fn, <font color="maroon">"Frame%02d"</font>, c<font color="black">)</font>;
+    string frameFn <font color="black">=</font> <font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font>fn<font color="black">]</font>;
+    <font color="blue">if</font> <font color="black">(</font>frameFn <font color="black">!</font><font color="black">=</font> <font color="maroon">""</font><font color="black">)</font>
+    <font color="black">{</font>
+      skin<font color="black">-</font><font color="black">&#62;</font>addImage<font color="black">(</font>frameFn.c_str<font color="black">(</font><font color="black">)</font>, <font color="maroon">1</font><font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  a<font color="black">-</font><font color="black">&#62;</font>asset <font color="black">=</font> skin;
+  a<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font> <font color="black">=</font> assetName;
+  a<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font> ROTATESKIN;
+
+  <font color="blue">return</font> a;
+
+<font color="black">}</font>
+
+Asset<font color="black">*</font> AssetManager<font color="black">:</font><font color="black">:</font>loadTexture<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>Debug, <font color="maroon">"AssetManager::loadTexture(%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  Asset<font color="black">*</font> a <font color="black">=</font> m_assetMap<font color="black">[</font>assetName<font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>a<font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Asset not found (%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  string fn <font color="black">=</font> <font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font><font color="maroon">"Filename"</font><font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font>fm_fileExists<font color="black">(</font>fn<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    HTexture texture <font color="black">=</font> Display<font color="black">:</font><font color="black">:</font>getInstance<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>acquire<font color="black">(</font>fn.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>texture <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      logError<font color="black">(</font>Error, <font color="maroon">"Couldn't load texture (%s)"</font>, fn.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+      a<font color="black">-</font><font color="black">&#62;</font>asset <font color="black">=</font> <font color="black">(</font><font color="blue">void</font><font color="black">*</font><font color="black">)</font>texture;
+      a<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font> <font color="black">=</font> assetName;
+      a<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font> TEXTURE;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"AssetManager::loadTexture(%s) file not found (%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font>, fn.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> a;
+<font color="black">}</font>
+
+Asset<font color="black">*</font> AssetManager<font color="black">:</font><font color="black">:</font>loadFont<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>Debug, <font color="maroon">"AssetManager::loadFont(%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  Asset<font color="black">*</font> a <font color="black">=</font> m_assetMap<font color="black">[</font>assetName<font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>a<font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Asset not found (%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  string fn <font color="black">=</font> <font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font>assetName<font color="black">]</font><font color="black">[</font><font color="maroon">"Filename"</font><font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font>fm_fileExists<font color="black">(</font>fn<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    Font<font color="black">*</font> f <font color="black">=</font> Font<font color="black">:</font><font color="black">:</font>load<font color="black">(</font>fn<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>f<font color="black">!</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      a <font color="black">=</font> <font color="blue">new</font> Asset;
+      a<font color="black">-</font><font color="black">&#62;</font>asset <font color="black">=</font> f;
+      a<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font> <font color="black">=</font> assetName;
+      a<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font> FONT;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  
+  <font color="blue">if</font> <font color="black">(</font>a <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"AssetManager::loadFont(%s) error (%s)"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font>, fn.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">return</font> a;
+<font color="black">}</font>
+
+<font color="blue">void</font> AssetManager<font color="black">:</font><font color="black">:</font>unload<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font> unused;
+  map<font color="black">&#60;</font>string, Asset<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  <font color="blue">for</font> <font color="black">(</font>pair <font color="black">=</font> m_assetMap.begin<font color="black">(</font><font color="black">)</font>; pair<font color="black">!</font><font color="black">=</font>m_assetMap.end<font color="black">(</font><font color="black">)</font>; pair<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    Asset<font color="black">*</font> asset <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+
+    <font color="blue">if</font> <font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>used <font color="black">=</font><font color="black">=</font> <font color="blue">false</font><font color="black">)</font>
+    <font color="black">{</font>
+      unused.push_back<font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">switch</font> <font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>type<font color="black">)</font>
+    <font color="black">{</font>
+    <font color="blue">case</font> SOUND_EFFECT<font color="black">:</font>
+      <font color="blue">delete</font> <font color="black">(</font>SoundEffect<font color="black">*</font><font color="black">)</font>asset<font color="black">-</font><font color="black">&#62;</font>asset;
+      logError<font color="black">(</font>Debug, <font color="maroon">"AssetManager::~ freed SoundEffect(%s)"</font>, asset<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      <font color="blue">break</font>;
+    <font color="blue">case</font> MUSIC<font color="black">:</font>
+      <font color="blue">delete</font> <font color="black">(</font>Music<font color="black">*</font><font color="black">)</font>asset<font color="black">-</font><font color="black">&#62;</font>asset;
+      logError<font color="black">(</font>Debug, <font color="maroon">"AssetManager::~ freed Music(%s)"</font>, asset<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      <font color="blue">break</font>;
+    <font color="blue">case</font> SKIN<font color="black">:</font>
+      <font color="blue">delete</font> <font color="black">(</font>SharableSkin<font color="black">*</font><font color="black">)</font>asset<font color="black">-</font><font color="black">&#62;</font>asset;
+      logError<font color="black">(</font>Debug, <font color="maroon">"AssetManager::~ freed Skin(%s)"</font>, asset<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      <font color="blue">break</font>;
+    <font color="blue">case</font> ROTATESKIN<font color="black">:</font>
+      <font color="blue">delete</font> <font color="black">(</font>SharableRotateSkin<font color="black">*</font><font color="black">)</font>asset<font color="black">-</font><font color="black">&#62;</font>asset;
+      logError<font color="black">(</font>Debug, <font color="maroon">"AssetManager::~ freed RotateSkin(%s)"</font>, asset<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      <font color="blue">break</font>;
+    <font color="blue">case</font> FONT<font color="black">:</font>
+<font color="green">//      delete (Font*)asset-&#62;asset;</font>
+<font color="green">//      logError(Inform, "AssetManager::~ freed Font(%s)", asset-&#62;name.c_str());</font>
+      <font color="blue">break</font>;
+    <font color="blue">case</font> TEXTURE<font color="black">:</font>
+      Display<font color="black">:</font><font color="black">:</font>getInstance<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>release<font color="black">(</font><font color="black">(</font>HTexture<font color="black">)</font>asset<font color="black">-</font><font color="black">&#62;</font>asset<font color="black">)</font>;
+      logError<font color="black">(</font>Debug, <font color="maroon">"AssetManager::~ freed Texture(%s)"</font>, asset<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      <font color="blue">break</font>;
+    <font color="blue">case</font> TEXT<font color="black">:</font>
+      <font color="blue">delete</font> <font color="black">(</font>string<font color="black">*</font><font color="black">)</font>asset<font color="black">-</font><font color="black">&#62;</font>asset;
+      logError<font color="black">(</font>Debug, <font color="maroon">"AssetManager::~ freed Text(%s)"</font>, asset<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      <font color="blue">break</font>;
+    <font color="blue">default</font><font color="black">:</font>
+      logError<font color="black">(</font>Debug, <font color="maroon">"AssetManager::~ Asset type %d (%s) was probably never loaded"</font>, asset<font color="black">-</font><font color="black">&#62;</font>type, asset<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      <font color="blue">break</font>;
+    <font color="black">}</font>
+
+    <font color="blue">delete</font> asset;
+  <font color="black">}</font>
+  m_assetMap.clear<font color="black">(</font><font color="black">)</font>;
+
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>unused.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>unused.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Debug, <font color="maroon">"Asset \"%s\" was never used"</font>, <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">bool</font> AssetManager<font color="black">:</font><font color="black">:</font>isAssetLoaded<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>
+<font color="black">{</font>
+  Asset<font color="black">*</font> a<font color="black">=</font>m_assetMap<font color="black">[</font><font color="blue">name</font><font color="black">]</font>;
+  <font color="blue">return</font> <font color="black">(</font>a <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font> <font color="black">&</font><font color="black">&</font> a<font color="black">-</font><font color="black">&#62;</font>asset <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+<font color="black">}</font>
+
+SoundEffect<font color="black">*</font> AssetManager<font color="black">:</font><font color="black">:</font>getSoundEffect<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>isAssetLoaded<font color="black">(</font>assetName<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    load2<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="black">}</font>
+  map<font color="black">&#60;</font>string, Asset<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  pair <font color="black">=</font> m_assetMap.find<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>pair <font color="black">!</font><font color="black">=</font> m_assetMap.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    Asset<font color="black">*</font> asset <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+    lassert2<font color="black">(</font>asset <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font>, <font color="maroon">"AssetManager asset is null (SoundEffect)"</font><font color="black">)</font>;
+    asset<font color="black">-</font><font color="black">&#62;</font>used <font color="black">=</font> <font color="blue">true</font>;
+    asset<font color="black">-</font><font color="black">&#62;</font>references<font color="black">+</font><font color="black">+</font>;
+    lassert<font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font><font color="black">=</font> SOUND_EFFECT<font color="black">)</font>;
+    m_assetToAssetMap<font color="black">[</font>asset<font color="black">-</font><font color="black">&#62;</font>asset<font color="black">]</font> <font color="black">=</font> asset;
+    <font color="blue">return</font> <font color="black">(</font>SoundEffect<font color="black">*</font><font color="black">)</font><font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>asset<font color="black">)</font>;
+  <font color="black">}</font>
+  logError<font color="black">(</font>Error, <font color="maroon">"Tried to get SoundEffect (%s) but it was never loaded or there was a problem"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> AssetManager<font color="black">:</font><font color="black">:</font>releaseSoundEffect<font color="black">(</font>SoundEffect<font color="black">*</font> effect<font color="black">)</font>
+<font color="black">{</font>
+  Asset<font color="black">*</font> asset <font color="black">=</font> m_assetToAssetMap<font color="black">[</font>effect<font color="black">]</font>;
+  lassert<font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>references <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>;
+  lassert<font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>asset <font color="black">=</font><font color="black">=</font> effect<font color="black">)</font>;
+  asset<font color="black">-</font><font color="black">&#62;</font>references<font color="black">-</font><font color="black">-</font>;
+  <font color="blue">if</font> <font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>references <font color="black">&#60;</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Inform, <font color="maroon">"Released Soundeffect (%s)"</font>, asset<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    asset<font color="black">-</font><font color="black">&#62;</font>references <font color="black">=</font> <font color="maroon">0</font>;
+    m_assetToAssetMap.erase<font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>asset<font color="black">)</font>;
+    asset<font color="black">-</font><font color="black">&#62;</font>asset <font color="black">=</font> <font color="maroon">0</font>;
+    <font color="blue">delete</font> effect;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+Music<font color="black">*</font> AssetManager<font color="black">:</font><font color="black">:</font>getMusic<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>isAssetLoaded<font color="black">(</font>assetName<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    load2<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="black">}</font>
+
+  map<font color="black">&#60;</font>string, Asset<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  pair <font color="black">=</font> m_assetMap.find<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>pair <font color="black">!</font><font color="black">=</font> m_assetMap.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    Asset<font color="black">*</font> asset <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+    lassert2<font color="black">(</font>asset <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font>, <font color="maroon">"AssetManager asset is null (Music)"</font><font color="black">)</font>;
+    asset<font color="black">-</font><font color="black">&#62;</font>used <font color="black">=</font> <font color="blue">true</font>;
+    lassert<font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font><font color="black">=</font> MUSIC<font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">(</font>Music<font color="black">*</font><font color="black">)</font><font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>asset<font color="black">)</font>;
+  <font color="black">}</font>
+  logError<font color="black">(</font>Error, <font color="maroon">"Tried to get Music (%s) but it was never loaded or there was a problem"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+Skin<font color="black">*</font> AssetManager<font color="black">:</font><font color="black">:</font>getSkin<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+<font color="green">/*
+Skins are a special case in that they manage themselves
+so we have to pass along most of the management to them
+  */</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>isAssetLoaded<font color="black">(</font>assetName<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    load2<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="black">}</font>
+
+  map<font color="black">&#60;</font>string, Asset<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  pair <font color="black">=</font> m_assetMap.find<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>pair <font color="black">!</font><font color="black">=</font> m_assetMap.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    Asset<font color="black">*</font> asset <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+    lassert2<font color="black">(</font>asset <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font>, <font color="maroon">"AssetManager asset is null (Skin)"</font><font color="black">)</font>;
+    asset<font color="black">-</font><font color="black">&#62;</font>used <font color="black">=</font> <font color="blue">true</font>;
+    lassert<font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font><font color="black">=</font> SKIN<font color="black">)</font>;
+    SharableSkin<font color="black">*</font> ss <font color="black">=</font> <font color="black">(</font>SharableSkin<font color="black">*</font><font color="black">)</font><font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>asset<font color="black">)</font>;
+    Skin<font color="black">*</font> skin <font color="black">=</font> ss<font color="black">-</font><font color="black">&#62;</font>acquire<font color="black">(</font><font color="black">)</font>;
+    m_assetToAssetMap<font color="black">[</font>skin<font color="black">]</font> <font color="black">=</font> asset;
+    <font color="blue">return</font> skin;
+  <font color="black">}</font>
+  logError<font color="black">(</font>Error, <font color="maroon">"Tried to get Skin (%s) but it was never loaded or there was a problem"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> AssetManager<font color="black">:</font><font color="black">:</font>releaseSkin<font color="black">(</font>Skin<font color="black">*</font> skin<font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>Debug, <font color="maroon">"Releasing SharedSkin (%08x)"</font>, skin<font color="black">)</font>;
+  Asset<font color="black">*</font> asset <font color="black">=</font> m_assetToAssetMap<font color="black">[</font>skin<font color="black">]</font>;
+  
+  <font color="blue">if</font> <font color="black">(</font>asset <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Unknown Skin (%08x)"</font>, skin<font color="black">)</font>;
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+
+  SharableSkin<font color="black">*</font> ss <font color="black">=</font> <font color="black">(</font>SharableSkin<font color="black">*</font><font color="black">)</font>asset<font color="black">-</font><font color="black">&#62;</font>asset;
+  ss<font color="black">-</font><font color="black">&#62;</font>release<font color="black">(</font>skin<font color="black">)</font>;
+  m_assetToAssetMap.erase<font color="black">(</font>skin<font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>ss<font color="black">-</font><font color="black">&#62;</font>references<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">delete</font> ss;
+    asset<font color="black">-</font><font color="black">&#62;</font>asset <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+SharedRotateSkin<font color="black">*</font> AssetManager<font color="black">:</font><font color="black">:</font>getRotateSkin<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+<font color="green">/*
+Skins are a special case in that they manage themselves
+so we have to pass along most of the management to them
+  */</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>isAssetLoaded<font color="black">(</font>assetName<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    load2<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="black">}</font>
+
+  map<font color="black">&#60;</font>string, Asset<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  pair <font color="black">=</font> m_assetMap.find<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>pair <font color="black">!</font><font color="black">=</font> m_assetMap.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    Asset<font color="black">*</font> asset <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+    lassert2<font color="black">(</font>asset <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font>, <font color="maroon">"AssetManager asset is null (Skin)"</font><font color="black">)</font>;
+    asset<font color="black">-</font><font color="black">&#62;</font>used <font color="black">=</font> <font color="blue">true</font>;
+    lassert<font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font><font color="black">=</font> ROTATESKIN<font color="black">)</font>;
+    SharableRotateSkin<font color="black">*</font> ss <font color="black">=</font> <font color="black">(</font>SharableRotateSkin<font color="black">*</font><font color="black">)</font><font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>asset<font color="black">)</font>;
+    SharedRotateSkin<font color="black">*</font> skin <font color="black">=</font> ss<font color="black">-</font><font color="black">&#62;</font>acquire<font color="black">(</font><font color="black">)</font>;
+    m_assetToAssetMap<font color="black">[</font>skin<font color="black">]</font> <font color="black">=</font> asset;
+    <font color="blue">return</font> skin;
+  <font color="black">}</font>
+  logError<font color="black">(</font>Error, <font color="maroon">"Tried to get RotateSkin (%s) but it was never loaded or there was a problem"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> AssetManager<font color="black">:</font><font color="black">:</font>releaseRotateSkin<font color="black">(</font>SharedRotateSkin<font color="black">*</font> skin<font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>Debug, <font color="maroon">"Releasing SharedSkin (%08x)"</font>, skin<font color="black">)</font>;
+  Asset<font color="black">*</font> asset <font color="black">=</font> m_assetToAssetMap<font color="black">[</font>skin<font color="black">]</font>;
+  
+  <font color="blue">if</font> <font color="black">(</font>asset <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Unknown Skin (%08x)"</font>, skin<font color="black">)</font>;
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+
+  SharableRotateSkin<font color="black">*</font> ss <font color="black">=</font> <font color="black">(</font>SharableRotateSkin<font color="black">*</font><font color="black">)</font>asset<font color="black">-</font><font color="black">&#62;</font>asset;
+  ss<font color="black">-</font><font color="black">&#62;</font>release<font color="black">(</font>skin<font color="black">)</font>;
+  m_assetToAssetMap.erase<font color="black">(</font>skin<font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>ss<font color="black">-</font><font color="black">&#62;</font>references<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">delete</font> ss;
+    asset<font color="black">-</font><font color="black">&#62;</font>asset <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+
+Font<font color="black">*</font> AssetManager<font color="black">:</font><font color="black">:</font>getFont<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>isAssetLoaded<font color="black">(</font>assetName<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    load2<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="black">}</font>
+
+  map<font color="black">&#60;</font>string, Asset<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  pair <font color="black">=</font> m_assetMap.find<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>pair <font color="black">!</font><font color="black">=</font> m_assetMap.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    Asset<font color="black">*</font> asset <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+    lassert2<font color="black">(</font>asset <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font>, <font color="maroon">"AssetManager asset is null (Font)"</font><font color="black">)</font>;
+    asset<font color="black">-</font><font color="black">&#62;</font>used <font color="black">=</font> <font color="blue">true</font>;
+    lassert<font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font><font color="black">=</font> FONT<font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">(</font>Font<font color="black">*</font><font color="black">)</font><font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>asset<font color="black">)</font>;
+  <font color="black">}</font>
+  logError<font color="black">(</font>Error, <font color="maroon">"Tried to get Font (%s) but it was never loaded or there was a problem"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+HTexture AssetManager<font color="black">:</font><font color="black">:</font>getTexture<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>isAssetLoaded<font color="black">(</font>assetName<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    load2<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="black">}</font>
+
+  map<font color="black">&#60;</font>string, Asset<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  pair <font color="black">=</font> m_assetMap.find<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>pair <font color="black">!</font><font color="black">=</font> m_assetMap.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    Asset<font color="black">*</font> asset <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+    lassert2<font color="black">(</font>asset <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font>, <font color="maroon">"AssetManager asset is null (Texture)"</font><font color="black">)</font>;
+    asset<font color="black">-</font><font color="black">&#62;</font>used <font color="black">=</font> <font color="blue">true</font>;
+    lassert<font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font><font color="black">=</font> TEXTURE<font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">(</font>HTexture<font color="black">)</font><font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>asset<font color="black">)</font>;
+  <font color="black">}</font>
+  logError<font color="black">(</font>Error, <font color="maroon">"Tried to get Texture (%s) but it was never loaded or there was a problem"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+string AssetManager<font color="black">:</font><font color="black">:</font>getText<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>isAssetLoaded<font color="black">(</font>assetName<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    load2<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="black">}</font>
+
+  map<font color="black">&#60;</font>string, Asset<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  pair <font color="black">=</font> m_assetMap.find<font color="black">(</font>assetName<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>pair <font color="black">!</font><font color="black">=</font> m_assetMap.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    Asset<font color="black">*</font> asset <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+    lassert2<font color="black">(</font>asset <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font>, <font color="maroon">"AssetManager asset is null (Text)"</font><font color="black">)</font>;
+    asset<font color="black">-</font><font color="black">&#62;</font>used <font color="black">=</font> <font color="blue">true</font>;
+    lassert<font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>type <font color="black">=</font><font color="black">=</font> TEXT<font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="black">(</font><font color="black">(</font>string<font color="black">*</font><font color="black">)</font><font color="black">(</font>asset<font color="black">-</font><font color="black">&#62;</font>asset<font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  logError<font color="black">(</font>Error, <font color="maroon">"Tried to get Text (%s) but it was never loaded or there was a problem"</font>, assetName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> <font color="maroon">""</font>;
+<font color="black">}</font>
+
+<font color="blue">int</font> AssetManager<font color="black">:</font><font color="black">:</font>getIntAttribute<font color="black">(</font>string <font color="blue">name</font>, string attribute<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> m_ini<font color="black">-</font><font color="black">&#62;</font>getInt<font color="black">(</font><font color="blue">name</font>, attribute<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">float</font> AssetManager<font color="black">:</font><font color="black">:</font>getFloatAttribute<font color="black">(</font>string <font color="blue">name</font>, string attribute<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> m_ini<font color="black">-</font><font color="black">&#62;</font>getFloat<font color="black">(</font><font color="blue">name</font>, attribute<font color="black">)</font>;
+<font color="black">}</font>
+
+string AssetManager<font color="black">:</font><font color="black">:</font>getStringAttribute<font color="black">(</font>string <font color="blue">name</font>, string attribute<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> <font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font>attribute<font color="black">]</font>;
+<font color="black">}</font>
+
+Point AssetManager<font color="black">:</font><font color="black">:</font>getPointAttribute<font color="black">(</font>string <font color="blue">name</font>, string attribute<font color="black">)</font>
+<font color="black">{</font>
+  StringTokenizer st<font color="black">(</font><font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font>attribute<font color="black">]</font>, <font color="maroon">", "</font><font color="black">)</font>;
+  Point ret<font color="black">(</font><font color="maroon">-1</font>, <font color="maroon">-1</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>st.countTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    ret.x <font color="black">=</font> atoi<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>st.countTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    ret.y <font color="black">=</font> atoi<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+Rect AssetManager<font color="black">:</font><font color="black">:</font>getRectAttribute<font color="black">(</font>string <font color="blue">name</font>, string attribute<font color="black">)</font>
+<font color="black">{</font>
+  StringTokenizer st<font color="black">(</font><font color="black">(</font><font color="black">*</font>m_ini<font color="black">)</font><font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font>attribute<font color="black">]</font>, <font color="maroon">", "</font><font color="black">)</font>;
+  Rect ret<font color="black">(</font><font color="maroon">-1</font>, <font color="maroon">-1</font>, <font color="maroon">-1</font>, <font color="maroon">-1</font><font color="black">)</font>;
+  <font color="blue">if</font><font color="black">(</font>st.countTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    ret.x <font color="black">=</font> atoi<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font><font color="black">(</font>st.countTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    ret.y <font color="black">=</font> atoi<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font><font color="black">(</font>st.countTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    ret.w <font color="black">=</font> atoi<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font><font color="black">(</font>st.countTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    ret.h <font color="black">=</font> atoi<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

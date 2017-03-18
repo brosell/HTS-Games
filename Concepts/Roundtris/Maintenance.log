@@ -1,0 +1,12 @@
+09/13/03 21:12:37 - Inform: SDLDisplay created.
+09/13/03 21:12:37 - Inform: loading Assets.ini from disk
+09/13/03 21:12:37 - Inform: AssetManager::loadSkin(skn_ConsoleBackground)
+09/13/03 21:12:37 - Inform: loading images\Console.jpg from disk
+09/13/03 21:12:37 - Inform: loading UI/Dialogs.ini from disk
+09/13/03 21:12:37 - Inform: loading UI/Dialogs.ini from disk
+09/13/03 21:12:37 - Inform: AssetManager::loadSkin(skn_GameScreenBackground)
+09/13/03 21:12:37 - Inform: loading images\gamescreen.png from disk
+09/13/03 21:12:37 - Inform: AssetManager::loadSkin(gfx_Ball)
+09/13/03 21:12:37 - Inform: loading images\ball.png from disk
+09/13/03 21:12:37 - Inform: AssetManager::loadSkin(mouse_Default)
+09/13/03 21:12:37 - Inform: loading images\BullsEye.png from disk

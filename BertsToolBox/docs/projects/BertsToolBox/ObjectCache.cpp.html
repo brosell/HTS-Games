@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>
+ObjectCache.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"ObjectCache.h"</font>
+
+
+<font color="blue">void</font> testObjectCache<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  ObjectCache<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font> ints;
+  <font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>;
+  <font color="blue">int</font><font color="black">*</font> test<font color="black">[</font><font color="maroon">100</font><font color="black">]</font>;
+  <font color="blue">for</font> <font color="black">(</font>c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font><font color="maroon">15</font>; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    test<font color="black">[</font>c<font color="black">]</font> <font color="black">=</font> ints.acquire<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">for</font> <font color="black">(</font>c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font><font color="maroon">5</font>; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    ints.release<font color="black">(</font>test<font color="black">[</font>c<font color="black">]</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">for</font> <font color="black">(</font>c<font color="black">=</font><font color="maroon">20</font>; c<font color="black">&#60;</font><font color="maroon">30</font>; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    test<font color="black">[</font>c<font color="black">]</font> <font color="black">=</font> ints.acquire<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

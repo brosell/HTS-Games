@@ -1,0 +1,216 @@
+# Microsoft Developer Studio Generated Dependency File, included by BertsToolBoxLib.mak
+
+.\BSocket.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\BSocket.h"\
+	".\ipc.h"\
+	".\Log.h"\
+	
+
+.\Link.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\Delegate.h"\
+	".\Event.h"\
+	".\ipc.h"\
+	".\Link.h"\
+	".\Log.h"\
+	".\Message.h"\
+	".\Mutex.h"\
+	".\ObjectCache.h"\
+	".\packFunctions.h"\
+	".\ThreadSafeList.h"\
+	".\Timer.h"\
+	
+
+.\Message.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\Delegate.h"\
+	".\Event.h"\
+	".\ipc.h"\
+	".\Link.h"\
+	".\Log.h"\
+	".\Message.h"\
+	".\Mutex.h"\
+	".\ObjectCache.h"\
+	".\packFunctions.h"\
+	".\ThreadSafeList.h"\
+	".\Timer.h"\
+	
+
+.\MessageCenter.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\Delegate.h"\
+	".\Event.h"\
+	".\ipc.h"\
+	".\Link.h"\
+	".\Log.h"\
+	".\Message.h"\
+	".\MessageCenter.h"\
+	".\MessageTesters.h"\
+	".\Mutex.h"\
+	".\ObjectCache.h"\
+	".\packFunctions.h"\
+	".\ThreadSafeList.h"\
+	".\Timer.h"\
+	
+
+.\MessageTesters.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\ipc.h"\
+	".\Log.h"\
+	".\Message.h"\
+	".\MessageTesters.h"\
+	".\ObjectCache.h"\
+	".\packFunctions.h"\
+	
+
+.\PackFunctions.cpp : \
+	".\ipc.h"\
+	".\packFunctions.h"\
+	
+
+.\SoftwareLink.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\Delegate.h"\
+	".\Event.h"\
+	".\ipc.h"\
+	".\Link.h"\
+	".\Log.h"\
+	".\Message.h"\
+	".\Mutex.h"\
+	".\ObjectCache.h"\
+	".\packFunctions.h"\
+	".\SoftwareLink.h"\
+	".\ThreadSafeList.h"\
+	".\Timer.h"\
+	
+
+.\TCPLink.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\BSocket.h"\
+	".\Delegate.h"\
+	".\Event.h"\
+	".\ipc.h"\
+	".\Link.h"\
+	".\Log.h"\
+	".\Message.h"\
+	".\Mutex.h"\
+	".\ObjectCache.h"\
+	".\packFunctions.h"\
+	".\TCPLink.h"\
+	".\ThreadSafeList.h"\
+	".\Timer.h"\
+	
+
+.\AutoBuffer.cpp : \
+	".\AutoBuffer.h"\
+	
+
+.\CommandLineParser.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\CommandLineParser.h"\
+	".\Log.h"\
+	".\StdString.h"\
+	".\StringTokenizer.h"\
+	
+
+.\OutputIteratorAdapters.cpp : \
+	".\OutputIteratorAdapters.h"\
+	
+
+.\StringTokenizer.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\Log.h"\
+	".\StdString.h"\
+	".\StringTokenizer.h"\
+	
+
+.\ThreadSafeList.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\Mutex.h"\
+	".\ThreadSafeList.h"\
+	
+
+.\ObjectCache.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\Log.h"\
+	".\ObjectCache.h"\
+	
+
+.\Timer.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\Delegate.h"\
+	".\ipc.h"\
+	".\Log.h"\
+	".\Message.h"\
+	".\packFunctions.h"\
+	".\Timer.h"\
+	
+
+.\StateMachine.cpp : \
+	".\StateMachine.h"\
+	
+
+.\Coroutine.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\Coroutine.h"\
+	".\Delegate.h"\
+	".\ipc.h"\
+	".\Log.h"\
+	".\Message.h"\
+	".\packFunctions.h"\
+	".\pcl.h"\
+	".\Timer.h"\
+	
+
+.\pcl.c : \
+	".\pcl.h"\
+	".\pcl_config.h"\
+	
+
+.\Thread.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\Mutex.h"\
+	".\Thread.h"\
+	
+
+.\FileManager.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\FileManager.h"\
+	".\FileUtils.h"\
+	".\Log.h"\
+	".\PakFile.h"\
+	".\StdString.h"\
+	
+
+.\FileUtils.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\FileUtils.h"\
+	".\StdString.h"\
+	".\StringTokenizer.h"\
+	
+
+.\IniFile.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\FileManager.h"\
+	".\IniFile.h"\
+	".\Log.h"\
+	".\StdString.h"\
+	".\StringTokenizer.h"\
+	
+
+.\Log.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\FileUtils.h"\
+	".\Log.h"\
+	".\StdString.h"\
+	
+
+.\PakFile.cpp : \
+	"..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\PakFile.h"\
+	
+
+.\Convert.cpp : \
+	".\Convert.h"\
+	

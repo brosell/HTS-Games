@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>
+Music.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> Music_h
+<font color="blue">#define</font> Music_h
+
+<font color="blue">#include</font> <font color="maroon">"SoundMixer.h"</font>
+
+<font color="green">/**
+midi music
+*/</font>
+<font color="blue">class</font> Music
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="green">/**
+  @param filename the midi filename
+  */</font>
+  Music<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename<font color="black">)</font> <font color="black">{</font> load<font color="black">(</font>filename<font color="black">)</font>; <font color="black">}</font>
+  
+  <font color="green">/**
+  @param filename the midi filename
+  */</font>
+  Music<font color="black">(</font>string filename<font color="black">)</font> <font color="black">{</font> load<font color="black">(</font>filename.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>; <font color="black">}</font>
+
+  <font color="green">/**
+  starts playback opf the midi
+  */</font>
+  <font color="blue">void</font> play<font color="black">(</font><font color="blue">int</font> loops<font color="black">)</font>;
+  <font color="green">/**
+  halts playback of the midi
+  */</font>
+  <font color="blue">void</font> halt<font color="black">(</font><font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">void</font> load<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename<font color="black">)</font>;
+  Mix_Music<font color="black">*</font> m_soundData;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

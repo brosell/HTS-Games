@@ -1,0 +1,121 @@
+<HTML>
+<HEAD>
+<TITLE>
+SharedRotateSkin.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> SharedRotateSkin_h
+<font color="blue">#define</font> SharedRotateSkin_h
+
+<font color="blue">#include</font> <font color="maroon">"Graphics/Display.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Graphics/Skin.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Timer.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;vector&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;list&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">class</font> SharableRotateSkin;
+
+<font color="blue">class</font> SharedRotateSkin<font color="black">:</font> <font color="blue">public</font> Skin, <font color="blue">public</font> TimerListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+
+  virtual HTexture currentFrame<font color="black">(</font><font color="black">)</font>;
+  virtual CollisionBitMask<font color="black">*</font> currentCollisionMask<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> setRotation<font color="black">(</font><font color="blue">int</font> r<font color="black">)</font> <font color="black">{</font> m_currentRotation <font color="black">=</font> r; <font color="black">}</font>
+  <font color="blue">void</font> setAngle<font color="black">(</font><font color="blue">int</font> a<font color="black">)</font>;
+
+
+  <font color="blue">void</font> reset<font color="black">(</font><font color="black">)</font>;
+  virtual <font color="blue">void</font> timeout<font color="black">(</font>TimerEvent<font color="black">*</font> ev<font color="black">)</font>;
+
+  <font color="blue">void</font> setFrame<font color="black">(</font><font color="blue">int</font> f<font color="black">)</font> <font color="black">{</font> m_currentFrame <font color="black">=</font> f; <font color="black">}</font>
+
+  virtual <font color="blue">int</font> getNumFrames<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_numFrames; <font color="black">}</font>
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">friend</font> <font color="blue">class</font> SharableRotateSkin;
+  SharedRotateSkin<font color="black">(</font>SharableRotateSkin<font color="black">*</font> parent<font color="black">)</font>;
+  ~SharedRotateSkin<font color="black">(</font><font color="black">)</font>;
+
+  SharedRotateSkin<font color="black">(</font><font color="blue">const</font> SharedRotateSkin<font color="black">&</font> other<font color="black">)</font>; <font color="green">// hidden copy</font>
+
+  SharableRotateSkin<font color="black">*</font> m_parent;
+  <font color="blue">int</font> m_currentFrame;
+  <font color="blue">int</font> m_numFrames;
+
+  <font color="blue">int</font> m_currentRotation;
+
+  HTimer m_frameTimer;
+  <font color="blue">int</font> m_fps;
+<font color="black">}</font>;
+
+<font color="blue">class</font> SharableRotateSkin
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  SharableRotateSkin<font color="black">(</font><font color="blue">int</font> rotations, <font color="blue">bool</font> generateCollisionMask <font color="black">=</font> <font color="blue">false</font><font color="black">)</font>;
+  ~SharableRotateSkin<font color="black">(</font><font color="black">)</font>;
+
+  SharedRotateSkin<font color="black">*</font> acquire<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> release<font color="black">(</font>SharedRotateSkin<font color="black">*</font> skin<font color="black">)</font>;
+
+  
+  <font color="blue">void</font> addImage<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename, <font color="blue">int</font> count <font color="black">=</font> <font color="maroon">1</font><font color="black">)</font>;
+
+  HTexture getFrame<font color="black">(</font><font color="blue">int</font> r, <font color="blue">int</font> f<font color="black">)</font>;
+
+  CollisionBitMask<font color="black">*</font> getCollisionMask<font color="black">(</font><font color="blue">int</font> r, <font color="blue">int</font> f<font color="black">)</font>
+  <font color="black">{</font>
+    lassert<font color="black">(</font>m_generateMasks<font color="black">)</font>;
+    <font color="blue">return</font> m_collisionMasks<font color="black">[</font>r<font color="black">]</font><font color="black">[</font>f<font color="black">]</font>;
+  <font color="black">}</font>
+  
+  <font color="blue">void</font> setFPS<font color="black">(</font><font color="blue">int</font> fps<font color="black">)</font> <font color="black">{</font> m_fps <font color="black">=</font> fps; <font color="black">}</font>
+  <font color="blue">int</font> getFPS<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_fps; <font color="black">}</font>
+
+  <font color="green">/** 
+  @param w the forced width or -1 for actual
+  @param h the forced height or -1 for actual
+  */</font>
+  <font color="blue">void</font> forceSize<font color="black">(</font><font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font> <font color="black">{</font> m_forcedW <font color="black">=</font> w; m_forcedH <font color="black">=</font> h; <font color="black">}</font>
+  
+  virtual <font color="blue">int</font> getNumFrames<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_images<font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.size<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">int</font> getNumRotations<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_rotations; <font color="black">}</font>
+
+  <font color="blue">int</font> references<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_references; <font color="black">}</font>
+
+  <font color="blue">void</font> load<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> unload<font color="black">(</font><font color="black">)</font>;
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> load<font color="black">(</font>SDL_Surface<font color="black">*</font> surface<font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">int</font> m_fps;
+  <font color="blue">int</font> m_rotations;
+
+  <font color="blue">int</font> m_forcedW;
+  <font color="blue">int</font> m_forcedH;
+  
+  vector<font color="black">&#60;</font>HTexture<font color="black">&#62;</font> m_images<font color="black">[</font><font color="maroon">72</font><font color="black">]</font>;
+  vector<font color="black">&#60;</font>CollisionBitMask<font color="black">*</font><font color="black">&#62;</font> m_collisionMasks<font color="black">[</font><font color="maroon">72</font><font color="black">]</font>;
+
+  <font color="blue">int</font> m_references;
+  <font color="blue">bool</font> m_loaded;
+  <font color="blue">bool</font> m_generateMasks;
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font> m_filenames;
+
+<font color="blue">#ifdef</font> _DEBUG
+  set<font color="black">&#60;</font>Skin<font color="black">*</font><font color="black">&#62;</font> m_acquired;
+<font color="blue">#endif</font>
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

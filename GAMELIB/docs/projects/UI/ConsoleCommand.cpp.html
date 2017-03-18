@@ -1,0 +1,146 @@
+<HTML>
+<HEAD>
+<TITLE>
+ConsoleCommand.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Event.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Console.h"</font>
+<font color="blue">#include</font> <font color="maroon">"ConsoleCommand.h"</font>
+
+
+<font color="blue">void</font> initConsoleCommands<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+<font color="green">//  static NonTypeDelegate surfaceCommandDel(surfaceCommand);</font>
+<font color="green">//  theGame.console-&#62;addCallback("surface", &surfaceCommandDel);</font>
+
+<font color="green">//  static NonTypeDelegate uithingCommandDel(UIThing::doConsoleCommand);</font>
+<font color="green">//  theGame.console-&#62;addCallback("uithing", &uithingCommandDel);</font>
+<font color="green">//</font>
+<font color="green">//  static NonTypeDelegate buttonCommandDel(buttonCommand);</font>
+<font color="green">//  theGame.console-&#62;addCallback("button", &buttonCommandDel);</font>
+
+<font color="black">}</font>
+
+<font color="green">//bool buttonCommand(Event* evt)</font>
+<font color="green">//{</font>
+<font color="green">//  ConsoleCommand* cc=(ConsoleCommand*) evt;</font>
+<font color="green">//</font>
+<font color="green">//  if (cc-&#62;args.size() == 0)</font>
+<font color="green">//  {</font>
+<font color="green">//    theGame.console-&#62;println("button [use_pc[+|-] | ?]");</font>
+<font color="green">//    return true;</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//  string arg1=*(cc-&#62;args.begin());</font>
+<font color="green">//  if (arg1 == "?")</font>
+<font color="green">//  {</font>
+<font color="green">//    theGame.console-&#62;println("-");</font>
+<font color="green">//    theGame.console-&#62;println("button use_pc+ - buttons to use pre rendered surfaces");</font>
+<font color="green">//    theGame.console-&#62;println("button use_pc- - buttons to draw surfaces as it goes");</font>
+<font color="green">//    theGame.console-&#62;println("button ? - show this");</font>
+<font color="green">//    theGame.console-&#62;println("-");</font>
+<font color="green">//    return true;</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//  if (arg1 == "use_pc+")</font>
+<font color="green">//  {</font>
+<font color="green">//    theGame.console-&#62;println("Enabling pre rendered surfaces for buttons");</font>
+<font color="green">//    Button::s_usePreCreated = true;</font>
+<font color="green">//  }</font>
+<font color="green">//  else if (arg1 == "use_pc-")</font>
+<font color="green">//  {</font>
+<font color="green">//    theGame.console-&#62;println("Disabling pre rendered surfaces for buttons");</font>
+<font color="green">//    Button::s_usePreCreated = false;</font>
+<font color="green">//  }</font>
+<font color="green">//  else</font>
+<font color="green">//  {</font>
+<font color="green">//    theGame.console-&#62;println("uh..");</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//  return true;</font>
+<font color="green">//}</font>
+
+
+<font color="green">//bool surfaceCommand(Event* evt)</font>
+<font color="green">//{</font>
+<font color="green">//  ConsoleCommand* cc=(ConsoleCommand*) evt;</font>
+<font color="green">//  char buf[255];</font>
+<font color="green">//  if (cc-&#62;args.size() == 0)</font>
+<font color="green">//  {</font>
+<font color="green">//    theGame.console-&#62;println("surface [hw | ?]");</font>
+<font color="green">//    return true;</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//  string arg1=*(cc-&#62;args.begin());</font>
+<font color="green">//  if (arg1 == "?")</font>
+<font color="green">//  {</font>
+<font color="green">//    theGame.console-&#62;println("-");</font>
+<font color="green">//    theGame.console-&#62;println("surface hw - show if surfaces are Hardware based");</font>
+<font color="green">//    theGame.console-&#62;println("surface ? - show this");</font>
+<font color="green">//    theGame.console-&#62;println("-");</font>
+<font color="green">//    return true;</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//  if (arg1 == "hw")</font>
+<font color="green">//  {</font>
+<font color="green">//    set&#60;Surface*&#62;::iterator i;</font>
+<font color="green">//    theGame.console-&#62;println("-");</font>
+<font color="green">//    theGame.console-&#62;println("Begin Surface Dump");</font>
+<font color="green">//    for (i=Surface::s_surfaces.begin(); i!=Surface::s_surfaces.end(); i++)</font>
+<font color="green">//    {</font>
+<font color="green">//      Surface* surface=(*i);</font>
+<font color="green">//      sprintf(buf, "ptr: %x (\"%s\") %sware", surface-&#62;getSDLSurface(), surface-&#62;getName().c_str(), (const char*)(surface-&#62;isHardware()?"Hard":"Soft"));</font>
+<font color="green">//      theGame.console-&#62;println(buf);</font>
+<font color="green">//    }</font>
+<font color="green">//    theGame.console-&#62;println("End Surface Dump");</font>
+<font color="green">//    theGame.console-&#62;println("-");</font>
+<font color="green">//    return true;</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//  if (arg1 == "blit+")</font>
+<font color="green">//  {</font>
+<font color="green">//    theGame.console-&#62;println("-");</font>
+<font color="green">//    theGame.console-&#62;println("Enabling blit list");</font>
+<font color="green">//    theGame.console-&#62;println("-");</font>
+<font color="green">//    Surface::s_recordBlits = true;</font>
+<font color="green">//    return true;</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//  if (arg1 == "blit-")</font>
+<font color="green">//  {</font>
+<font color="green">//    theGame.console-&#62;println("-");</font>
+<font color="green">//    theGame.console-&#62;println("Disabling and clearing blit list");</font>
+<font color="green">//    theGame.console-&#62;println("-");</font>
+<font color="green">//    Surface::s_recordBlits = false;</font>
+<font color="green">//    Surface::s_blits.clear();</font>
+<font color="green">//    return true;</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//  if (arg1 == "blits")</font>
+<font color="green">//  {</font>
+<font color="green">//    list&#60;string&#62;::iterator i;</font>
+<font color="green">//    theGame.console-&#62;println("-");</font>
+<font color="green">//    theGame.console-&#62;println("begin blit dump");</font>
+<font color="green">//    for (i=Surface::s_blits.begin(); i!=Surface::s_blits.end(); i++)</font>
+<font color="green">//    {</font>
+<font color="green">//      theGame.console-&#62;println(*i);</font>
+<font color="green">//    }</font>
+<font color="green">//    theGame.console-&#62;println("end blit dump");</font>
+<font color="green">//    theGame.console-&#62;println("-");</font>
+<font color="green">//    return true;</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//  theGame.console-&#62;println("Unrecognized surface command");</font>
+<font color="green">//</font>
+<font color="green">//  return true;</font>
+<font color="green">//}</font>
+<font color="green">//</font>
+
+
+</PRE>
+</BODY>
+</HTML>

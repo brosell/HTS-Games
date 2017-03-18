@@ -1,0 +1,204 @@
+<HTML>
+<HEAD>
+<TITLE>
+TextArea.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4503</font> <font color="maroon">4530</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"TextArea.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Font.h"</font>
+<font color="blue">#include</font> <font color="maroon">"SDL_gfxPrimitives.h"</font>
+<font color="blue">#include</font> <font color="maroon">"StringTokenizer.h"</font>
+
+TextArea<font color="black">:</font><font color="black">:</font>TextArea<font color="black">(</font><font color="black">)</font><font color="black">:</font> 
+UIThing<font color="black">(</font><font color="black">)</font>, 
+m_margin<font color="black">(</font><font color="maroon">5</font><font color="black">)</font>,
+m_dirty<font color="black">(</font><font color="blue">true</font><font color="black">)</font>
+<font color="black">{</font> 
+  m_textEvent.thing <font color="black">=</font> <font color="blue">this</font>;
+  updateTextListeners<font color="black">(</font><font color="black">)</font>; 
+<font color="black">}</font>
+
+<font color="blue">void</font> TextArea<font color="black">:</font><font color="black">:</font>paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>
+<font color="black">{</font>
+
+  <font color="blue">if</font> <font color="black">(</font>m_dirty<font color="black">)</font>
+  <font color="black">{</font>
+    formatText<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  m_topIndex <font color="black">=</font> m_formattedLines.size<font color="black">(</font><font color="black">)</font> <font color="black">-</font>getVisibleLines<font color="black">(</font><font color="black">)</font>;
+  m_topIndex<font color="black">-</font><font color="black">-</font>;
+  <font color="blue">if</font> <font color="black">(</font>m_topIndex <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font> 
+  <font color="black">{</font>
+    m_topIndex <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  Rect r<font color="black">=</font>getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">int</font> x2<font color="black">=</font>r.x<font color="black">+</font>r.w <font color="maroon">-1</font>;
+  <font color="blue">int</font> y2<font color="black">=</font>r.y<font color="black">+</font>r.h <font color="maroon">-1</font> ;
+
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+
+  <font color="blue">int</font> curIndex <font color="black">=</font> <font color="maroon">0</font>;
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font> toBeDrawn;
+  <font color="blue">for</font> <font color="black">(</font>i <font color="black">=</font> m_formattedLines.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>m_formattedLines.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font>, curIndex<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>curIndex <font color="black">&#60;</font> m_topIndex<font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">continue</font>;
+    <font color="black">}</font>
+    toBeDrawn.push_front<font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+  <font color="black">}</font>
+  drawLines<font color="black">(</font>surface, toBeDrawn<font color="black">)</font>;
+
+<font color="black">}</font>
+
+<font color="blue">void</font> TextArea<font color="black">:</font><font color="black">:</font>drawLines<font color="black">(</font>Display<font color="black">*</font> surface, list<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">&</font> lines<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> space <font color="black">=</font> <font color="maroon">0</font>;
+  Rect r<font color="black">=</font>getPosition<font color="black">(</font><font color="black">)</font>;
+  Font<font color="black">*</font> font <font color="black">=</font> getFont<font color="black">(</font><font color="black">)</font>; <font color="green">//Font::getDefault();</font>
+  <font color="blue">int</font> y <font color="black">=</font> m_margin <font color="black">+</font> <font color="black">(</font><font color="black">(</font>lines.size<font color="black">(</font><font color="black">)</font><font color="maroon">-1</font><font color="black">)</font> <font color="black">*</font> font<font color="black">-</font><font color="black">&#62;</font>getFontHeight<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">+</font> r.y;
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>lines.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>lines.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    string <font color="blue">line</font> <font color="black">=</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+    font<font color="black">-</font><font color="black">&#62;</font>drawLine<font color="black">(</font>surface, <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>, m_margin <font color="black">+</font> r.x, y<font color="black">)</font>;
+    y<font color="black">-</font><font color="black">=</font>font<font color="black">-</font><font color="black">&#62;</font>getFontHeight<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="green">//void TextArea::formatText()</font>
+<font color="green">//{</font>
+<font color="green">//  // FIXME: Word wrap doesn;t work</font>
+<font color="green">//  m_formattedLines.clear();</font>
+<font color="green">//  Font* font=Font::getDefault();</font>
+<font color="green">//  Rect r = getPosition();</font>
+<font color="green">//</font>
+<font color="green">//  int maxCharPerLine = r.w / font-&#62;getTextWidth("&#62;");</font>
+<font color="green">//</font>
+<font color="green">//  int usablePixels = r.w - (2*m_margin);</font>
+<font color="green">//</font>
+<font color="green">//  StringTokenizer st(getText().c_str(), "\r\n");</font>
+<font color="green">//  while (st.hasMoreTokens())</font>
+<font color="green">//  {</font>
+<font color="green">//    string curLine = "";</font>
+<font color="green">//    int curColumn = 0;</font>
+<font color="green">//    char line[2048];// = strdup(st.nextToken().c_str());</font>
+<font color="green">//    strcpy(line, st.nextToken().c_str());</font>
+<font color="green">//    char* cstr = line;</font>
+<font color="green">//    char replaceChar;</font>
+<font color="green">//    bool firstWordOfNewLine = false;</font>
+<font color="green">//    while(*cstr != '\0')</font>
+<font color="green">//    {</font>
+<font color="green">//      char* nextSpace = (strchr(cstr+1, ' '));</font>
+<font color="green">//      if (nextSpace == 0) // no more sapces</font>
+<font color="green">//      {</font>
+<font color="green">//        nextSpace = cstr+(strlen(cstr)); // get to the end</font>
+<font color="green">//      }</font>
+<font color="green">//      else</font>
+<font color="green">//      {</font>
+<font color="green">//        nextSpace++;</font>
+<font color="green">//      }</font>
+<font color="green">//      replaceChar = *nextSpace; // might be ' ', might be '\0'</font>
+<font color="green">//      //if ( (nextSpace - cstr) &#60;= (maxCharPerLine - curColumn) )</font>
+<font color="green">//      if (font-&#62;getTextWidth(cstr, 0, nextSpace-cstr) &#60;= usablePixels)</font>
+<font color="green">//      {</font>
+<font color="green">//        *nextSpace = '\0'; // temparary</font>
+<font color="green">//        curColumn += strlen(cstr);</font>
+<font color="green">//        curLine += cstr;</font>
+<font color="green">//        *nextSpace = replaceChar;</font>
+<font color="green">//        cstr = nextSpace;</font>
+<font color="green">//        </font>
+<font color="green">//      }</font>
+<font color="green">//      //else if ( (nextSpace - cstr) &#62; maxCharPerLine)</font>
+<font color="green">//      else if ( font-&#62;getTextWidth(cstr, 0, nextSpace-cstr) &#62; usablePixels)</font>
+<font color="green">//      {</font>
+<font color="green">//        //  FIXME: It's a really big word...</font>
+<font color="green">//        if (curLine.size() &#62; 0)</font>
+<font color="green">//        {</font>
+<font color="green">//          m_formattedLines.push_back(curLine);</font>
+<font color="green">//          curLine = "";</font>
+<font color="green">//        }</font>
+<font color="green">//        replaceChar = *(cstr+maxCharPerLine);</font>
+<font color="green">//        *(cstr+maxCharPerLine) = '\0';</font>
+<font color="green">//        m_formattedLines.push_back(cstr);</font>
+<font color="green">//        *(cstr+maxCharPerLine) = replaceChar;</font>
+<font color="green">//        cstr+=maxCharPerLine;        </font>
+<font color="green">//      }</font>
+<font color="green">//      else</font>
+<font color="green">//      {</font>
+<font color="green">//        firstWordOfNewLine = true;</font>
+<font color="green">//        curColumn = 0;</font>
+<font color="green">//        m_formattedLines.push_back(curLine);</font>
+<font color="green">//        curLine = "";</font>
+<font color="green">//      }</font>
+<font color="green">//    }</font>
+<font color="green">//    m_formattedLines.push_back(curLine);</font>
+<font color="green">////    free(line);</font>
+<font color="green">//  }</font>
+<font color="green">//  m_dirty = false;</font>
+<font color="green">//}</font>
+
+<font color="blue">void</font> TextArea<font color="black">:</font><font color="black">:</font>formatText<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  m_formattedLines.clear<font color="black">(</font><font color="black">)</font>;
+  Font<font color="black">*</font> font<font color="black">=</font>getFont<font color="black">(</font><font color="black">)</font>;
+  Rect r <font color="black">=</font> getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+  StringTokenizer st<font color="black">(</font>getText<font color="black">(</font><font color="black">)</font>, <font color="maroon">"\r\n"</font><font color="black">)</font>;
+  <font color="blue">while</font> <font color="black">(</font>st.hasMoreTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    string toFormat <font color="black">=</font> st.nextToken<font color="black">(</font><font color="black">)</font>;
+    StringTokenizer words<font color="black">(</font>toFormat, <font color="maroon">" "</font><font color="black">)</font>;
+    <font color="blue">int</font> textWidth <font color="black">=</font> <font color="maroon">0</font>;
+    string <font color="blue">line</font> <font color="black">=</font> <font color="maroon">" "</font>;
+    CStdString proposedLine;
+    <font color="blue">while</font><font color="black">(</font>words.hasMoreTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      string word <font color="black">=</font> words.nextToken<font color="black">(</font><font color="black">)</font>;
+      <font color="blue">if</font> <font color="black">(</font>word <font color="black">=</font><font color="black">=</font> <font color="maroon">"&#60;BR&#62;"</font><font color="black">)</font>
+      <font color="black">{</font>
+        m_formattedLines.push_back<font color="black">(</font><font color="blue">line</font><font color="black">)</font>;
+<font color="green">//        m_formattedLines.push_back("&#60;BR&#62;");</font>
+        <font color="blue">line</font> <font color="black">=</font> <font color="maroon">" "</font>;
+        <font color="blue">continue</font>;
+      <font color="black">}</font>
+
+      proposedLine.Format<font color="black">(</font><font color="maroon">"%s %s"</font>, <font color="blue">line</font>.c_str<font color="black">(</font><font color="black">)</font>, word.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      
+      <font color="blue">if</font> <font color="black">(</font>font<font color="black">-</font><font color="black">&#62;</font>getTextWidth<font color="black">(</font>proposedLine<font color="black">)</font> <font color="black">&#62;</font> <font color="black">(</font>r.w <font color="black">-</font><font color="black">(</font>m_margin<font color="black">*</font><font color="maroon">2</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        m_formattedLines.push_back<font color="black">(</font><font color="blue">line</font><font color="black">)</font>;
+        <font color="blue">line</font> <font color="black">=</font> <font color="maroon">" "</font>;
+        <font color="blue">line</font> <font color="black">+</font><font color="black">=</font> word;
+      <font color="black">}</font>
+      <font color="blue">else</font>
+      <font color="black">{</font>
+        <font color="blue">line</font><font color="black">+</font><font color="black">=</font><font color="maroon">" "</font>;
+        <font color="blue">line</font><font color="black">+</font><font color="black">=</font>word;
+      <font color="black">}</font>
+    <font color="black">}</font>
+    m_formattedLines.push_back<font color="black">(</font><font color="blue">line</font><font color="black">)</font>;
+<font color="green">//    m_formattedLines.push_back("&#60;BR&#62;");</font>
+  <font color="black">}</font>
+  m_dirty <font color="black">=</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> TextArea<font color="black">:</font><font color="black">:</font>updateTextListeners<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  m_textEvent.commandId <font color="black">=</font> getId<font color="black">(</font><font color="black">)</font>;
+  set<font color="black">&#60;</font>TextListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_textListeners<font color="black">)</font>;
+  set<font color="black">&#60;</font>TextListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>textChanged<font color="black">(</font><font color="black">&</font>m_textEvent<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

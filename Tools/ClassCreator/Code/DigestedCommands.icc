@@ -1,0 +1,113 @@
+/* ****************************************************************************
+ *
+ *  DigestedCommands.icc
+ *  Created by John F. Hubbard, on Fri Aug 25 2000, 10:25:35 PST
+ *
+ *  Copyright (c) 2000, ATD Azad Technology Development Corporation
+ *
+ *            The Reliable Software Outsource Resource
+ *        You hire us, we do it for you, and we do it right.
+ *
+ *                       www.azadtech.com
+ *
+ *  Permission is granted to use this code without restriction,
+ *  as long as this copyright notice appears in all source files.
+ *
+ *  File Contents: Inline definitions for the DigestedCommands class.
+ *  Please see DigestedCommands.h for full documentation of this class.
+ *
+ * %version: 2.29 %
+ * %date_modified: Wed Nov 15 18:46:01 2000 %
+ * %created_by: jhubbard %
+ *
+ *************************************************************************** */
+
+namespace code_gen
+{
+inline std::string DigestedCommands::GetClassList()  	const
+{ return mstrClassList;
+}
+inline std::string DigestedCommands::GetHeaderFile() 	const
+{ return mstrHeaderFile;
+}
+inline std::string DigestedCommands::GetImplFile()   	const
+{ return mstrImplFile;
+}
+inline std::string DigestedCommands::GetInlineFile() 	const
+{ return mstrInlineFile;
+}
+inline std::string DigestedCommands::GetMakefile()	 	const
+{ return mstrMakefile;
+}
+inline std::string DigestedCommands::GetUnitTestFile() 	const
+{ return mstrUnitTestFile;
+}
+inline std::string DigestedCommands::GetNamespace()	 	const
+{ return mstrNamespace;
+}
+inline std::string DigestedCommands::GetAuthor()	 	const
+{ return mstrAuthor;
+}
+inline std::string DigestedCommands::GetProjectName() 	const
+{ return mstrProjectName;
+}
+inline bool	DigestedCommands::WillCreateMakefile()	  	const
+{ return mbMakefile;
+}
+inline bool	DigestedCommands::WillCreateUnitTestFile() 	const
+{ return mbUnitTestFile;
+}
+inline int	DigestedCommands::GetWriteSentryMode() 	  	const
+{ return mfWriteSentryMode;
+}
+
+inline bool	DigestedCommands::SccsKeywords() 	  	const
+{ return mbSccsKeywords;
+}
+inline bool	DigestedCommands::ContinuusKeywords()  	const
+{ return mbContinuusKeywords;
+}
+inline bool	DigestedCommands::CVS_Keywords()  		const
+{ return mbCVS_Keywords;
+}
+inline bool	DigestedCommands::OpenSourceNotice()   	const
+{ return mbOpenSourceNotice;
+}
+inline std::string DigestedCommands::GetCopyright()   		const
+{ return mstrCopyright;
+}
+inline std::string DigestedCommands::GetBaseFilename() 	const
+{	return mstrBaseFilename;
+}
+inline bool	DigestedCommands::AssignmentOperator() 	const
+{ return mbAssignmentOperator;
+}
+inline bool	DigestedCommands::Ctor() 	const
+{ return mbCtor;
+}
+inline bool	DigestedCommands::CopyCtor() 	const
+{ return mbCopyCtor;
+}
+inline bool	DigestedCommands::Dtor() 	const
+{ return mbDtor;
+}
+inline bool	DigestedCommands::IccFile() 	const
+{ return mbIccFile;
+}
+inline bool	DigestedCommands::UseCheckValid() 	const
+{ return mbCheckValid;
+}
+inline bool	DigestedCommands::UseDumpDiagnostics() 	const
+{ return mbDumpDiagnostics;
+}
+inline bool	DigestedCommands::UseNamespace() 	const
+{ return mbNamespace;
+}
+inline bool	DigestedCommands::PublicCopyCtor() 	const
+{ return mbPublicCopyCtor;
+}
+inline bool	DigestedCommands::PublicAssignmentOperator() 	const
+{ return mbPublicAssignmentOperator;
+}
+
+} // end of the code_gen namespace

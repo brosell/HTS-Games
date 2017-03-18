@@ -1,0 +1,232 @@
+<HTML>
+<HEAD>
+<TITLE>
+TextBox.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4503</font> <font color="maroon">4530</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+<font color="blue">#include</font> <font color="maroon">"TextBox.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Font.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"SDL_gfxPrimitives.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+
+TextBox<font color="black">:</font><font color="black">:</font>TextBox<font color="black">(</font><font color="black">)</font><font color="black">:</font>
+UIThing<font color="black">(</font><font color="black">)</font>,
+m_cursorPosition<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_physCursorPosition<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_leftMargin<font color="black">(</font><font color="maroon">5</font><font color="black">)</font>,
+m_rightMargin<font color="black">(</font><font color="maroon">5</font><font color="black">)</font>,
+m_topMargin<font color="black">(</font><font color="maroon">5</font><font color="black">)</font>,
+m_bottomMargin<font color="black">(</font><font color="maroon">5</font><font color="black">)</font>
+<font color="black">{</font>
+  m_textEvent.thing <font color="black">=</font> <font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> TextBox<font color="black">:</font><font color="black">:</font>setIterAtCursor<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  m_iterBeforeCursor <font color="black">=</font> m_currentLine.begin<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">for</font><font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>m_cursorPosition<font color="maroon">-1</font>; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_iterBeforeCursor<font color="black">+</font><font color="black">+</font>;
+  <font color="black">}</font>
+  m_iterAtCursor <font color="black">=</font> m_iterBeforeCursor;
+  <font color="blue">if</font> <font color="black">(</font>m_iterAtCursor <font color="black">!</font><font color="black">=</font> m_currentLine.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_iterAtCursor<font color="black">+</font><font color="black">+</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> TextBox<font color="black">:</font><font color="black">:</font>paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> c <font color="black">=</font> <font color="maroon">0</font>;
+  string text <font color="black">=</font> getText<font color="black">(</font><font color="black">)</font>;  
+  Font<font color="black">*</font> font<font color="black">=</font>getFont<font color="black">(</font><font color="black">)</font>;
+  Rect r<font color="black">=</font>getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+
+  surface<font color="black">-</font><font color="black">&#62;</font>pushClipRect<font color="black">(</font>r<font color="black">)</font>;
+
+  <font color="blue">int</font> usablePixels <font color="black">=</font> r.w <font color="black">-</font><font color="black">(</font>m_leftMargin <font color="black">-</font>m_rightMargin<font color="black">)</font>;
+  <font color="blue">int</font> stringPixels <font color="black">=</font> font<font color="black">-</font><font color="black">&#62;</font>getTextWidth<font color="black">(</font>text<font color="black">)</font>;
+  
+  <font color="blue">char</font><font color="black">*</font> buf <font color="black">=</font> <font color="blue">new</font> <font color="blue">char</font><font color="black">[</font>m_cursorPosition <font color="black">+</font> <font color="maroon">1</font><font color="black">]</font>;
+  memset<font color="black">(</font>buf, <font color="maroon">0</font>, m_cursorPosition <font color="black">+</font> <font color="maroon">1</font><font color="black">)</font>;
+  <font color="blue">for</font> <font color="black">(</font>c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>m_cursorPosition; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    buf<font color="black">[</font>c<font color="black">]</font> <font color="black">=</font> getText<font color="black">(</font><font color="black">)</font>.at<font color="black">(</font>c<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">int</font> cursorPixelLocation <font color="black">=</font> font<font color="black">-</font><font color="black">&#62;</font>getTextWidth<font color="black">(</font>buf<font color="black">)</font> <font color="black">+</font> font<font color="black">-</font><font color="black">&#62;</font>getTextWidth<font color="black">(</font><font color="maroon">" "</font><font color="black">)</font> <font color="black">+</font> r.x;
+  
+  <font color="green">// draw the text</font>
+  Point textLocation<font color="black">(</font>r.x<font color="black">+</font>m_leftMargin, r.y<font color="black">+</font>m_topMargin<font color="black">)</font>;
+  <font color="green">// case 1: the text fits</font>
+  <font color="blue">if</font> <font color="black">(</font>stringPixels <font color="black">&#60;</font><font color="black">=</font> usablePixels<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">// just draw it</font>
+    font<font color="black">-</font><font color="black">&#62;</font>drawLine<font color="black">(</font>surface, text, textLocation.x, textLocation.y<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>cursorPixelLocation <font color="black">&#60;</font> usablePixels<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">// just draw it letting the clip rect clip it</font>
+    font<font color="black">-</font><font color="black">&#62;</font>drawLine<font color="black">(</font>surface, text, textLocation.x, textLocation.y<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    <font color="blue">for</font> <font color="black">(</font>c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>m_cursorPosition; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">if</font> <font color="black">(</font>font<font color="black">-</font><font color="black">&#62;</font>getTextWidth<font color="black">(</font><font color="black">&</font>buf<font color="black">[</font>c<font color="black">]</font><font color="black">)</font> <font color="black">&#60;</font> usablePixels<font color="black">)</font>
+      <font color="black">{</font>
+        cursorPixelLocation <font color="black">=</font> font<font color="black">-</font><font color="black">&#62;</font>drawLine<font color="black">(</font>surface, <font color="black">&</font>buf<font color="black">[</font>c<font color="black">]</font>, textLocation.x, textLocation.y<font color="black">)</font>;
+        <font color="blue">break</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  <font color="green">// if focus, draw the cursor</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>hasFocus<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    surface<font color="black">-</font><font color="black">&#62;</font>drawVLine<font color="black">(</font>cursorPixelLocation, textLocation.y, font<font color="black">-</font><font color="black">&#62;</font>getFontHeight<font color="black">(</font><font color="black">)</font>, <font color="maroon">127</font>, <font color="maroon">127</font>, <font color="maroon">127</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">delete</font> <font color="black">[</font><font color="black">]</font> buf;
+
+  surface<font color="black">-</font><font color="black">&#62;</font>popClipRect<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="green">//void TextBox::paint(Display* surface)</font>
+<font color="green">//{</font>
+<font color="green">//  </font>
+<font color="green">//</font>
+<font color="green">//  Font* font=getFont();</font>
+<font color="green">//  Rect r=getTranslatedPosition();</font>
+<font color="green">//</font>
+<font color="green">//  surface-&#62;pushClipRect(r);</font>
+<font color="green">//</font>
+<font color="green">//  int capacity = (r.w-(2*m_leftMargin))/font-&#62;getTextWidth("&#62;");</font>
+<font color="green">//  int numToPrint = min(m_currentLine.size(), capacity);</font>
+<font color="green">//  int first=m_cursorPosition-numToPrint;</font>
+<font color="green">//  if (first &#60; 0)</font>
+<font color="green">//    first = 0;</font>
+<font color="green">//  int last=first+numToPrint;</font>
+<font color="green">//</font>
+<font color="green">//  // draw edge</font>
+<font color="green">//  int x2=r.x+r.w - 1;</font>
+<font color="green">//  int y2=r.y+r.h - 1 ;</font>
+<font color="green">//  // draw text</font>
+<font color="green">//  // draw input line</font>
+<font color="green">//  char buf[255];</font>
+<font color="green">//  for (int c=0; c&#60;numToPrint; c++)</font>
+<font color="green">//  {</font>
+<font color="green">//    buf[c] = m_currentLine.at(c+first);</font>
+<font color="green">//  }</font>
+<font color="green">//  buf[numToPrint]=0;</font>
+<font color="green">//  int inputY=r.y + 5;</font>
+<font color="green">//  font-&#62;drawLine(surface, buf, r.x+m_leftMargin, inputY);</font>
+<font color="green">//</font>
+<font color="green">//  if (this-&#62;hasFocus())</font>
+<font color="green">//  {</font>
+<font color="green">//    // draw cursor (if we have focus)</font>
+<font color="green">//    int phys=(m_cursorPosition-first) * font-&#62;getTextWidth("&#62;");</font>
+<font color="green">//    int x1 = r.x+m_leftMargin+(phys);</font>
+<font color="green">//</font>
+<font color="green">//    font-&#62;drawLine(surface, "_", x1, r.y+5);</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//  surface-&#62;popClipRect();</font>
+<font color="green">//}</font>
+
+
+<font color="blue">void</font> TextBox<font color="black">:</font><font color="black">:</font>onKeyPress<font color="black">(</font>KeyPressEvent<font color="black">*</font> ke<font color="black">)</font>
+<font color="black">{</font>
+  lassert<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>hasFocus<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  setIterAtCursor<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">bool</font> shifted<font color="black">=</font><font color="blue">false</font>;
+  lassert<font color="black">(</font>m_cursorPosition <font color="black">&#60;</font><font color="black">=</font> m_currentLine.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+  <font color="blue">switch</font><font color="black">(</font>ke<font color="black">-</font><font color="black">&#62;</font>keySym<font color="black">)</font>
+  <font color="black">{</font>
+  <font color="blue">case</font> SDLK_LEFT<font color="black">:</font>
+    <font color="black">{</font>
+      <font color="blue">if</font> <font color="black">(</font>m_cursorPosition <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+      <font color="black">{</font>
+        m_cursorPosition<font color="black">-</font><font color="black">-</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="blue">case</font> SDLK_RIGHT<font color="black">:</font>
+    <font color="black">{</font>
+      <font color="blue">if</font> <font color="black">(</font>m_cursorPosition <font color="black">&#60;</font> m_currentLine.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        m_cursorPosition<font color="black">+</font><font color="black">+</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="blue">case</font> SDLK_DELETE<font color="black">:</font>
+    <font color="black">{</font>
+      <font color="blue">if</font><font color="black">(</font>m_cursorPosition <font color="black">!</font><font color="black">=</font> m_currentLine.size<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> m_currentLine.size<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+      <font color="black">{</font>
+        m_currentLine.erase<font color="black">(</font>m_iterBeforeCursor<font color="black">)</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="blue">case</font> SDLK_BACKSPACE<font color="black">:</font>
+    <font color="black">{</font>
+      <font color="blue">if</font> <font color="black">(</font>m_cursorPosition <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+      <font color="black">{</font>
+        m_currentLine.erase<font color="black">(</font>m_iterBeforeCursor<font color="black">)</font>;
+        m_cursorPosition<font color="black">-</font><font color="black">-</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="blue">case</font> SDLK_HOME<font color="black">:</font>
+    <font color="black">{</font>
+      m_cursorPosition <font color="black">=</font> <font color="maroon">0</font>;
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="blue">case</font> SDLK_END<font color="black">:</font>
+    <font color="black">{</font>
+      m_cursorPosition <font color="black">=</font> m_currentLine.size<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="blue">default</font><font color="black">:</font>
+    <font color="black">{</font>
+      <font color="blue">if</font> <font color="black">(</font>theGame.isKey<font color="black">(</font>SDLK_RSHIFT<font color="black">)</font> <font color="black">|</font><font color="black">|</font> theGame.isKey<font color="black">(</font>SDLK_LSHIFT<font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        shifted<font color="black">=</font><font color="blue">true</font>;
+      <font color="black">}</font>
+      
+      <font color="blue">if</font> <font color="black">(</font>ke<font color="black">-</font><font color="black">&#62;</font>keySym <font color="black">&#62;</font><font color="black">=</font> <font color="maroon">0x20</font> <font color="black">&</font><font color="black">&</font> ke<font color="black">-</font><font color="black">&#62;</font>keySym <font color="black">&#60;</font><font color="black">=</font><font color="maroon">0x7E</font><font color="black">)</font>
+      <font color="black">{</font>
+        <font color="blue">char</font> key<font color="black">=</font>ke<font color="black">-</font><font color="black">&#62;</font>keySym;
+        <font color="blue">if</font> <font color="black">(</font>shifted<font color="black">)</font> key<font color="black">=</font>upperof<font color="black">(</font>key<font color="black">)</font>;
+        
+        m_currentLine.insert<font color="black">(</font>m_iterAtCursor, key<font color="black">)</font>;
+        m_cursorPosition<font color="black">+</font><font color="black">+</font>;
+        updateTextListeners<font color="black">(</font><font color="black">)</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> TextBox<font color="black">:</font><font color="black">:</font>updateTextListeners<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  m_textEvent.commandId <font color="black">=</font> getId<font color="black">(</font><font color="black">)</font>;
+  
+  set<font color="black">&#60;</font>TextListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_textListeners<font color="black">)</font>;
+  set<font color="black">&#60;</font>TextListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>textChanged<font color="black">(</font><font color="black">&</font>m_textEvent<font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,64 @@
+<HTML>
+<HEAD>
+<TITLE>
+CollisionBitMask.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> CollisionBitMask_h
+<font color="blue">#define</font> CollisionBitMask_h
+
+<font color="blue">#include</font> <font color="maroon">"Misc/GameMath.h"</font>
+
+<font color="green">/**
+CollisionBitMask is used to test for collisions between objects based on 
+their images
+*/</font>
+<font color="blue">class</font> CollisionBitMask
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="green">/**
+    Constructs a CollisionBitMask from pixel data
+    @param sourcePixels 32bit alpha channeled pixels
+    @param w the width of the image
+    @param h the height of the image
+    */</font>
+  CollisionBitMask<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> sourcePixels, <font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font>;
+  ~CollisionBitMask<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">/**
+    return the array of bits
+    */</font>
+  <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> getBits<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> m_bits; <font color="black">}</font>
+  <font color="blue">int</font> getWidth<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> m_width; <font color="black">}</font>
+  <font color="blue">int</font> getHeight<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> m_height; <font color="black">}</font>
+
+  <font color="green">/**
+    Tests whether a point colides with this mask
+    */</font>
+  <font color="blue">bool</font> isPointCollision<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font> <font color="blue">const</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">char</font><font color="black">*</font> m_bits;
+  <font color="blue">int</font> m_width;
+  <font color="blue">int</font> m_height;
+<font color="black">}</font>;
+
+<font color="green">/**
+  Test for collision between two CollisionBitMaks
+  @param ent1 the first mask
+  @param ent1x the world X position of ent 1
+  @param ent1y the world y position or ent 1
+  @param ent2 the second mask
+  @param ent2x the world X position of ent 2
+  @param ent2y the world y position or ent 2
+  */</font>
+<font color="blue">bool</font> testCollision<font color="black">(</font><font color="blue">const</font> CollisionBitMask<font color="black">*</font> ent1, <font color="blue">int</font> ent1x, <font color="blue">int</font> ent1y, 
+                   <font color="blue">const</font> CollisionBitMask<font color="black">*</font> ent2, <font color="blue">int</font> ent2x, <font color="blue">int</font> ent2y, 
+                   Point<font color="black">&</font> loc1, Point<font color="black">&</font> loc2<font color="black">)</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,213 @@
+<HTML>
+<HEAD>
+<TITLE>
+World.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"World.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Thing.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+
+
+
+World<font color="black">:</font><font color="black">:</font>World<font color="black">(</font><font color="blue">int</font> w, <font color="blue">int</font> h, <font color="blue">int</font> physX, <font color="blue">int</font> physY, <font color="blue">int</font> vw, <font color="blue">int</font> vh<font color="black">)</font><font color="black">:</font>
+m_width<font color="black">(</font>w<font color="black">)</font>, 
+m_height<font color="black">(</font>h<font color="black">)</font>,
+m_viewportPhysicalX<font color="black">(</font>physX<font color="black">)</font>,
+m_viewportPhysicalY<font color="black">(</font>physY<font color="black">)</font>,
+m_viewportWidth<font color="black">(</font>vw<font color="black">)</font>,
+m_viewportHeight<font color="black">(</font>vh<font color="black">)</font>
+<font color="black">{</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> World<font color="black">:</font><font color="black">:</font>addThing<font color="black">(</font>Thing<font color="black">&</font> thing<font color="black">)</font>
+<font color="black">{</font>
+  things.add<font color="black">(</font><font color="black">&</font>thing<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> World<font color="black">:</font><font color="black">:</font>addMovingThing<font color="black">(</font>Thing<font color="black">&</font> thing<font color="black">)</font>
+<font color="black">{</font>
+  movingThings.add<font color="black">(</font><font color="black">&</font>thing<font color="black">)</font>;
+  movingThings.sort<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> World<font color="black">:</font><font color="black">:</font>removeThing<font color="black">(</font>Thing<font color="black">&</font> thing<font color="black">)</font>
+<font color="black">{</font>
+  things.remove<font color="black">(</font><font color="black">&</font>thing<font color="black">)</font>;
+  movingThings.remove<font color="black">(</font><font color="black">&</font>thing<font color="black">)</font>;
+  movingThings.sort<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> World<font color="black">:</font><font color="black">:</font>optimize<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  things.sort<font color="black">(</font><font color="black">)</font>;
+<font color="green">//  movingThings.sort();</font>
+<font color="black">}</font>
+
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+
+<font color="blue">void</font> World<font color="black">:</font><font color="black">:</font>draw<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>
+<font color="black">{</font>
+  Display<font color="black">*</font> display <font color="black">=</font> Display<font color="black">:</font><font color="black">:</font>getInstance<font color="black">(</font><font color="black">)</font>;
+  display<font color="black">-</font><font color="black">&#62;</font>pushClipRect<font color="black">(</font>Rect<font color="black">(</font>m_viewportPhysicalX, m_viewportPhysicalY, m_viewportWidth, m_viewportHeight<font color="black">)</font><font color="black">)</font>;
+  <font color="blue">static</font> Thing<font color="black">*</font> thingsToDraw<font color="black">[</font>MAX_ELEMS<font color="black">]</font>;
+  <font color="blue">static</font> Rect vr;
+  vr.x<font color="black">=</font>m_viewportX;
+  vr.y<font color="black">=</font>m_viewportY;
+  vr.w<font color="black">=</font>m_viewportWidth;
+  vr.h<font color="black">=</font>m_viewportHeight;
+  
+  
+  <font color="blue">int</font> count<font color="black">=</font>things.getByRect<font color="black">(</font><font color="black">&</font>vr, thingsToDraw, MAX_ELEMS, <font color="maroon">0</font>, <font color="maroon">15</font><font color="black">)</font>;
+  count<font color="black">+</font><font color="black">=</font>movingThings.getByRectSortX<font color="black">(</font><font color="black">&</font>vr, <font color="black">&</font><font color="black">(</font>thingsToDraw<font color="black">[</font>count<font color="black">]</font><font color="black">)</font>, MAX_ELEMS<font color="black">-</font>count, <font color="maroon">0</font>, <font color="maroon">15</font><font color="black">)</font>;
+  
+
+  ThingCollection<font color="black">:</font><font color="black">:</font>sortByZ<font color="black">(</font>thingsToDraw, count<font color="black">)</font>;
+
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> x<font color="black">=</font><font color="maroon">0</font>; x<font color="black">&#60;</font>count; x<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    Point p<font color="black">=</font>thingsToDraw<font color="black">[</font>x<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>getPositioni<font color="black">(</font><font color="black">)</font>;
+    
+    <font color="blue">int</font> screenRelativeX<font color="black">=</font>p.x <font color="black">-</font>m_viewportX <font color="black">+</font> m_viewportPhysicalX;
+    <font color="blue">int</font> screenRelativeY<font color="black">=</font>p.y <font color="black">-</font>m_viewportY <font color="black">+</font> m_viewportPhysicalY;
+
+    thingsToDraw<font color="black">[</font>x<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>draw<font color="black">(</font>surface, screenRelativeX, screenRelativeY<font color="black">)</font>;
+  <font color="black">}</font>
+  display<font color="black">-</font><font color="black">&#62;</font>popClipRect<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">bool</font> World<font color="black">:</font><font color="black">:</font>computeMovement<font color="black">(</font>Rect<font color="black">*</font> thingRect, <font color="blue">int</font> startX, <font color="blue">int</font> startY, <font color="blue">int</font> destX, <font color="blue">int</font> destY, <font color="blue">int</font><font color="black">&</font> endX, <font color="blue">int</font><font color="black">&</font> endY<font color="black">)</font>
+<font color="black">{</font>
+
+    <font color="green">/* this all is based on y=mx+b where m = (deltaX/deltaY) and b = y intercept.
+        We have to check the entire route for obsticles, so we figure out the line
+        and check each (X,Y) point for obstructions.
+
+      IF we can not fit, we will try to do just the X axis. If that won't fit, we will try
+        just the Y axis.
+  */</font>
+
+  <font color="blue">int</font> xx<font color="black">=</font><font color="maroon">0</font>, yy<font color="black">=</font><font color="maroon">0</font>;
+  
+  <font color="blue">int</font> dx <font color="black">=</font> destX <font color="black">-</font>startX;
+  <font color="blue">int</font> dy <font color="black">=</font> destY <font color="black">-</font>startY;
+  
+  <font color="blue">int</font> goodX<font color="black">=</font>startX;
+  <font color="blue">int</font> goodY<font color="black">=</font>startY;
+  
+  <font color="blue">if</font> <font color="black">(</font>dx <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> b<font color="black">=</font>startY<font color="black">-</font><font color="black">(</font>dy<font color="black">/</font>dx<font color="black">)</font><font color="black">*</font>startX;
+    
+    <font color="blue">for</font> <font color="black">(</font>xx<font color="black">=</font>startX; xx<font color="black">!</font><font color="black">=</font>destX; xx<font color="black">+</font><font color="black">=</font><font color="black">(</font>dx<font color="black">/</font>abs<font color="black">(</font>dx<font color="black">)</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      yy <font color="black">=</font> xx<font color="black">*</font><font color="black">(</font>dy<font color="black">/</font>dx<font color="black">)</font><font color="black">+</font>b;
+      <font color="blue">if</font> <font color="black">(</font>canThingFit<font color="black">(</font>thingRect, xx, yy<font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        goodX<font color="black">=</font>xx;
+        goodY<font color="black">=</font>yy;
+      <font color="black">}</font>
+      <font color="blue">else</font>
+      <font color="black">{</font>
+        <font color="green">// maybe the formula causes the yy to increment by more than 1 and we're only </font>
+        <font color="green">// one higher than the ground. (should cover any height 2, 3, 4 anything</font>
+        <font color="green">// try this special case.... </font>
+        <font color="blue">int</font> inc<font color="black">=</font><font color="black">(</font>dy<font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>?<font color="maroon">0</font><font color="black">:</font>dy<font color="black">/</font>abs<font color="black">(</font>dy<font color="black">)</font>; <font color="green">// get the sign</font>
+        <font color="blue">if</font> <font color="black">(</font>canThingFit<font color="black">(</font>thingRect, xx, goodY<font color="black">+</font>inc<font color="black">)</font><font color="black">)</font>
+        <font color="black">{</font>
+          goodX<font color="black">=</font>xx;
+          goodY<font color="black">=</font>goodY<font color="black">+</font>inc;
+        <font color="black">}</font>
+        <font color="blue">else</font>
+        <font color="black">{</font>
+          <font color="green">// try X axis</font>
+          <font color="blue">if</font> <font color="black">(</font>canThingFit<font color="black">(</font>thingRect, xx, goodY<font color="black">)</font><font color="black">)</font>
+          <font color="black">{</font>
+            goodX <font color="black">=</font> xx;
+            <font color="blue">break</font>; <font color="green">// if we can't go X, then thats it. gravity takes care of Y</font>
+          <font color="black">}</font>
+          <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>canThingFit<font color="black">(</font>thingRect, goodX, yy<font color="black">)</font><font color="black">)</font> <font color="green">// and the y</font>
+          <font color="black">{</font>
+            goodY <font color="black">=</font> yy;
+          <font color="black">}</font>
+          <font color="blue">else</font>
+          <font color="black">{</font>
+            <font color="blue">break</font>;
+          <font color="black">}</font>
+        <font color="black">}</font>
+      <font color="black">}</font>
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    <font color="green">// straight up or straight down. ie only Y axis (no need to check other axis on failure</font>
+    <font color="blue">for</font> <font color="black">(</font>yy<font color="black">=</font>startY; yy<font color="black">!</font><font color="black">=</font>destY; yy<font color="black">+</font><font color="black">=</font><font color="black">(</font>dy<font color="black">/</font>abs<font color="black">(</font>dy<font color="black">)</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      xx<font color="black">=</font>destX;
+      <font color="blue">if</font> <font color="black">(</font>canThingFit<font color="black">(</font>thingRect, xx, yy<font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        goodX<font color="black">=</font>xx;
+        goodY<font color="black">=</font>yy;
+      <font color="black">}</font>
+      <font color="blue">else</font>
+      <font color="black">{</font>
+         <font color="blue">break</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  endX<font color="black">=</font>goodX;
+  endY<font color="black">=</font>goodY;
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+Thing<font color="black">*</font> World<font color="black">:</font><font color="black">:</font>movingThingAt<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font>
+<font color="black">{</font>
+  Point trans <font color="black">=</font> translateScreenPoint<font color="black">(</font>Point<font color="black">(</font>x, y<font color="black">)</font><font color="black">)</font>;
+  Rect r<font color="black">(</font>trans.x, trans.y, <font color="maroon">0</font>, <font color="maroon">0</font><font color="black">)</font>;
+  Thing<font color="black">*</font> array<font color="black">[</font><font color="maroon">15</font><font color="black">]</font>;
+  <font color="blue">int</font> count <font color="black">=</font> movingThings.getByRect<font color="black">(</font><font color="black">&</font>r, array, <font color="maroon">15</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>count <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>count; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      Thing<font color="black">*</font> thing <font color="black">=</font> array<font color="black">[</font>c<font color="black">]</font>;
+      <font color="blue">int</font> mx <font color="black">=</font> trans.x <font color="black">-</font><font color="black">(</font>thing<font color="black">-</font><font color="black">&#62;</font>getTopLeftX<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      <font color="blue">int</font> my <font color="black">=</font> trans.y <font color="black">-</font><font color="black">(</font>thing<font color="black">-</font><font color="black">&#62;</font>getTopLeftY<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      <font color="blue">if</font> <font color="black">(</font>thing<font color="black">-</font><font color="black">&#62;</font>getCurrentCollisionBitMask<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>isPointCollision<font color="black">(</font>mx, my<font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        <font color="blue">return</font> thing;
+      <font color="black">}</font>
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+Thing<font color="black">*</font> World<font color="black">:</font><font color="black">:</font>getThingAt<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> z<font color="black">)</font>
+<font color="black">{</font>
+  Point trans <font color="black">=</font> translateScreenPoint<font color="black">(</font>Point<font color="black">(</font>x, y<font color="black">)</font><font color="black">)</font>;
+  Rect r<font color="black">(</font>trans.x, trans.y, <font color="maroon">0</font>, <font color="maroon">0</font><font color="black">)</font>;
+  Thing<font color="black">*</font> array<font color="black">[</font><font color="maroon">15</font><font color="black">]</font>;
+  <font color="blue">int</font> count <font color="black">=</font> things.getByRect<font color="black">(</font><font color="black">&</font>r, array, <font color="maroon">15</font>, z, z<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>count <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>count; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      Thing<font color="black">*</font> thing <font color="black">=</font> array<font color="black">[</font>c<font color="black">]</font>;
+      <font color="blue">int</font> mx <font color="black">=</font> trans.x <font color="black">-</font><font color="black">(</font>thing<font color="black">-</font><font color="black">&#62;</font>getTopLeftX<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      <font color="blue">int</font> my <font color="black">=</font> trans.y <font color="black">-</font><font color="black">(</font>thing<font color="black">-</font><font color="black">&#62;</font>getTopLeftY<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      <font color="blue">if</font> <font color="black">(</font>thing<font color="black">-</font><font color="black">&#62;</font>getCurrentCollisionBitMask<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>isPointCollision<font color="black">(</font>mx, my<font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        <font color="blue">return</font> thing;
+      <font color="black">}</font>
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

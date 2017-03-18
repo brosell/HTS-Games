@@ -1,0 +1,292 @@
+<HTML>
+<HEAD>
+<TITLE>
+SDLDisplay.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4530</font> <font color="maroon">4503</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"SDLDisplay.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"SDL_gfxPrimitives.h"</font>
+<font color="green">//#include "audio/SoundMixer.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;iostream&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+
+SDLDisplay<font color="black">:</font><font color="black">:</font>SDLDisplay<font color="black">(</font><font color="blue">int</font> width, <font color="blue">int</font> height, <font color="blue">int</font> bpp, Uint32 flags<font color="black">)</font><font color="black">:</font>
+m_colorKey<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>
+<font color="black">{</font>
+<font color="green">//  flags -= SDL_DOUBLEBUF; // uncomment for FAST FAST FAST drawing</font>
+  lassert<font color="black">(</font> <font color="black">(</font>flags <font color="black">&</font> SDL_OPENGL<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+  
+  m_surface <font color="black">=</font> SDL_SetVideoMode<font color="black">(</font>width, height, bpp, flags<font color="black">)</font>;
+  
+  <font color="blue">if</font><font color="black">(</font><font color="black">!</font>m_surface<font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Failed to initialize Video"</font><font color="black">)</font>;
+    isValid<font color="black">(</font><font color="blue">false</font><font color="black">)</font>;
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+  isValid<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+
+  logError<font color="black">(</font>Inform, <font color="maroon">"Screen is %s surface"</font>, <font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font><font color="black">(</font><font color="black">(</font>m_surface<font color="black">-</font><font color="black">&#62;</font>flags%<font color="maroon">2</font><font color="black">)</font><font color="black">=</font><font color="black">=</font><font color="maroon">1</font>?<font color="maroon">"HW"</font><font color="black">:</font><font color="maroon">"SW"</font><font color="black">)</font><font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font><font color="black">(</font>m_surface<font color="black">-</font><font color="black">&#62;</font>flags%<font color="maroon">2</font><font color="black">)</font><font color="black">=</font><font color="black">=</font><font color="maroon">1</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">// hardware surface... map a back buffer</font>
+    m_dblBuf <font color="black">=</font> createSDLSurface<font color="black">(</font>width, height<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    m_dblBuf <font color="black">=</font> m_surface;
+  <font color="black">}</font>
+  
+
+  logError<font color="black">(</font>Inform, <font color="maroon">"Rmask %08x"</font>, m_dblBuf<font color="black">-</font><font color="black">&#62;</font>format<font color="black">-</font><font color="black">&#62;</font>Rmask<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Gmask %08x"</font>, m_dblBuf<font color="black">-</font><font color="black">&#62;</font>format<font color="black">-</font><font color="black">&#62;</font>Gmask<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Bmask %08x"</font>, m_dblBuf<font color="black">-</font><font color="black">&#62;</font>format<font color="black">-</font><font color="black">&#62;</font>Bmask<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Amask %08x"</font>, m_dblBuf<font color="black">-</font><font color="black">&#62;</font>format<font color="black">-</font><font color="black">&#62;</font>Amask<font color="black">)</font>;
+
+  m_colorKey <font color="black">=</font> SDL_MapRGB<font color="black">(</font>m_surface<font color="black">-</font><font color="black">&#62;</font>format, <font color="maroon">0xf0</font>, <font color="maroon">0x00</font>, <font color="maroon">0xf0</font><font color="black">)</font>;
+<font color="green">//  SDL_SetColorKey(m_surface, SDL_SRCCOLORKEY | SDL_RLEACCEL, m_colorKey);</font>
+
+  pushClipRect<font color="black">(</font>Rect<font color="black">(</font><font color="maroon">0</font>, <font color="maroon">0</font>, width, height<font color="black">)</font><font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"SDLDisplay created."</font><font color="black">)</font>;
+<font color="black">}</font>
+
+SDLDisplay<font color="black">:</font><font color="black">:</font>~SDLDisplay<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>Inform, <font color="maroon">"Tearing down SDLDisplay"</font><font color="black">)</font>;
+  map<font color="black">&#60;</font>HTexture, <font color="blue">void</font><font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  <font color="blue">while</font><font color="black">(</font>textureMap.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    pair <font color="black">=</font> textureMap.begin<font color="black">(</font><font color="black">)</font>;
+    freeTexture<font color="black">(</font>pair<font color="black">-</font><font color="black">&#62;</font>first<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">bool</font> SDLDisplay<font color="black">:</font><font color="black">:</font>setWindowed<font color="black">(</font><font color="blue">bool</font> w<font color="black">)</font>
+<font color="black">{</font>
+  <font color="green">/* 
+  unset display mode
+    set using same parameters
+    convert all loaded textures to new format
+*/</font>
+  <font color="green">// unset</font>
+  <font color="blue">if</font> <font color="black">(</font>m_dblBuf <font color="black">!</font><font color="black">=</font> m_surface<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">// we have a back buffer... free it</font>
+    SDL_FreeSurface<font color="black">(</font>m_dblBuf<font color="black">)</font>;
+    m_dblBuf <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  SDL_QuitSubSystem<font color="black">(</font>SDL_INIT_VIDEO<font color="black">)</font>;
+  m_surface <font color="black">=</font> <font color="maroon">0</font>;
+
+  <font color="green">// reset</font>
+  SDL_InitSubSystem<font color="black">(</font>SDL_INIT_VIDEO<font color="black">)</font>;
+  Uint32 flags <font color="black">=</font> getFlags<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>flags <font color="black">&</font> SDL_FULLSCREEN<font color="black">)</font> flags<font color="black">-</font><font color="black">=</font>SDL_FULLSCREEN;
+
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>w<font color="black">)</font>
+  <font color="black">{</font>
+    flags <font color="black">|</font><font color="black">=</font> SDL_FULLSCREEN;
+  <font color="black">}</font>
+
+  m_surface <font color="black">=</font> SDL_SetVideoMode<font color="black">(</font>getWidth<font color="black">(</font><font color="black">)</font>, getHeight<font color="black">(</font><font color="black">)</font>, getBpp<font color="black">(</font><font color="black">)</font>, flags<font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>m_surface<font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Unable to set video mode. Expect to die soon."</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  m_colorKey <font color="black">=</font> SDL_MapRGB<font color="black">(</font>m_surface<font color="black">-</font><font color="black">&#62;</font>format, <font color="maroon">0xf0</font>, <font color="maroon">0x00</font>, <font color="maroon">0xf0</font><font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>m_surface<font color="black">-</font><font color="black">&#62;</font>flags <font color="black">&</font> SDL_HWSURFACE<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">// hardware surface... map a back buffer</font>
+    m_dblBuf <font color="black">=</font> createSDLSurface<font color="black">(</font>getWidth<font color="black">(</font><font color="black">)</font>, getHeight<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    m_dblBuf <font color="black">=</font> m_surface;
+  <font color="black">}</font>
+
+  SDL_ShowCursor<font color="black">(</font><font color="blue">false</font><font color="black">)</font>;
+<font color="green">//  SoundMixer::bounce();</font>
+  
+  <font color="green">// FIXME: now convert all the loaded textures to the new format</font>
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> SDLDisplay<font color="black">:</font><font color="black">:</font>clear<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">static</font> SDL_Rect r;
+  r.x<font color="black">=</font><font color="maroon">0</font>;
+  r.y<font color="black">=</font><font color="maroon">0</font>;
+  r.w<font color="black">=</font>m_dblBuf<font color="black">-</font><font color="black">&#62;</font>w;
+  r.h<font color="black">=</font>m_dblBuf<font color="black">-</font><font color="black">&#62;</font>h;
+
+  SDL_FillRect<font color="black">(</font>m_dblBuf, <font color="black">&</font>r, SDL_MapRGBA<font color="black">(</font>m_dblBuf<font color="black">-</font><font color="black">&#62;</font>format, <font color="maroon">0x00</font>, <font color="maroon">0x00</font>, <font color="maroon">0x00</font>, <font color="maroon">0xff</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+<font color="blue">void</font> SDLDisplay<font color="black">:</font><font color="black">:</font>flip<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">static</font> SDL_Rect sr;
+  <font color="blue">static</font> SDL_Rect dest;
+  
+  <font color="blue">if</font> <font color="black">(</font>m_dblBuf <font color="black">!</font><font color="black">=</font> m_surface<font color="black">)</font>
+  <font color="black">{</font>
+    sr.x<font color="black">=</font><font color="maroon">0</font>;
+    sr.y<font color="black">=</font><font color="maroon">0</font>;
+    sr.w<font color="black">=</font>m_dblBuf<font color="black">-</font><font color="black">&#62;</font>w;
+    sr.h<font color="black">=</font>m_dblBuf<font color="black">-</font><font color="black">&#62;</font>h;
+    
+    
+    dest.x<font color="black">=</font><font color="maroon">0</font>;
+    dest.y<font color="black">=</font><font color="maroon">0</font>;
+    SDL_BlitSurface<font color="black">(</font>m_dblBuf, <font color="black">&</font>sr, m_surface, <font color="black">&</font>dest<font color="black">)</font>;
+  <font color="black">}</font>
+  
+  SDL_Flip<font color="black">(</font>m_surface<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> SDLDisplay<font color="black">:</font><font color="black">:</font>blit<font color="black">(</font>HTexture textureId, <font color="blue">int</font> destX, <font color="blue">int</font> destY<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">void</font><font color="black">*</font> vp <font color="black">=</font> textureMap<font color="black">[</font>textureId<font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font>vp <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    lassert2<font color="black">(</font><font color="blue">false</font>, <font color="maroon">"null SDL_Surface"</font><font color="black">)</font>;
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+
+  SDL_Surface<font color="black">*</font> toBeBlitted <font color="black">=</font> <font color="black">(</font>SDL_Surface<font color="black">*</font><font color="black">)</font>vp;
+  
+  <font color="blue">static</font> SDL_Rect sr;
+  sr.x<font color="black">=</font><font color="maroon">0</font>;
+  sr.y<font color="black">=</font><font color="maroon">0</font>;
+  sr.w<font color="black">=</font>toBeBlitted<font color="black">-</font><font color="black">&#62;</font>w;
+  sr.h<font color="black">=</font>toBeBlitted<font color="black">-</font><font color="black">&#62;</font>h;
+
+  <font color="blue">static</font> SDL_Rect dest;
+  dest.x<font color="black">=</font>destX <font color="black">+</font> getDrawOffsetAmount<font color="black">(</font><font color="black">)</font>.x;
+  dest.y<font color="black">=</font>destY <font color="black">+</font> getDrawOffsetAmount<font color="black">(</font><font color="black">)</font>.y;
+  SDL_BlitSurface<font color="black">(</font>toBeBlitted, <font color="black">&</font>sr, m_dblBuf, <font color="black">&</font>dest<font color="black">)</font>;
+<font color="black">}</font>
+
+HTexture SDLDisplay<font color="black">:</font><font color="black">:</font>loadTexture<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename<font color="black">)</font>
+<font color="black">{</font>
+  SDL_Surface<font color="black">*</font> img<font color="black">=</font>loadSDLSurface<font color="black">(</font>filename<font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>img<font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Failed to load \"%s\""</font>, filename<font color="black">)</font>;
+    lassert<font color="black">(</font><font color="blue">false</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  HTexture ret <font color="black">=</font> loadTexture<font color="black">(</font>img<font color="black">)</font>;
+  
+  SDL_FreeSurface<font color="black">(</font>img<font color="black">)</font>;
+  
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+HTexture SDLDisplay<font color="black">:</font><font color="black">:</font>loadTexture<font color="black">(</font>SDL_Surface<font color="black">*</font> img<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> id <font color="black">=</font><font color="maroon">0</font>;
+  SDL_Surface<font color="black">*</font> convImg <font color="black">=</font> <font color="maroon">0</font>;
+  
+  <font color="blue">if</font> <font color="black">(</font>isDoubleBuffered<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    convImg <font color="black">=</font> SDL_ConvertSurface<font color="black">(</font>img, img<font color="black">-</font><font color="black">&#62;</font>format, SDL_SWSURFACE<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    convImg <font color="black">=</font> SDL_ConvertSurface<font color="black">(</font>img, img<font color="black">-</font><font color="black">&#62;</font>format, SDL_HWSURFACE<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">if</font> <font color="black">(</font>convImg <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">//SDL_SetColorKey(convImg, SDL_SRCCOLORKEY |SDL_RLEACCEL, m_colorKey);</font>
+    id <font color="black">=</font> nextTextureId<font color="black">+</font><font color="black">+</font>;
+    textureMap<font color="black">[</font>id<font color="black">]</font> <font color="black">=</font> <font color="black">(</font><font color="blue">void</font><font color="black">*</font><font color="black">)</font>convImg;
+    addTextureInfo<font color="black">(</font>id, <font color="blue">new</font> TextureInfo<font color="black">(</font>convImg<font color="black">-</font><font color="black">&#62;</font>w, convImg<font color="black">-</font><font color="black">&#62;</font>h<font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Could not set color key on surface"</font><font color="black">)</font>;
+  <font color="black">}</font>
+  
+  <font color="blue">return</font> id;
+<font color="black">}</font>
+
+
+<font color="blue">void</font> SDLDisplay<font color="black">:</font><font color="black">:</font>freeTexture<font color="black">(</font>HTexture textureId<font color="black">)</font>
+<font color="black">{</font>
+  <font color="green">// only Free_surface since all the cache work has been done</font>
+  SDL_Surface<font color="black">*</font> surface <font color="black">=</font> <font color="black">(</font>SDL_Surface<font color="black">*</font><font color="black">)</font>textureMap<font color="black">[</font>textureId<font color="black">]</font>;
+  lassert<font color="black">(</font>surface <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+
+  SDL_FreeSurface<font color="black">(</font>surface<font color="black">)</font>;
+  textureMap.erase<font color="black">(</font>textureId<font color="black">)</font>;
+
+  TextureInfo<font color="black">*</font> ti <font color="black">=</font> <font color="black">(</font>TextureInfo<font color="black">*</font><font color="black">)</font>getTextureInfo<font color="black">(</font>textureId<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>ti<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">delete</font> ti;
+    removeTextureInfo<font color="black">(</font>textureId<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Trying to free texture but TextureInfo for textureId %d is null"</font>, textureId<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> SDLDisplay<font color="black">:</font><font color="black">:</font>drawVLine<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> h, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha<font color="black">)</font>
+<font color="black">{</font>
+  Vector v <font color="black">=</font> getDrawOffsetAmount<font color="black">(</font><font color="black">)</font>;
+  x<font color="black">+</font><font color="black">=</font>v.x;
+  y<font color="black">+</font><font color="black">=</font>v.y;
+  vlineRGBA<font color="black">(</font>m_dblBuf, x, y, y<font color="black">+</font>h, red, green, blue, alpha<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> SDLDisplay<font color="black">:</font><font color="black">:</font>drawLine<font color="black">(</font><font color="blue">int</font> x1, <font color="blue">int</font> y1, <font color="blue">int</font> x2, <font color="blue">int</font> y2, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha<font color="black">)</font>
+<font color="black">{</font>
+  lineRGBA<font color="black">(</font>m_dblBuf, x1, y1, x2, y2, red, green, blue, alpha<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> SDLDisplay<font color="black">:</font><font color="black">:</font>drawHLine<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> w, <font color="blue">int</font> y, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha<font color="black">)</font>
+<font color="black">{</font>
+  Vector v <font color="black">=</font> getDrawOffsetAmount<font color="black">(</font><font color="black">)</font>;
+  x<font color="black">+</font><font color="black">=</font>v.x;
+  y<font color="black">+</font><font color="black">=</font>v.y;
+  hlineRGBA<font color="black">(</font>m_dblBuf, x, x<font color="black">+</font>w, y, red, green, blue, alpha<font color="black">)</font>;
+<font color="black">}</font>
+<font color="blue">void</font> SDLDisplay<font color="black">:</font><font color="black">:</font>fillRect<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> w, <font color="blue">int</font> h, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha<font color="black">)</font>
+<font color="black">{</font>
+  Vector v <font color="black">=</font> getDrawOffsetAmount<font color="black">(</font><font color="black">)</font>;
+  x<font color="black">+</font><font color="black">=</font>v.x;
+  y<font color="black">+</font><font color="black">=</font>v.y;
+  
+  boxRGBA<font color="black">(</font>m_dblBuf, x, y, x<font color="black">+</font>w, y<font color="black">+</font>h, red, green, blue, alpha<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> SDLDisplay<font color="black">:</font><font color="black">:</font>reportTextureInfo<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  map<font color="black">&#60;</font>HTexture, string<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  <font color="blue">for</font> <font color="black">(</font>pair<font color="black">=</font>m_filenameMap.begin<font color="black">(</font><font color="black">)</font>; pair<font color="black">!</font><font color="black">=</font>m_filenameMap.end<font color="black">(</font><font color="black">)</font>; pair<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    SDL_Surface<font color="black">*</font> surface <font color="black">=</font> <font color="black">(</font>SDL_Surface<font color="black">*</font><font color="black">)</font>textureMap<font color="black">[</font>pair<font color="black">-</font><font color="black">&#62;</font>first<font color="black">]</font>;
+    logError<font color="black">(</font>Inform, <font color="maroon">"Texture %8d (%3dx%3d) %s"</font>,
+      surface,
+      surface<font color="black">-</font><font color="black">&#62;</font>w,
+      surface<font color="black">-</font><font color="black">&#62;</font>h,
+      <font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font><font color="black">(</font><font color="black">(</font>surface<font color="black">-</font><font color="black">&#62;</font>flags<font color="black">&</font>SDL_HWSURFACE<font color="black">)</font><font color="black">=</font><font color="black">=</font>SDL_HWSURFACE<font color="black">)</font>?<font color="maroon">"HW"</font><font color="black">:</font><font color="maroon">"SW"</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

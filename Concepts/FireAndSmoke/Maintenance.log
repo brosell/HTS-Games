@@ -1,0 +1,36 @@
+09/18/03 16:15:22 - Inform: HW Available: 1
+09/18/03 16:15:22 - Inform: Accelerated HW->HW Blits: 1
+09/18/03 16:15:22 - Inform: Accelerated HW->HW Colorkey Blits: 1
+09/18/03 16:15:22 - Inform: Accelerated HW->HW ALPHA Blits: 0
+09/18/03 16:15:22 - Inform: Accelerated SW->HW Blits: 1
+09/18/03 16:15:22 - Inform: Accelerated SW->HW Colorkey Blits: 1
+09/18/03 16:15:22 - Inform: Accelerated SW->HW ALPHA Blits: 0
+09/18/03 16:15:22 - Inform: Accelerated Fills :1
+09/18/03 16:15:22 - Inform: Screen is SW surface
+09/18/03 16:15:22 - Inform: Rmask 0000f800
+09/18/03 16:15:22 - Inform: Gmask 000007e0
+09/18/03 16:15:22 - Inform: Bmask 0000001f
+09/18/03 16:15:22 - Inform: Amask 00000000
+09/18/03 16:15:22 - Inform: SDLDisplay created.
+09/18/03 16:15:22 - Inform: App Lost focus.
+09/18/03 16:15:22 - Inform: App Gained focus.
+09/18/03 16:15:23 - Inform: 
+09/18/03 16:15:23 - Inform: Time Report
+09/18/03 16:15:23 - Inform: -----------------------
+09/18/03 16:15:23 - Inform: drawing    : 023
+09/18/03 16:15:23 - Inform: network    : 000
+09/18/03 16:15:23 - Inform: input      : 000
+09/18/03 16:15:23 - Inform: timer      : 000
+09/18/03 16:15:23 - Inform: coroutine  : 001
+09/18/03 16:15:23 - Inform: -----------------------
+09/18/03 16:15:23 - Inform: TOTAL      :0022
+09/18/03 16:15:26 - Inform: 
+09/18/03 16:15:26 - Inform: Time Report
+09/18/03 16:15:26 - Inform: -----------------------
+09/18/03 16:15:26 - Inform: drawing    : 021
+09/18/03 16:15:26 - Inform: network    : 000
+09/18/03 16:15:26 - Inform: input      : 000
+09/18/03 16:15:26 - Inform: timer      : 000
+09/18/03 16:15:26 - Inform: coroutine  : 001
+09/18/03 16:15:26 - Inform: -----------------------
+09/18/03 16:15:26 - Inform: TOTAL      :0023

@@ -1,0 +1,314 @@
+<HTML>
+<HEAD>
+<TITLE>
+PakFile.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"PakFile.h"</font>
+<font color="blue">#include</font> <font color="maroon">"stdlib.h"</font>
+<font color="green">//#include &#60;unistd.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;iostream&#62;</font>
+
+PakFile<font color="black">:</font><font color="black">:</font>PakFile<font color="black">(</font>string pn, <font color="blue">bool</font> l<font color="black">)</font>
+<font color="black">{</font>
+  packName<font color="black">=</font>pn;
+  
+  <font color="blue">if</font><font color="black">(</font>l<font color="black">)</font>
+  <font color="black">{</font>
+    load<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> PakFile<font color="black">:</font><font color="black">:</font>load<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+<font color="green">//  cout &#60;&#60; "Loading" &#60;&#60; endl;</font>
+
+  FILE<font color="black">*</font> fd<font color="black">=</font>fopen<font color="black">(</font>packName.c_str<font color="black">(</font><font color="black">)</font>, <font color="maroon">"rb"</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>fd<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+
+  <font color="blue">char</font> id<font color="black">[</font><font color="maroon">5</font><font color="black">]</font><font color="black">=</font><font color="maroon">"xxxx"</font>;
+  fread<font color="black">(</font>id, <font color="maroon">1</font>, <font color="maroon">4</font>, fd<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>strcmp<font color="black">(</font>id, <font color="maroon">"skpk"</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    fclose<font color="black">(</font>fd<font color="black">)</font>;
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+
+  <font color="blue">unsigned</font> <font color="blue">long</font> tmp;
+  fread<font color="black">(</font><font color="black">&</font>tmp, <font color="maroon">1</font>, <font color="maroon">4</font>, fd<font color="black">)</font>; <font color="green">// dir loc;</font>
+  dirLoc<font color="black">=</font>NBULong<font color="black">:</font><font color="black">:</font>fromNetwork<font color="black">(</font>tmp<font color="black">)</font>;
+
+  fread<font color="black">(</font><font color="black">&</font>tmp, <font color="maroon">1</font>, <font color="maroon">4</font>, fd<font color="black">)</font>; <font color="green">// dir size</font>
+  dirSize<font color="black">=</font>NBULong<font color="black">:</font><font color="black">:</font>fromNetwork<font color="black">(</font>tmp<font color="black">)</font>;
+
+  fseek<font color="black">(</font>fd, dirLoc, SEEK_SET<font color="black">)</font>;
+
+  <font color="green">// FIXME: it is important to read the dir here!!!</font>
+
+  <font color="blue">for</font><font color="black">(</font><font color="blue">int</font> x<font color="black">=</font><font color="maroon">0</font>; x<font color="black">&#60;</font>dirSize<font color="black">/</font><font color="black">(</font><font color="maroon">128</font><font color="black">+</font><font color="maroon">4</font><font color="black">+</font><font color="maroon">4</font><font color="black">)</font>; x<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+<font color="green">//    cout &#60;&#60; "Loading # " &#60;&#60; x &#60;&#60; endl;</font>
+    <font color="blue">char</font> <font color="blue">name</font><font color="black">[</font><font color="maroon">128</font><font color="black">]</font>;
+    memset<font color="black">(</font><font color="blue">name</font>, <font color="maroon">0</font>, <font color="maroon">128</font><font color="black">)</font>;
+    
+    <font color="blue">unsigned</font> <font color="blue">long</font> offset;<font color="green">//=i-&#62;getOffset().getNetworkVal();</font>
+    <font color="blue">unsigned</font> <font color="blue">long</font> length;<font color="green">//=i-&#62;getSize().getNetworkVal();</font>
+
+    fread<font color="black">(</font><font color="blue">name</font>, <font color="maroon">1</font>, <font color="maroon">128</font>, fd<font color="black">)</font>;
+    fread<font color="black">(</font><font color="black">&</font>offset, <font color="maroon">1</font>, <font color="maroon">4</font>, fd<font color="black">)</font>;
+    fread<font color="black">(</font><font color="black">&</font>length, <font color="maroon">1</font>, <font color="maroon">4</font>, fd<font color="black">)</font>;
+
+    PakFileElement pfe;
+    pfe.setName<font color="black">(</font><font color="blue">name</font><font color="black">)</font>;
+    pfe.setOffset<font color="black">(</font>NBULong<font color="black">:</font><font color="black">:</font>fromNetwork<font color="black">(</font>offset<font color="black">)</font><font color="black">)</font>;
+    pfe.setSize<font color="black">(</font>NBULong<font color="black">:</font><font color="black">:</font>fromNetwork<font color="black">(</font>length<font color="black">)</font><font color="black">)</font>;
+
+    <font color="green">//push_back(pfe);</font>
+    <font color="black">(</font><font color="black">*</font><font color="blue">this</font><font color="black">)</font><font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">=</font>pfe;
+  <font color="black">}</font>
+
+  fclose<font color="black">(</font>fd<font color="black">)</font>;
+
+<font color="black">}</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;time.h&#62;</font>
+<font color="blue">int</font> tmpnamii<font color="black">(</font><font color="blue">char</font><font color="black">*</font> temp<font color="black">)</font>;
+<font color="blue">int</font> tmpnamii<font color="black">(</font><font color="blue">char</font><font color="black">*</font> temp<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">char</font><font color="black">*</font> start<font color="black">=</font>strstr<font color="black">(</font>temp, <font color="maroon">"XXXXXX"</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>start<font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="maroon">0</font>;
+    <font color="black">}</font>
+  sprintf<font color="black">(</font>start, <font color="maroon">"%x.tmp"</font>, clock<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> <font color="maroon">1</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> PakFile<font color="black">:</font><font color="black">:</font>commit<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+<font color="green">//  cout &#60;&#60; "Committing" &#60;&#60; endl;</font>
+  <font color="blue">char</font> tmpName<font color="black">[</font><font color="maroon">256</font><font color="black">]</font><font color="black">=</font><font color="maroon">"pkXXXXXX"</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>tmpnamii<font color="black">(</font>tmpName<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+<font color="green">//   cout &#60;&#60; "tmp name no good" &#60;&#60; endl;</font>
+   <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  
+<font color="green">//  cout &#60;&#60; tmpName &#60;&#60; endl;</font>
+
+  <font color="blue">unsigned</font> <font color="blue">long</font> curOffset<font color="black">=</font><font color="maroon">0</font>;
+
+  FILE<font color="black">*</font> fd<font color="black">=</font>fopen<font color="black">(</font>tmpName, <font color="maroon">"wb"</font><font color="black">)</font>;
+
+    
+  curOffset<font color="black">+</font><font color="black">=</font>fwrite<font color="black">(</font><font color="maroon">"skpk        "</font>, <font color="maroon">1</font>, <font color="maroon">12</font>, fd<font color="black">)</font>; <font color="green">// header</font>
+  
+  map<font color="black">&#60;</font>string, PakFileElement<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+
+  <font color="blue">for</font><font color="black">(</font>pair<font color="black">=</font>begin<font color="black">(</font><font color="black">)</font>; pair<font color="black">!</font><font color="black">=</font>end<font color="black">(</font><font color="black">)</font>; pair<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+<font color="green">//    cout &#60;&#60; "adding " &#60;&#60; pair-&#62;first &#60;&#60; endl;</font>
+    <font color="blue">unsigned</font> <font color="blue">long</font> startOffset<font color="black">=</font>curOffset;
+<font color="green">//    if (!pair-&#62;second.isOnDisk())</font>
+<font color="green">//    {</font>
+<font color="green">//      // copy bytes from old pak;</font>
+<font color="green">//      char tmpElem[256]="pkelemXXXXXX";</font>
+<font color="green">//      tmpnamii(tmpElem);</font>
+<font color="green">//      extract(pair-&#62;second, tmpElem);</font>
+<font color="green">//      curOffset+=copy(tmpElem, fd);</font>
+<font color="green">//      unlink(tmpElem);</font>
+<font color="green">//    }</font>
+<font color="green">//    else</font>
+<font color="green">//    {</font>
+    curOffset<font color="black">+</font><font color="black">=</font>copy<font color="black">(</font>pair<font color="black">-</font><font color="black">&#62;</font>second.getName<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font>, fd<font color="black">)</font>;
+<font color="green">//    }</font>
+    pair<font color="black">-</font><font color="black">&#62;</font>second.setOffset<font color="black">(</font>startOffset<font color="black">)</font>;
+    pair<font color="black">-</font><font color="black">&#62;</font>second.setSize<font color="black">(</font>curOffset<font color="black">-</font>startOffset<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">// at this point diroffset = curOffset</font>
+  <font color="green">// and size = size() * (128+4+4)</font>
+
+  <font color="blue">unsigned</font> <font color="blue">long</font> dirOffset<font color="black">=</font>NBULong<font color="black">:</font><font color="black">:</font>fromHost<font color="black">(</font>curOffset<font color="black">)</font>.getNetworkVal<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">unsigned</font> <font color="blue">long</font> dirSize<font color="black">=</font>NBULong<font color="black">:</font><font color="black">:</font>fromHost<font color="black">(</font>size<font color="black">(</font><font color="black">)</font><font color="black">*</font><font color="black">(</font><font color="maroon">128</font><font color="black">+</font><font color="maroon">4</font><font color="black">+</font><font color="maroon">4</font><font color="black">)</font><font color="black">)</font>.getNetworkVal<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">// write directory</font>
+  <font color="blue">for</font><font color="black">(</font>pair<font color="black">=</font>begin<font color="black">(</font><font color="black">)</font>; pair<font color="black">!</font><font color="black">=</font>end<font color="black">(</font><font color="black">)</font>; pair<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    PakFileElement pfe <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+<font color="green">//    cout &#60;&#60; " dir entry: " &#60;&#60; pair-&#62;first &#60;&#60; endl;</font>
+    <font color="blue">char</font> <font color="blue">name</font><font color="black">[</font><font color="maroon">128</font><font color="black">]</font>;
+    memset<font color="black">(</font><font color="blue">name</font>, <font color="maroon">0</font>, <font color="maroon">128</font><font color="black">)</font>;
+    strcpy<font color="black">(</font><font color="blue">name</font>, pfe.getName<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">unsigned</font> <font color="blue">long</font> offset<font color="black">=</font>pfe.getOffset<font color="black">(</font><font color="black">)</font>.getNetworkVal<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">unsigned</font> <font color="blue">long</font> length<font color="black">=</font>pfe.getSize<font color="black">(</font><font color="black">)</font>.getNetworkVal<font color="black">(</font><font color="black">)</font>;
+
+    fwrite<font color="black">(</font><font color="blue">name</font>, <font color="maroon">1</font>, <font color="maroon">128</font>, fd<font color="black">)</font>;
+    fwrite<font color="black">(</font><font color="black">&</font>offset, <font color="maroon">1</font>, <font color="maroon">4</font>, fd<font color="black">)</font>;
+    fwrite<font color="black">(</font><font color="black">&</font>length, <font color="maroon">1</font>, <font color="maroon">4</font>, fd<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">// seek to begining and write out size and lkenght of directory</font>
+  fseek<font color="black">(</font>fd, <font color="maroon">4</font>, SEEK_SET<font color="black">)</font>;
+
+  fwrite<font color="black">(</font><font color="black">&</font>dirOffset, <font color="maroon">1</font>, <font color="maroon">4</font>, fd<font color="black">)</font>;
+  fwrite<font color="black">(</font><font color="black">&</font>dirSize, <font color="maroon">1</font>, <font color="maroon">4</font>, fd<font color="black">)</font>;
+  
+  fclose<font color="black">(</font>fd<font color="black">)</font>;
+
+  unlink<font color="black">(</font>packName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="green">//  cout &#60;&#60; "trying to raname " &#60;&#60; tmpName &#60;&#60; " to " &#60;&#60; packName &#60;&#60; " ";</font>
+  <font color="blue">int</font> res <font color="black">=</font> rename<font color="black">(</font>tmpName, packName.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+<font color="blue">unsigned</font> <font color="blue">long</font> PakFile<font color="black">:</font><font color="black">:</font>copy<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename, FILE<font color="black">*</font> fd<font color="black">)</font>
+<font color="black">{</font>
+  FILE<font color="black">*</font> in<font color="black">=</font>fopen<font color="black">(</font>filename, <font color="maroon">"rb"</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>in<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  <font color="blue">unsigned</font> <font color="blue">long</font> retSize<font color="black">=</font><font color="maroon">0</font>;
+  <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">255</font><font color="black">]</font>;
+  <font color="blue">int</font> count<font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="blue">while</font> <font color="black">(</font> count<font color="black">=</font>fread<font color="black">(</font>buf, <font color="maroon">1</font>, <font color="maroon">255</font>, in<font color="black">)</font> <font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> c<font color="black">=</font>fwrite<font color="black">(</font>buf, <font color="maroon">1</font>, count, fd<font color="black">)</font>;
+    retSize<font color="black">+</font><font color="black">=</font>c;  <font color="green">// use c instead of count because there might be an error writing that we have to catch</font>
+  <font color="black">}</font>
+
+  fclose<font color="black">(</font>in<font color="black">)</font>;
+  <font color="blue">return</font> retSize;
+<font color="black">}</font>
+
+<font color="blue">bool</font> PakFile<font color="black">:</font><font color="black">:</font>extract<font color="black">(</font>PakFileElement elem<font color="black">)</font> <font color="green">//, const char* whereTo)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> extract<font color="black">(</font>elem, elem.getLocation<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> PakFile<font color="black">:</font><font color="black">:</font>extract<font color="black">(</font>PakFileElement elem, <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> to<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>elem.getOffset<font color="black">(</font><font color="black">)</font><font color="black">=</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">// never made to the pak file so we can't extract it</font>
+    <font color="blue">return</font> <font color="blue">true</font>;
+  <font color="black">}</font>
+
+  <font color="green">// it is posable to get a zero size file</font>
+
+  FILE<font color="black">*</font> pack<font color="black">=</font>fopen<font color="black">(</font>packName.c_str<font color="black">(</font><font color="black">)</font>, <font color="maroon">"rb"</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>pack<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+
+  FILE<font color="black">*</font> out<font color="black">=</font>fopen<font color="black">(</font>to, <font color="maroon">"wb"</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>out<font color="black">)</font>
+  <font color="black">{</font>
+    fclose<font color="black">(</font>pack<font color="black">)</font>;
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+
+  fseek<font color="black">(</font>pack, elem.getOffset<font color="black">(</font><font color="black">)</font>, SEEK_SET<font color="black">)</font>;
+
+  <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">1</font><font color="black">]</font>;
+
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> x<font color="black">=</font><font color="maroon">0</font>; x<font color="black">&#60;</font>elem.getSize<font color="black">(</font><font color="black">)</font>; x<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">// FIXME: one byte at a time is not very efficiant but I'll optimize later :)</font>
+    fread<font color="black">(</font>buf, <font color="maroon">1</font>, <font color="maroon">1</font>, pack<font color="black">)</font>;
+    fwrite<font color="black">(</font>buf, <font color="maroon">1</font>, <font color="maroon">1</font>, out<font color="black">)</font>;
+  <font color="black">}</font>
+
+  fclose<font color="black">(</font>pack<font color="black">)</font>;
+  fclose<font color="black">(</font>out<font color="black">)</font>;
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> PakFile<font color="black">:</font><font color="black">:</font>contains<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> <font color="black">(</font>find<font color="black">(</font><font color="blue">name</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> end<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> PakFile<font color="black">:</font><font color="black">:</font>toMemory<font color="black">(</font>string <font color="blue">name</font>, <font color="blue">void</font><font color="black">*</font> destination<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">char</font><font color="black">*</font> start <font color="black">=</font> <font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font>destination;
+  <font color="blue">char</font><font color="black">*</font> to<font color="black">=</font><font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font>destination;
+
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>contains<font color="black">(</font><font color="blue">name</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+<font color="green">//    cout &#60;&#60; "not found" &#60;&#60; endl;</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+
+  PakFileElement elem <font color="black">=</font> <font color="black">(</font><font color="black">*</font><font color="blue">this</font><font color="black">)</font><font color="black">[</font><font color="blue">name</font><font color="black">]</font>;  
+
+  <font color="green">// it is posable to get a zero size file</font>
+
+  FILE<font color="black">*</font> pack<font color="black">=</font>fopen<font color="black">(</font>packName.c_str<font color="black">(</font><font color="black">)</font>, <font color="maroon">"rb"</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>pack<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+
+  fseek<font color="black">(</font>pack, elem.getOffset<font color="black">(</font><font color="black">)</font>, SEEK_SET<font color="black">)</font>;
+
+  <font color="green">//char buf[1024];</font>
+
+  <font color="blue">int</font> read <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="green">//while (read &#60; elem.getSize())</font>
+  <font color="blue">while</font> <font color="black">(</font>to <font color="black">&#60;</font> start<font color="black">+</font>elem.getSize<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> leftToRead <font color="black">=</font> elem.getSize<font color="black">(</font><font color="black">)</font><font color="black">-</font>read;
+    <font color="blue">int</font> toRead <font color="black">=</font> min<font color="black">(</font><font color="maroon">1024</font>, elem.getSize<font color="black">(</font><font color="black">)</font><font color="black">-</font>read<font color="black">)</font>;
+    <font color="blue">int</font> justRead <font color="black">=</font> fread<font color="black">(</font>to, <font color="maroon">1</font>, toRead, pack<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>justRead <font color="black">&#60;</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="blue">false</font>;
+    <font color="black">}</font>
+    to<font color="black">+</font><font color="black">=</font>justRead;
+    read<font color="black">+</font><font color="black">=</font>justRead;
+  <font color="black">}</font>
+
+  fclose<font color="black">(</font>pack<font color="black">)</font>;
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+    
+
+<font color="green">//using namespace std;</font>
+<font color="blue">void</font> PakFile<font color="black">:</font><font color="black">:</font>dump<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  map<font color="black">&#60;</font>string, PakFileElement<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  <font color="blue">int</font> count<font color="black">=</font><font color="maroon">0</font>;
+  <font color="blue">for</font> <font color="black">(</font>pair<font color="black">=</font>begin<font color="black">(</font><font color="black">)</font>; pair<font color="black">!</font><font color="black">=</font>end<font color="black">(</font><font color="black">)</font>; pair<font color="black">+</font><font color="black">+</font>, count<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    PakFileElement pfe <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+<font color="green">//    cout &#60;&#60; dec &#60;&#60; count &#60;&#60; ": " &#60;&#60; pfe.getName() &#60;&#60; " Offset: " &#60;&#60; </font>
+<font color="green">//      pfe.getOffset() &#60;&#60; " Size: " &#60;&#60; pfe.getSize() &#60;&#60; endl;</font>
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="green">//void PakFile::extractAll()</font>
+<font color="green">//{</font>
+<font color="green">//  map&#60;string, PakleFileElement&#62;::iterator pair;</font>
+<font color="green">//  for (pair=begin(); pair!=end(); pair++)</font>
+<font color="green">//  {</font>
+<font color="green">//    PakFileElement pfe = pair-&#62;second;</font>
+<font color="green">//    pfe.setLocation(pfe.getName());</font>
+<font color="green">//    cout &#60;&#60; "Extracting: " &#60;&#60; pfe.getLocation() &#60;&#60; endl;</font>
+<font color="green">//    extract(i);</font>
+<font color="green">//  }</font>
+<font color="green">//  </font>
+<font color="green">//}</font>
+
+</PRE>
+</BODY>
+</HTML>

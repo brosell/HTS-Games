@@ -1,0 +1,97 @@
+<HTML>
+<HEAD>
+<TITLE>
+OutputIteratorAdapters.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">&#60;iterator&#62;</font>
+
+<font color="green">//template &#60;typename Cont&#62;</font>
+<font color="green">//class back_insert_iterator: public std::iterator&#60;std::output_iterator_tag, void, void&#62;</font>
+<font color="green">//{</font>
+<font color="green">//  public:</font>
+<font color="green">//    back_insert_iterator(Cont &c): m_c(&c) </font>
+<font color="green">//    {</font>
+<font color="green">//    }</font>
+<font color="green">//    </font>
+<font color="green">//    back_insert_iterator& operator =( const typename Cont::value_type &v)</font>
+<font color="green">//    {</font>
+<font color="green">//      m_c-&#62;push_back(v);</font>
+<font color="green">//      return *this;</font>
+<font color="green">//    }</font>
+<font color="green">//    </font>
+<font color="green">//    back_insert_iterator& operator *()</font>
+<font color="green">//    {</font>
+<font color="green">//      return *this;</font>
+<font color="green">//    }</font>
+<font color="green">//    </font>
+<font color="green">//    back_insert_iterator& operator ++()</font>
+<font color="green">//    {</font>
+<font color="green">//      return *this;</font>
+<font color="green">//    }</font>
+<font color="green">//    </font>
+<font color="green">//    back_insert_iterator& operator ++(int)</font>
+<font color="green">//    {</font>
+<font color="green">//      return *this;</font>
+<font color="green">//    }</font>
+<font color="green">//</font>
+<font color="green">//  private:</font>
+<font color="green">//    Cont* m_c;</font>
+<font color="green">//};</font>
+<font color="green">//</font>
+<font color="green">//template &#60;typename Cont&#62; </font>
+<font color="green">//back_insert_iterator&#60;Cont&#62; back_inserter(Cont& c)</font>
+<font color="green">//{</font>
+<font color="green">//  return back_insert_iterator&#60;Cont&#62;(c);</font>
+<font color="green">//}</font>
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename Out1, typename Out2<font color="black">&#62;</font>
+<font color="blue">class</font> MultiOut<font color="black">:</font> <font color="blue">public</font> std<font color="black">:</font><font color="black">:</font>iterator<font color="black">&#60;</font>std<font color="black">:</font><font color="black">:</font>output_iterator_tag, typename std<font color="black">:</font><font color="black">:</font>iterator_traits<font color="black">&#60;</font>Out1<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>value_type, <font color="blue">void</font><font color="black">&#62;</font>
+<font color="black">{</font>
+  <font color="blue">public</font><font color="black">:</font>
+    MultiOut<font color="black">(</font>Out1 o1, Out2 o2 <font color="black">)</font><font color="black">:</font> m_o1<font color="black">(</font>o1<font color="black">)</font>, m_o2<font color="black">(</font>o2<font color="black">)</font>
+    <font color="black">{</font>
+    <font color="black">}</font>
+    
+    MultiOut<font color="black">&</font> <font color="blue">operator</font> <font color="black">=</font><font color="black">(</font> <font color="blue">const</font> value_type <font color="black">&</font>v<font color="black">)</font>
+    <font color="black">{</font>
+      <font color="black">*</font>m_o1<font color="black">=</font>v;
+      <font color="black">*</font>m_o2<font color="black">=</font>v;
+      <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+    <font color="black">}</font>
+    
+    MultiOut<font color="black">&</font> <font color="blue">operator</font> <font color="black">*</font><font color="black">(</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+    <font color="black">}</font>
+    
+    MultiOut<font color="black">&</font> <font color="blue">operator</font> <font color="black">+</font><font color="black">+</font><font color="black">(</font><font color="black">)</font>
+    <font color="black">{</font>
+      m_o1<font color="black">+</font><font color="black">+</font>;
+      m_o2<font color="black">+</font><font color="black">+</font>;
+      <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+    <font color="black">}</font>
+    
+    MultiOut<font color="black">&</font> <font color="blue">operator</font> <font color="black">+</font><font color="black">+</font><font color="black">(</font><font color="blue">int</font><font color="black">)</font>
+    <font color="black">{</font>
+      MultiOut tmp<font color="black">(</font><font color="black">*</font><font color="blue">this</font><font color="black">)</font>; 
+      <font color="black">+</font><font color="black">+</font><font color="black">*</font><font color="blue">this</font>; 
+      <font color="blue">return</font> tmp;
+    <font color="black">}</font>
+
+  <font color="blue">private</font><font color="black">:</font>
+    Out1 m_o1;
+    Out2 m_o2;
+<font color="black">}</font>;
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename Out1, typename Out2<font color="black">&#62;</font> 
+MultiOut<font color="black">&#60;</font>Out1, Out2<font color="black">&#62;</font> multiOut<font color="black">(</font>Out1 o1, Out2 o2<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> MultiOut<font color="black">&#60;</font>Out1, Out2<font color="black">&#62;</font><font color="black">(</font>o1, o2<font color="black">)</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

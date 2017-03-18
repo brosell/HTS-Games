@@ -1,0 +1,238 @@
+<HTML>
+<HEAD>
+<TITLE>
+Display.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> Display_h
+<font color="blue">#define</font> Display_h
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable<font color="black">:</font><font color="maroon">4786</font><font color="black">)</font>
+
+<font color="blue">#include</font> <font color="maroon">"SDL.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;list&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;map&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;memory&#62;</font>
+
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Misc/GameMath.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Utils.h"</font>
+<font color="blue">#include</font> <font color="maroon">"VideoMode.h"</font>
+
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">typedef</font> <font color="blue">unsigned</font> <font color="blue">int</font> HTexture;
+
+<font color="blue">extern</font> map<font color="black">&#60;</font>HTexture, <font color="blue">void</font><font color="black">*</font><font color="black">&#62;</font> textureMap;
+<font color="blue">extern</font> HTexture nextTextureId;
+
+HTexture loadTexture<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename<font color="black">)</font>;
+SDL_Surface<font color="black">*</font> loadSDLSurface<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename<font color="black">)</font>;
+SDL_Surface<font color="black">*</font> createSDLSurface<font color="black">(</font><font color="blue">int</font> w, <font color="blue">int</font> h, SDL_Surface<font color="black">*</font> inspiration<font color="black">)</font>;
+
+
+<font color="blue">class</font> TextureInfo
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  TextureInfo<font color="black">(</font><font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font><font color="black">:</font> w<font color="black">(</font>w<font color="black">)</font>, h<font color="black">(</font>h<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  <font color="blue">int</font> w;
+  <font color="blue">int</font> h;
+<font color="black">}</font>;
+
+<font color="blue">class</font> TextureCacheEntry
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  TextureCacheEntry<font color="black">(</font>HTexture id<font color="black">)</font><font color="black">:</font> id<font color="black">(</font>id<font color="black">)</font>, references<font color="black">(</font><font color="maroon">0</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  HTexture id;
+  <font color="blue">int</font> references;
+<font color="black">}</font>;
+
+
+<font color="blue">class</font> DisplayPeer<font color="black">:</font> Noncopyable
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  DisplayPeer<font color="black">(</font><font color="black">)</font><font color="black">:</font> m_valid<font color="black">(</font><font color="blue">false</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  virtual ~DisplayPeer<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  <font color="blue">bool</font> isValid<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_valid; <font color="black">}</font>
+  
+
+  virtual <font color="blue">void</font> clear<font color="black">(</font><font color="black">)</font> <font color="black">=</font> <font color="maroon">0</font>;
+  virtual <font color="blue">void</font> flip<font color="black">(</font><font color="black">)</font> <font color="black">=</font> <font color="maroon">0</font>;
+  virtual <font color="blue">void</font> blit<font color="black">(</font>HTexture textureId, <font color="blue">int</font> destX, <font color="blue">int</font> destY<font color="black">)</font> <font color="black">=</font> <font color="maroon">0</font>;
+  
+  virtual <font color="blue">void</font> setClipRect<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font> <font color="black">=</font> <font color="maroon">0</font>;
+  
+  virtual <font color="blue">void</font> drawVLine<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> h, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font> <font color="black">=</font> <font color="maroon">0</font>;
+  virtual <font color="blue">void</font> drawHLine<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> w, <font color="blue">int</font> y, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font> <font color="black">=</font> <font color="maroon">0</font>;
+  virtual <font color="blue">void</font> fillRect<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> w, <font color="blue">int</font> h, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font> <font color="black">=</font> <font color="maroon">0</font>;
+  virtual <font color="blue">void</font> drawLine<font color="black">(</font><font color="blue">int</font> x1, <font color="blue">int</font> y1, <font color="blue">int</font> x2, <font color="blue">int</font> y2, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font> <font color="black">=</font> <font color="maroon">0</font>;
+
+  virtual HTexture loadTexture<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename<font color="black">)</font> <font color="black">=</font> <font color="maroon">0</font>;
+  virtual HTexture loadTexture<font color="black">(</font>SDL_Surface<font color="black">*</font> surface<font color="black">)</font> <font color="black">=</font> <font color="maroon">0</font>;
+  virtual <font color="blue">void</font> freeTexture<font color="black">(</font>HTexture textureId<font color="black">)</font> <font color="black">=</font> <font color="maroon">0</font>;
+
+  virtual <font color="blue">bool</font> setWindowed<font color="black">(</font><font color="blue">bool</font> w<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+  virtual <font color="blue">bool</font> isWindowed<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+  virtual SDL_Surface<font color="black">*</font> getSDLSurface<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="maroon">0</font>; <font color="black">}</font>
+
+  <font color="blue">int</font> m_width;
+  <font color="blue">int</font> m_height;
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> setValid<font color="black">(</font><font color="blue">bool</font> v<font color="black">)</font> <font color="black">{</font> m_valid <font color="black">=</font> v; <font color="black">}</font>
+
+  <font color="blue">int</font> m_bpp;
+  <font color="blue">int</font> m_flags;
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> m_valid;
+  
+<font color="black">}</font>;
+
+<font color="blue">class</font> Display<font color="black">:</font> Noncopyable
+<font color="black">{</font>
+  DisplayPeer<font color="black">*</font> m_peer;
+  VideoMode m_mode;
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">bool</font> setVideoMode<font color="black">(</font>VideoMode mode<font color="black">)</font>;
+
+  virtual ~Display<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> clear<font color="black">(</font><font color="black">)</font> <font color="black">{</font> m_peer<font color="black">-</font><font color="black">&#62;</font>clear<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">void</font> flip<font color="black">(</font><font color="black">)</font> <font color="black">{</font> m_peer<font color="black">-</font><font color="black">&#62;</font>flip<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">void</font> blit<font color="black">(</font>HTexture textureId, <font color="blue">int</font> destX, <font color="blue">int</font> destY<font color="black">)</font> <font color="black">{</font> m_peer<font color="black">-</font><font color="black">&#62;</font>blit<font color="black">(</font>textureId, destX, destY<font color="black">)</font>; <font color="black">}</font>
+
+  SDL_Surface<font color="black">*</font> getSDLSurface<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_peer<font color="black">-</font><font color="black">&#62;</font>getSDLSurface<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+
+  <font color="blue">bool</font> setWindowed<font color="black">(</font><font color="blue">bool</font> w<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_peer<font color="black">-</font><font color="black">&#62;</font>setWindowed<font color="black">(</font>w<font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">bool</font> isWindowed<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_peer<font color="black">-</font><font color="black">&#62;</font>isWindowed<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+
+  <font color="blue">void</font> setClipRect<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font>
+  <font color="black">{</font>
+    Vector v <font color="black">=</font> getDrawOffsetAmount<font color="black">(</font><font color="black">)</font>;
+    x<font color="black">+</font><font color="black">=</font>v.x;
+    y<font color="black">+</font><font color="black">=</font>v.y;
+
+    m_peer<font color="black">-</font><font color="black">&#62;</font>setClipRect<font color="black">(</font>x, y, w, h<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> pushClipRect<font color="black">(</font>Rect<font color="black">&</font> clipRect<font color="black">)</font>
+  <font color="black">{</font>
+    m_clipRects.push_back<font color="black">(</font>clipRect<font color="black">)</font>;
+    setClipRect<font color="black">(</font>clipRect.x, clipRect.y, clipRect.w, clipRect.h<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> popClipRect<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_clipRects.pop_back<font color="black">(</font><font color="black">)</font>;
+    Rect clipRect <font color="black">=</font> m_clipRects.back<font color="black">(</font><font color="black">)</font>;
+    setClipRect<font color="black">(</font>clipRect.x, clipRect.y, clipRect.w, clipRect.h<font color="black">)</font>;
+  <font color="black">}</font>
+    
+  Rect getClipRect<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> m_clipRects.back<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> setDrawOffsetAmount<font color="black">(</font><font color="blue">int</font> dx, <font color="blue">int</font> dy<font color="black">)</font> <font color="black">{</font>setDrawOffsetAmount<font color="black">(</font>Vector<font color="black">(</font>dx, dy<font color="black">)</font><font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">void</font> setDrawOffsetAmount<font color="black">(</font>Vector o<font color="black">)</font> <font color="black">{</font> m_drawOffset <font color="black">=</font> o; <font color="black">}</font>
+  Vector getDrawOffsetAmount<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_drawOffset; <font color="black">}</font>
+
+  
+  <font color="green">// drawing primitives //////</font>
+  <font color="blue">void</font> drawVLine<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> h, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_peer<font color="black">-</font><font color="black">&#62;</font>drawVLine<font color="black">(</font>x, y, h, red, green, blue, alpha<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">void</font> drawHLine<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> w, <font color="blue">int</font> y, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_peer<font color="black">-</font><font color="black">&#62;</font>drawHLine<font color="black">(</font>x, w, y, red, green, blue, alpha<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">void</font> fillRect<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> w, <font color="blue">int</font> h, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_peer<font color="black">-</font><font color="black">&#62;</font>fillRect<font color="black">(</font>x, y, w, h, red, green, blue, alpha<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">void</font> drawLine<font color="black">(</font><font color="blue">int</font> x1, <font color="blue">int</font> y1, <font color="blue">int</font> x2, <font color="blue">int</font> y2, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha <font color="black">=</font> <font color="maroon">255</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_peer<font color="black">-</font><font color="black">&#62;</font>drawLine<font color="black">(</font>x1, y1, x2, y2, red, green, blue, alpha<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="green">////////////////////////////</font>
+
+  SDL_Surface<font color="black">*</font> createSDLSurface<font color="black">(</font><font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font>;
+  
+  <font color="blue">void</font> isValid<font color="black">(</font><font color="blue">bool</font> b<font color="black">)</font> <font color="black">{</font> m_isValid <font color="black">=</font> b; <font color="black">}</font>
+  <font color="blue">bool</font> isValid<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_isValid; <font color="black">}</font>
+
+  <font color="blue">static</font> Display<font color="black">*</font> getInstance<font color="black">(</font><font color="black">)</font> 
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>s_instance.get<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      auto_ptr<font color="black">&#60;</font>Display<font color="black">&#62;</font> tmp<font color="black">(</font><font color="blue">new</font> Display<font color="black">)</font>;
+      s_instance <font color="black">=</font> tmp;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> s_instance.get<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+
+  <font color="blue">const</font> TextureInfo<font color="black">*</font> getTextureInfo<font color="black">(</font>HTexture id<font color="black">)</font>
+  <font color="black">{</font>
+    TextureInfo<font color="black">*</font> ret <font color="black">=</font> <font color="maroon">0</font>;
+    map<font color="black">&#60;</font>HTexture, TextureInfo<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+    pair <font color="black">=</font> m_textureInfo.find<font color="black">(</font>id<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>pair <font color="black">!</font><font color="black">=</font> m_textureInfo.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      ret <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+    <font color="black">}</font>
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  VideoMode getVideoMode<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_mode; <font color="black">}</font>
+  
+  <font color="blue">int</font> getTextureCount<font color="black">(</font><font color="black">)</font><font color="black">{</font>
+    <font color="blue">return</font> m_textureInfo.size<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> screenshot<font color="black">(</font>string fn<font color="black">)</font>;
+
+  HTexture acquire<font color="black">(</font>string filename<font color="black">)</font>;
+  HTexture prepare<font color="black">(</font>SDL_Surface<font color="black">*</font> surface<font color="black">)</font>;
+  <font color="blue">void</font> release<font color="black">(</font>HTexture id<font color="black">)</font>;
+
+  <font color="blue">void</font> report<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> addTextureInfo<font color="black">(</font>HTexture id, TextureInfo<font color="black">*</font> ti<font color="black">)</font> <font color="black">{</font> m_textureInfo<font color="black">[</font>id<font color="black">]</font> <font color="black">=</font> ti; <font color="black">}</font>
+  <font color="blue">void</font> removeTextureInfo<font color="black">(</font>HTexture id<font color="black">)</font> <font color="black">{</font> m_textureInfo.erase<font color="black">(</font>id<font color="black">)</font>; <font color="black">}</font>
+  
+  map<font color="black">&#60;</font>string, TextureCacheEntry<font color="black">*</font><font color="black">&#62;</font> m_imageCache;
+  map<font color="black">&#60;</font>HTexture, string<font color="black">&#62;</font> m_filenameMap; 
+  map<font color="black">&#60;</font>HTexture, TextureInfo<font color="black">*</font><font color="black">&#62;</font> m_textureInfo;
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> sanityCheck<font color="black">(</font><font color="black">)</font>;
+  
+  Display<font color="black">(</font><font color="black">)</font><font color="black">:</font> m_isValid<font color="black">(</font><font color="blue">false</font><font color="black">)</font>, m_peer<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, m_drawOffset<font color="black">(</font><font color="maroon">0</font>, <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  
+<font color="blue">private</font><font color="black">:</font>
+  Vector m_drawOffset;
+
+  <font color="blue">static</font> auto_ptr<font color="black">&#60;</font>Display<font color="black">&#62;</font> s_instance;
+
+  list<font color="black">&#60;</font>Rect<font color="black">&#62;</font> m_clipRects;
+
+  <font color="blue">bool</font> m_isValid;
+<font color="black">}</font>;
+
+<font color="blue">inline</font> SDL_Surface<font color="black">*</font> createSDLSurface<font color="black">(</font><font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> Display<font color="black">:</font><font color="black">:</font>getInstance<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>createSDLSurface<font color="black">(</font>w, h<font color="black">)</font>;
+<font color="black">}</font>
+
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

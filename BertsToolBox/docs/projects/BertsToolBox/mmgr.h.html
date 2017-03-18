@@ -1,0 +1,182 @@
+<HTML>
+<HEAD>
+<TITLE>
+mmgr.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">//                                     _     </font>
+<font color="green">//                                    | |    </font>
+<font color="green">//  _ __ ___  _ __ ___   __ _ _ __    | |__  </font>
+<font color="green">// | '_ ` _ \| '_ ` _ \ / _` | '__|   | '_ \ </font>
+<font color="green">// | | | | | | | | | | | (_| | |    _ | | | |</font>
+<font color="green">// |_| |_| |_|_| |_| |_|\__, |_|   (_)|_| |_|</font>
+<font color="green">//                       __/ |               </font>
+<font color="green">//                      |___/                </font>
+<font color="green">//</font>
+<font color="green">// Memory manager & tracking software</font>
+<font color="green">//</font>
+<font color="green">// Best viewed with 8-character tabs and (at least) 132 columns</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// Restrictions & freedoms pertaining to usage and redistribution of this software:</font>
+<font color="green">//</font>
+<font color="green">//  * This software is 100% free</font>
+<font color="green">//  * If you use this software (in part or in whole) you must credit the author.</font>
+<font color="green">//  * This software may not be re-distributed (in part or in whole) in a modified</font>
+<font color="green">//    form without clear documentation on how to obtain a copy of the original work.</font>
+<font color="green">//  * You may not use this software to directly or indirectly cause harm to others.</font>
+<font color="green">//  * This software is provided as-is and without warrantee. Use at your own risk.</font>
+<font color="green">//</font>
+<font color="green">// For more information, visit HTTP://www.FluidStudios.com</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Originally created on 12/22/2000 by Paul Nettle</font>
+<font color="green">//</font>
+<font color="green">// Copyright 2000, Fluid Studios, Inc., all rights reserved.</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">#ifndef</font> _H_MMGR
+<font color="blue">#define</font> _H_MMGR
+
+<font color="blue">#include</font> <font color="maroon">&#60;stdio.h&#62;</font>   <font color="green">// Standard includes MUST come first</font>
+<font color="blue">#include</font> <font color="maroon">&#60;stdlib.h&#62;</font>  <font color="green">//</font>
+<font color="blue">#include</font> <font color="maroon">&#60;iostream&#62;</font>  <font color="green">//</font>
+
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// For systems that don't have the __FUNCTION__ variable, we can just define it here</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">#define</font> __FUNCTION__ <font color="maroon">"??"</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Types</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">typedef</font> <font color="blue">struct</font> tag_au
+<font color="black">{</font>
+    size_t      actualSize;
+    size_t      reportedSize;
+    <font color="blue">void</font>        <font color="black">*</font>actualAddress;
+    <font color="blue">void</font>        <font color="black">*</font>reportedAddress;
+    <font color="blue">char</font>        sourceFile<font color="black">[</font><font color="maroon">40</font><font color="black">]</font>;
+    <font color="blue">char</font>        sourceFunc<font color="black">[</font><font color="maroon">40</font><font color="black">]</font>;
+    <font color="blue">unsigned</font> <font color="blue">int</font>    sourceLine;
+    <font color="blue">unsigned</font> <font color="blue">int</font>    allocationType;
+    <font color="blue">bool</font>        breakOnDealloc;
+    <font color="blue">bool</font>        breakOnRealloc;
+    <font color="blue">unsigned</font> <font color="blue">int</font>    allocationNumber;
+    <font color="blue">struct</font> tag_au   <font color="black">*</font>next;
+    <font color="blue">struct</font> tag_au   <font color="black">*</font>prev;
+<font color="black">}</font> sAllocUnit;
+
+<font color="blue">typedef</font> <font color="blue">struct</font>
+<font color="black">{</font>
+    <font color="blue">unsigned</font> <font color="blue">int</font>    totalReportedMemory;
+    <font color="blue">unsigned</font> <font color="blue">int</font>    totalActualMemory;
+    <font color="blue">unsigned</font> <font color="blue">int</font>    peakReportedMemory;
+    <font color="blue">unsigned</font> <font color="blue">int</font>    peakActualMemory;
+    <font color="blue">unsigned</font> <font color="blue">int</font>    accumulatedReportedMemory;
+    <font color="blue">unsigned</font> <font color="blue">int</font>    accumulatedActualMemory;
+    <font color="blue">unsigned</font> <font color="blue">int</font>    accumulatedAllocUnitCount;
+    <font color="blue">unsigned</font> <font color="blue">int</font>    totalAllocUnitCount;
+    <font color="blue">unsigned</font> <font color="blue">int</font>    peakAllocUnitCount;
+<font color="black">}</font> sMStats;
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// External constants</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">extern</font>  <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_unknown;
+<font color="blue">extern</font>  <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_new;
+<font color="blue">extern</font>  <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_new_array;
+<font color="blue">extern</font>  <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_malloc;
+<font color="blue">extern</font>  <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_calloc;
+<font color="blue">extern</font>  <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_realloc;
+<font color="blue">extern</font>  <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_delete;
+<font color="blue">extern</font>  <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_delete_array;
+<font color="blue">extern</font>  <font color="blue">const</font>   <font color="blue">unsigned</font> <font color="blue">int</font>    m_alloc_free;
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Used by the macros</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>        m_setOwner<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>file, <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> <font color="blue">line</font>, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>func<font color="black">)</font>;
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Allocation breakpoints</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">bool</font>        <font color="black">&</font>m_breakOnRealloc<font color="black">(</font><font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>;
+<font color="blue">bool</font>        <font color="black">&</font>m_breakOnDealloc<font color="black">(</font><font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>;
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// The meat of the memory tracking software</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>        <font color="black">*</font>m_allocator<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFile, <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> sourceLine, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFunc,
+                 <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> allocationType, <font color="blue">const</font> size_t reportedSize<font color="black">)</font>;
+<font color="blue">void</font>        <font color="black">*</font>m_reallocator<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFile, <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> sourceLine, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFunc,
+                   <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> reallocationType, <font color="blue">const</font> size_t reportedSize, <font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>;
+<font color="blue">void</font>        m_deallocator<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFile, <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> sourceLine, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFunc,
+                  <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">int</font> deallocationType, <font color="blue">const</font> <font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>;
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Utilitarian functions</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">bool</font>        m_validateAddress<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>;
+<font color="blue">bool</font>        m_validateAllocUnit<font color="black">(</font><font color="blue">const</font> sAllocUnit <font color="black">*</font>allocUnit<font color="black">)</font>;
+<font color="blue">bool</font>        m_validateAllAllocUnits<font color="black">(</font><font color="black">)</font>;
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Unused RAM calculations</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">unsigned</font> <font color="blue">int</font>    m_calcUnused<font color="black">(</font><font color="blue">const</font> sAllocUnit <font color="black">*</font>allocUnit<font color="black">)</font>;
+<font color="blue">unsigned</font> <font color="blue">int</font>    m_calcAllUnused<font color="black">(</font><font color="black">)</font>;
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Logging and reporting</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>        m_dumpAllocUnit<font color="black">(</font><font color="blue">const</font> sAllocUnit <font color="black">*</font>allocUnit, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>prefix <font color="black">=</font> <font color="maroon">""</font><font color="black">)</font>;
+<font color="blue">void</font>        m_dumpMemoryReport<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>filename <font color="black">=</font> <font color="maroon">"memreport.log"</font>, <font color="blue">const</font> <font color="blue">bool</font> overwrite <font color="black">=</font> <font color="blue">true</font><font color="black">)</font>;
+sMStats     m_getMemoryStatistics<font color="black">(</font><font color="black">)</font>;
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Variations of global operators new & delete</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">void</font>    <font color="black">*</font><font color="blue">operator</font> <font color="blue">new</font><font color="black">(</font>size_t reportedSize<font color="black">)</font>;
+<font color="blue">void</font>    <font color="black">*</font><font color="blue">operator</font> <font color="blue">new</font><font color="black">[</font><font color="black">]</font><font color="black">(</font>size_t reportedSize<font color="black">)</font>;
+<font color="blue">void</font>    <font color="black">*</font><font color="blue">operator</font> <font color="blue">new</font><font color="black">(</font>size_t reportedSize, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFile, <font color="blue">int</font> sourceLine<font color="black">)</font>;
+<font color="blue">void</font>    <font color="black">*</font><font color="blue">operator</font> <font color="blue">new</font><font color="black">[</font><font color="black">]</font><font color="black">(</font>size_t reportedSize, <font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font>sourceFile, <font color="blue">int</font> sourceLine<font color="black">)</font>;
+<font color="blue">void</font>    <font color="blue">operator</font> <font color="blue">delete</font><font color="black">(</font><font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>;
+<font color="blue">void</font>    <font color="blue">operator</font> <font color="blue">delete</font><font color="black">[</font><font color="black">]</font><font color="black">(</font><font color="blue">void</font> <font color="black">*</font>reportedAddress<font color="black">)</font>;
+
+<font color="blue">#endif</font> <font color="green">// _H_MMGR</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// Macros -- "Kids, please don't try this at home. We're trained professionals here." :)</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+<font color="blue">#include</font> <font color="maroon">"nommgr.h"</font>
+<font color="blue">#define</font> <font color="blue">new</font>     <font color="black">(</font>m_setOwner  <font color="black">(</font>__FILE__,__LINE__,__FUNCTION__<font color="black">)</font>,<font color="blue">false</font><font color="black">)</font> ? NULL <font color="black">:</font> <font color="blue">new</font>
+<font color="blue">#define</font> <font color="blue">delete</font>      <font color="black">(</font>m_setOwner  <font color="black">(</font>__FILE__,__LINE__,__FUNCTION__<font color="black">)</font>,<font color="blue">false</font><font color="black">)</font> ? m_setOwner<font color="black">(</font><font color="maroon">""</font>,<font color="maroon">0</font>,<font color="maroon">""</font><font color="black">)</font> <font color="black">:</font> <font color="blue">delete</font>
+<font color="blue">#define</font> malloc<font color="black">(</font>sz<font color="black">)</font>  m_allocator  <font color="black">(</font>__FILE__,__LINE__,__FUNCTION__,m_alloc_malloc,sz<font color="black">)</font>
+<font color="blue">#define</font> calloc<font color="black">(</font>sz<font color="black">)</font>  m_allocator  <font color="black">(</font>__FILE__,__LINE__,__FUNCTION__,m_alloc_calloc,sz<font color="black">)</font>
+<font color="blue">#define</font> realloc<font color="black">(</font>ptr,sz<font color="black">)</font> m_reallocator<font color="black">(</font>__FILE__,__LINE__,__FUNCTION__,m_alloc_realloc,sz,ptr<font color="black">)</font>
+<font color="blue">#define</font> free<font color="black">(</font>ptr<font color="black">)</font>   m_deallocator<font color="black">(</font>__FILE__,__LINE__,__FUNCTION__,m_alloc_free,ptr<font color="black">)</font>
+
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+<font color="green">// mmgr.h - End of file</font>
+<font color="green">// ---------------------------------------------------------------------------------------------------------------------------------</font>
+
+</PRE>
+</BODY>
+</HTML>

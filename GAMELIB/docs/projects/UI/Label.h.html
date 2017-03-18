@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<TITLE>
+Label.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> Label_h
+<font color="blue">#define</font> Label_h
+
+<font color="blue">#include</font> <font color="maroon">"UI/UIThing.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Font.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+
+<font color="blue">enum</font> HJUST_TYPE
+<font color="black">{</font>
+  JUST_LEFT,
+  JUST_CENTER,
+  JUST_RIGHT
+<font color="black">}</font>;
+
+<font color="blue">enum</font> VJUST_TYPE
+<font color="black">{</font>
+  JUST_TOP,
+  JUST_MIDDLE,
+  JUST_BOTTOM
+<font color="black">}</font>;
+
+<font color="blue">class</font> Label<font color="black">:</font> <font color="blue">public</font> UIThing
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Label<font color="black">(</font><font color="black">)</font><font color="black">:</font> 
+  UIThing<font color="black">(</font><font color="black">)</font>, 
+  m_horizJust<font color="black">(</font>JUST_LEFT<font color="black">)</font>, 
+  m_vertJust<font color="black">(</font>JUST_TOP<font color="black">)</font>, 
+  m_drawBorder<font color="black">(</font><font color="blue">false</font><font color="black">)</font>
+  <font color="black">{</font> <font color="black">}</font>
+
+  virtual <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>;
+  <font color="blue">void</font> setHorizJust<font color="black">(</font>HJUST_TYPE just<font color="black">)</font> <font color="black">{</font> m_horizJust <font color="black">=</font> just; <font color="black">}</font>
+  <font color="blue">void</font> setVertJust<font color="black">(</font>VJUST_TYPE just<font color="black">)</font> <font color="black">{</font> m_vertJust <font color="black">=</font> just; <font color="black">}</font>
+  <font color="blue">void</font> setDrawBorder<font color="black">(</font><font color="blue">bool</font> b<font color="black">)</font> <font color="black">{</font> m_drawBorder <font color="black">=</font> b; <font color="black">}</font>
+
+  virtual <font color="blue">bool</font> acceptsFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+<font color="blue">private</font><font color="black">:</font>
+  HJUST_TYPE m_horizJust;
+  VJUST_TYPE m_vertJust;
+  <font color="blue">bool</font> m_drawBorder;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,152 @@
+<HTML>
+<HEAD>
+<TITLE>
+UIThing.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable<font color="black">:</font><font color="maroon">4786</font> <font color="maroon">4530</font> <font color="maroon">4503</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+<font color="blue">#include</font> <font color="maroon">"UIThing.h"</font>
+
+<font color="blue">bool</font> UIThing<font color="black">:</font><font color="black">:</font>s_ocheck<font color="black">=</font><font color="blue">true</font>;
+UIThing<font color="black">*</font> UIThing<font color="black">:</font><font color="black">:</font>s_mouseOver <font color="black">=</font> <font color="maroon">0</font>;
+
+UIThing<font color="black">:</font><font color="black">:</font>UIThing<font color="black">(</font><font color="black">)</font><font color="black">:</font> 
+m_haveFocus<font color="black">(</font><font color="blue">false</font><font color="black">)</font>, 
+m_visible<font color="black">(</font><font color="blue">true</font><font color="black">)</font>, 
+m_parent<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_id<font color="black">(</font><font color="maroon">-1</font><font color="black">)</font>,
+m_haveMouse<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+m_font<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_controlName<font color="black">(</font><font color="maroon">"Unnamed"</font><font color="black">)</font>,
+m_red<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_green<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_blue<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_alpha<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>
+<font color="black">{</font>
+
+<font color="black">}</font>
+
+UIThing<font color="black">:</font><font color="black">:</font>~UIThing<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>s_mouseOver <font color="black">=</font><font color="black">=</font> <font color="blue">this</font><font color="black">)</font>
+  <font color="black">{</font>
+    s_mouseOver <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+Font<font color="black">*</font> UIThing<font color="black">:</font><font color="black">:</font>getFont<font color="black">(</font><font color="black">)</font> 
+<font color="black">{</font> 
+  <font color="blue">if</font> <font color="black">(</font>m_font <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>m_parent<font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">if</font> <font color="black">(</font>m_parent<font color="black">-</font><font color="black">&#62;</font>getFont<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+      <font color="black">{</font>
+        <font color="blue">return</font> Font<font color="black">:</font><font color="black">:</font>getDefault<font color="black">(</font><font color="black">)</font>;
+      <font color="black">}</font>
+      <font color="blue">return</font> m_parent<font color="black">-</font><font color="black">&#62;</font>getFont<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">return</font> m_font; 
+<font color="black">}</font>
+
+<font color="blue">void</font> UIThing<font color="black">:</font><font color="black">:</font>draw<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>
+<font color="black">{</font>
+  Rect r <font color="black">=</font> getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>s_ocheck<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>m_alpha <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      surface<font color="black">-</font><font color="black">&#62;</font>fillRect<font color="black">(</font>r.x, r.y, r.w, r.h, m_red, m_green, m_blue, m_alpha<font color="black">)</font>;
+    <font color="black">}</font>      
+    paint<font color="black">(</font>surface<font color="black">)</font>;
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>isObscured<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>m_alpha <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      surface<font color="black">-</font><font color="black">&#62;</font>fillRect<font color="black">(</font>r.x, r.y, r.w, r.h, m_red, m_green, m_blue, m_alpha<font color="black">)</font>;
+    <font color="black">}</font>      
+    paint<font color="black">(</font>surface<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+
+Rect UIThing<font color="black">:</font><font color="black">:</font>getTranslatedPosition<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  Rect ret <font color="black">=</font> getPosition<font color="black">(</font><font color="black">)</font>;
+  Rect p;
+  <font color="blue">if</font> <font color="black">(</font>m_parent <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    p<font color="black">=</font>m_parent<font color="black">-</font><font color="black">&#62;</font>getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+    ret.x <font color="black">+</font><font color="black">=</font> p.x;
+    ret.y <font color="black">+</font><font color="black">=</font> p.y;
+  <font color="black">}</font>
+  
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+<font color="blue">bool</font> UIThing<font color="black">:</font><font color="black">:</font>isObscured<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="green">// if we aren't part of a container, we assume we are not obscured</font>
+  <font color="blue">if</font> <font color="black">(</font>m_parent<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> m_parent<font color="black">-</font><font color="black">&#62;</font>isObscured<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> UIThing<font color="black">:</font><font color="black">:</font>isObscuredBy<font color="black">(</font>UIThing<font color="black">*</font> thing<font color="black">)</font>
+<font color="black">{</font>
+  Rect me<font color="black">=</font>getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+  Rect other<font color="black">=</font>thing<font color="black">-</font><font color="black">&#62;</font>getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+
+  Rect overlap<font color="black">=</font>Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font><font color="black">&</font>me, <font color="black">&</font>other<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>overlap.x <font color="black">=</font><font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">//there is no overlap, so we are not obscured by thing</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="green">/*overlap.w == other.w && overlap.h == other.h) || */</font>
+       <font color="black">(</font>overlap.w <font color="black">=</font><font color="black">=</font> me.w <font color="black">&</font><font color="black">&</font> overlap.h <font color="black">=</font><font color="black">=</font> me.h<font color="black">)</font> <font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">true</font>;
+  <font color="black">}</font>
+  <font color="green">// this is a partial overlap. Now we let Z order do the clipping :)</font>
+  <font color="blue">return</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+
+<font color="blue">void</font> UIThing<font color="black">:</font><font color="black">:</font>show<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_parent<font color="black">)</font>
+  <font color="black">{</font>
+    m_parent<font color="black">-</font><font color="black">&#62;</font>addUIThing<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    theGame.uiSystem.addUIThing<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> UIThing<font color="black">:</font><font color="black">:</font>hide<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_parent<font color="black">)</font>
+  <font color="black">{</font>
+    m_parent<font color="black">-</font><font color="black">&#62;</font>removeUIThing<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    theGame.uiSystem.removeUIThing<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+  
+
+</PRE>
+</BODY>
+</HTML>

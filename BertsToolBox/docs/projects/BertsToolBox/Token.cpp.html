@@ -1,0 +1,108 @@
+<HTML>
+<HEAD>
+<TITLE>
+Token.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Token.cpp: implementation of the CToken class.</font>
+<font color="green">//</font>
+<font color="green">//  MFC Simple CString Tokenizer (Version 1)</font>
+<font color="green">//  </font>
+<font color="green">//  Written by Richard Case (case@dcs.kcl.ac.uk)</font>
+<font color="green">//  Copyright (c) 1999</font>
+<font color="green">//</font>
+<font color="green">// This code may be used in compiled form in any way you desire. This</font>
+<font color="green">// file may be redistributed unmodified by any means PROVIDING it is </font>
+<font color="green">// not sold for profit without the authors written consent, and </font>
+<font color="green">// providing that this notice and the authors name and all copyright </font>
+<font color="green">// notices remains intact. </font>
+<font color="green">//</font>
+<font color="green">// This file is provided "as is" with no expressed or implied warranty.</font>
+<font color="green">// The author accepts no liability for any damage/loss of business that</font>
+<font color="green">// this product may cause.</font>
+<font color="green">//</font>
+<font color="green">// Expect bugs!</font>
+<font color="green">// </font>
+<font color="green">// Please use and enjoy. Please let me know of any bugs/mods/improvements </font>
+<font color="green">// that you have found/implemented and I will fix/incorporate them into this</font>
+<font color="green">// file. </font>
+<font color="green">//</font>
+<font color="green">//</font>
+<font color="green">//////////////////////////////////////////////////////////////////////</font>
+
+<font color="blue">#include</font> <font color="maroon">"Token.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+
+<font color="green">//////////////////////////////////////////////////////////////////////</font>
+<font color="green">// Construction/Destruction</font>
+<font color="green">//////////////////////////////////////////////////////////////////////</font>
+
+CToken<font color="black">:</font><font color="black">:</font>CToken<font color="black">(</font>CStdString str, CStdString delims<font color="black">)</font>
+<font color="black">{</font>
+    m_strToToken <font color="black">=</font> str;
+    m_strLeft <font color="black">=</font> str;
+    m_strToken <font color="black">=</font> delims;
+    m_bFoundAny <font color="black">=</font> <font color="blue">false</font>;
+    m_bFinalToken <font color="black">=</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+CToken<font color="black">:</font><font color="black">:</font>~CToken<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+
+<font color="black">}</font>
+
+BOOL CToken<font color="black">:</font><font color="black">:</font>hasMoreTokens<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="black">(</font>m_strLeft.Find<font color="black">(</font>m_strToken,<font color="maroon">0</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> <font color="black">(</font>m_bFinalToken<font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">true</font>; <font color="green">// The string that is left over is a token</font>
+    <font color="black">}</font>
+    <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="black">(</font>m_strLeft.Find<font color="black">(</font>m_strToken,<font color="maroon">0</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> <font color="black">(</font><font color="black">!</font>m_bFinalToken<font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">false</font>; <font color="green">// The string contains no tokens</font>
+    <font color="black">}</font>
+    <font color="blue">else</font>
+        <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+
+CStdString CToken<font color="black">:</font><font color="black">:</font>nextToken<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    
+    <font color="blue">if</font><font color="black">(</font>m_bFinalToken<font color="black">)</font>
+    <font color="black">{</font>
+        m_bFinalToken <font color="black">=</font> <font color="blue">false</font>;
+        <font color="blue">return</font> m_strLeft;
+    <font color="black">}</font>
+    
+
+    <font color="blue">int</font> pos, len;
+    CStdString newtok <font color="black">=</font> m_strLeft; <font color="green">// Our own working copy of the string left</font>
+    len <font color="black">=</font> newtok.GetLength<font color="black">(</font><font color="black">)</font>;
+    pos <font color="black">=</font> newtok.Find<font color="black">(</font>m_strToken,<font color="maroon">0</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>pos <font color="black">=</font><font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font>
+    <font color="black">{</font>
+        <font color="green">// This should never happen</font>
+        logError<font color="black">(</font>Error, <font color="maroon">"StringTokenizer Bug"</font><font color="black">)</font>;
+    <font color="black">}</font>
+    m_bFoundAny <font color="black">=</font> <font color="blue">true</font>;
+    newtok <font color="black">=</font> newtok.Left<font color="black">(</font>pos<font color="black">)</font>;
+    pos<font color="black">+</font><font color="black">+</font>;
+    m_strLeft <font color="black">=</font> m_strLeft.Right<font color="black">(</font>len <font color="black">-</font>pos<font color="black">)</font>;
+
+    <font color="green">//Check to see if there anymore tokens</font>
+    <font color="blue">if</font> <font color="black">(</font>m_strLeft.Find<font color="black">(</font>m_strToken,<font color="maroon">0</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font>
+    <font color="black">{</font>
+        <font color="green">// No more tokens but the string left is the remaining token</font>
+        m_bFinalToken <font color="black">=</font> <font color="blue">true</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> newtok;
+
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

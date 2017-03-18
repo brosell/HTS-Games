@@ -1,0 +1,633 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: IGMapper - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2A4.tmp" with contents
+[
+/nologo /ML /W3 /O2 /I "C:\PROJECTS\BERTSTOOLBOX" /I "c:\projects\gamelib_2\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "IGMAPPER" /Fp"Release/IGMapper.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\projects\IndustrialGolf\Face.cpp"
+"C:\projects\IndustrialGolf\Globals.cpp"
+"C:\projects\IndustrialGolf\IGMapper.cpp"
+"C:\projects\IndustrialGolf\IGMapperChooseTileDlg.cpp"
+"C:\projects\IndustrialGolf\IGMapperEntiry.cpp"
+"C:\projects\IndustrialGolf\IGMapperListeners.cpp"
+"C:\projects\IndustrialGolf\IGMapperTile.cpp"
+"C:\projects\IndustrialGolf\Tile.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2A4.tmp" 
+Creating temporary file "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2A5.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/IGMapper.pdb" /machine:I386 /out:"Release/IGMapper.exe" 
+.\Release\CullFaces.obj
+.\Release\Entity.obj
+.\Release\Face.obj
+.\Release\Globals.obj
+.\Release\IGMapper.obj
+.\Release\IGMapperChooseTileDlg.obj
+.\Release\IGMapperEntiry.obj
+.\Release\IGMapperGlobals.obj
+.\Release\IGMapperListeners.obj
+.\Release\IGMapperTile.obj
+.\Release\PropertiesDialog.obj
+.\Release\Tile.obj
+\projects\BertsToolBox\Release\BertsToolBoxLib.lib
+\projects\GAMELIB_2\Release\GameLib_2.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2A5.tmp"
+<h3>Output Window</h3>
+Compiling...
+Face.cpp
+Globals.cpp
+IGMapper.cpp
+IGMapperChooseTileDlg.cpp
+IGMapperEntiry.cpp
+C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\istream(547) : warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify -GX
+C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\ostream(234) : warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify -GX
+        C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\ostream(229) : while compiling class-template member function 'class std::basic_ostream<char,struct std::char_traits<char> > &__thiscall std::basic_ostream<char,struct std::char_traits<char> >::put(char)'
+C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\ostream(234) : warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify -GX
+        C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\ostream(229) : while compiling class-template member function 'class std::basic_ostream<unsigned short,struct std::char_traits<unsigned short> > &__thiscall std::basic_ostream<unsigned short,struct std::char_traits<unsigned short> >::put(unsigned short)'
+C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\istream(46) : warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify -GX
+        C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\istream(41) : while compiling class-template member function 'bool __thiscall std::basic_istream<char,struct std::char_traits<char> >::ipfx(bool)'
+C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\istream(46) : warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify -GX
+        C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\istream(41) : while compiling class-template member function 'bool __thiscall std::basic_istream<unsigned short,struct std::char_traits<unsigned short> >::ipfx(bool)'
+C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\xstring(525) : warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify -GX
+        C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\xstring(521) : while compiling class-template member function 'void __thiscall std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >::_Copy(unsigned int)'
+C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\xstring(525) : warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify -GX
+        C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\xstring(521) : while compiling class-template member function 'void __thiscall std::basic_string<unsigned short,struct std::char_traits<unsigned short>,class std::allocator<unsigned short> >::_Copy(unsigned int)'
+C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\ostream(296) : warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify -GX
+        c:\projects\gamelib_2\include\UIThing.h(168) : see reference to function template instantiation 'class std::basic_ostream<char,struct std::char_traits<char> > &__cdecl std::operator <<(class std::basic_ostream<char,struct std::char_traits<char> > &,const char *)' being compiled
+C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\ostream(113) : warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify -GX
+        C:\Program Files\Microsoft Visual Studio\VC98\INCLUDE\ostream(106) : while compiling class-template member function 'class std::basic_ostream<char,struct std::char_traits<char> > &__thiscall std::basic_ostream<char,struct std::char_traits<char> >::operator <<(int)'
+IGMapperListeners.cpp
+C:\projects\IndustrialGolf\IGMapperListeners.cpp(239) : warning C4305: '=' : truncation from 'const double' to 'float'
+C:\projects\IndustrialGolf\IGMapperListeners.cpp(273) : warning C4305: '=' : truncation from 'const double' to 'float'
+IGMapperTile.cpp
+Tile.cpp
+Linking...
+<h3>
+--------------------Configuration: IndustrialGolf - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2A7.tmp" with contents
+[
+/nologo /ML /W3 /GR /GX /O2 /I "C:\PROJECTS\BERTSTOOLBOX" /I "c:\projects\gamelib_2\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"Release/IndustrialGolf.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\projects\IndustrialGolf\Game.cpp"
+"C:\projects\IndustrialGolf\Level.cpp"
+"C:\projects\IndustrialGolf\Listeners.cpp"
+"C:\projects\IndustrialGolf\StartUp.cpp"
+"C:\projects\IndustrialGolf\Club.cpp"
+"C:\projects\IndustrialGolf\Door.cpp"
+"C:\projects\IndustrialGolf\Goal.cpp"
+"C:\projects\IndustrialGolf\GolfBall.cpp"
+"C:\projects\IndustrialGolf\OscillatingFan.cpp"
+"C:\projects\IndustrialGolf\Star.cpp"
+"C:\projects\IndustrialGolf\Switch.cpp"
+"C:\projects\IndustrialGolf\Tee.cpp"
+"C:\projects\IndustrialGolf\Teleporter.cpp"
+"C:\projects\IndustrialGolf\UpWind.cpp"
+"C:\projects\IndustrialGolf\UI.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2A7.tmp" 
+Creating temporary file "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2A8.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/IndustrialGolf.pdb" /machine:I386 /out:"Release/IndustrialGolf.exe" 
+.\Release\EventGenerator.obj
+.\Release\Face.obj
+.\Release\Game.obj
+.\Release\Globals.obj
+.\Release\Level.obj
+.\Release\Listeners.obj
+.\Release\LocalEventGenerator.obj
+.\Release\Player.obj
+.\Release\RemoteEventGenerator.obj
+.\Release\StartUp.obj
+.\Release\Tile.obj
+.\Release\Club.obj
+.\Release\Door.obj
+.\Release\Entity.obj
+.\Release\Goal.obj
+.\Release\GolfBall.obj
+.\Release\OscillatingFan.obj
+.\Release\Star.obj
+.\Release\Switch.obj
+.\Release\Tee.obj
+.\Release\Teleporter.obj
+.\Release\UpWind.obj
+.\Release\UI.obj
+\projects\BertsToolBox\Release\BertsToolBoxLib.lib
+\projects\GAMELIB_2\Release\GameLib_2.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2A8.tmp"
+<h3>Output Window</h3>
+Compiling...
+Game.cpp
+Level.cpp
+Listeners.cpp
+StartUp.cpp
+Club.cpp
+C:\projects\IndustrialGolf\Club.cpp(11) : warning C4355: 'this' : used in base member initializer list
+Door.cpp
+Goal.cpp
+GolfBall.cpp
+C:\projects\IndustrialGolf\GolfBall.cpp(13) : warning C4355: 'this' : used in base member initializer list
+OscillatingFan.cpp
+C:\projects\IndustrialGolf\OscillatingFan.cpp(28) : warning C4355: 'this' : used in base member initializer list
+Star.cpp
+Switch.cpp
+Tee.cpp
+Teleporter.cpp
+C:\projects\IndustrialGolf\Teleporter.cpp(45) : warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+C:\projects\IndustrialGolf\Teleporter.cpp(46) : warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+UpWind.cpp
+C:\projects\IndustrialGolf\UpWind.cpp(9) : warning C4355: 'this' : used in base member initializer list
+UI.cpp
+Linking...
+<h3>
+--------------------Configuration: Organizer - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2AA.bat" with contents
+[
+@echo off
+.\releaseOrganize.bat
+]
+Creating command line "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2AA.bat"
+<h3>Output Window</h3>
+Performing Custom Build Step on .\releaseOrganize.bat
+'rm' is not recognized as an internal or external command,
+operable program or batch file.
+'rm' is not recognized as an internal or external command,
+operable program or batch file.
+        1 file(s) copied.
+        1 file(s) copied.
+ running asseter
+11/14/03 10:10:36 - Inform: assetfilename : Assets.ini
+11/14/03 10:10:36 - Inform: destination   : c:\BigGolf_release
+11/14/03 10:10:36 - Inform: testOnly      : False
+11/14/03 10:10:36 - Inform: asset (bg_BlueSky1) filename (images\backgroundTiles\BlueSky1.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\backgroundTiles\BlueSky1.png -> c:\BigGolf_release\images\backgroundTiles\BlueSky1.png
+11/14/03 10:10:36 - Inform: asset (bg_BlueSky2) filename (images\backgroundTiles\BlueSky2.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\backgroundTiles\BlueSky2.png -> c:\BigGolf_release\images\backgroundTiles\BlueSky2.png
+11/14/03 10:10:36 - Inform: asset (bg_BlueSky3) filename (images\backgroundTiles\BlueSky3.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\backgroundTiles\BlueSky3.png -> c:\BigGolf_release\images\backgroundTiles\BlueSky3.png
+11/14/03 10:10:36 - Inform: asset (bg_BlueSky4) filename (images\backgroundTiles\BlueSky4.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\backgroundTiles\BlueSky4.png -> c:\BigGolf_release\images\backgroundTiles\BlueSky4.png
+11/14/03 10:10:36 - Inform: asset (dlg_Game) filename (images\game.jpg) - seems to be valid
+11/14/03 10:10:36 - Inform: images\game.jpg -> c:\BigGolf_release\images\game.jpg
+11/14/03 10:10:36 - Inform: asset (fnt_Default) filename (ui\sfont_comic_red.png) - seems to be valid
+11/14/03 10:10:36 - Inform: ui\sfont_comic_red.png -> c:\BigGolf_release\ui\sfont_comic_red.png
+11/14/03 10:10:36 - Inform: asset (map_Test1) filename (test1.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: test1.ini -> c:\BigGolf_release\test1.ini
+11/14/03 10:10:36 - Inform: asset (map_Test2) filename (test2.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: test2.ini -> c:\BigGolf_release\test2.ini
+11/14/03 10:10:36 - Inform: asset (map_Test3) filename (test3.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: test3.ini -> c:\BigGolf_release\test3.ini
+11/14/03 10:10:36 - Inform: asset (map_Test4) filename (test4.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: test4.ini -> c:\BigGolf_release\test4.ini
+11/14/03 10:10:36 - Inform: asset (mouse_Default) filename (images\BullsEye.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\BullsEye.png -> c:\BigGolf_release\images\BullsEye.png
+11/14/03 10:10:36 - Inform: asset (mouse_Square) filename (images\mouse.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\mouse.png -> c:\BigGolf_release\images\mouse.png
+11/14/03 10:10:36 - Inform: asset (RelevantFiles) filename (G1L1.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: G1L1.ini -> c:\BigGolf_release\G1L1.ini
+11/14/03 10:10:36 - Inform: asset (RelevantFiles) filename (G1L2.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: G1L2.ini -> c:\BigGolf_release\G1L2.ini
+11/14/03 10:10:36 - Inform: asset (RelevantFiles) filename (G1L3.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: G1L3.ini -> c:\BigGolf_release\G1L3.ini
+11/14/03 10:10:36 - Inform: asset (RelevantFiles) filename (G1L4.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: G1L4.ini -> c:\BigGolf_release\G1L4.ini
+11/14/03 10:10:36 - Inform: asset (RelevantFiles) filename (G1L5.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: G1L5.ini -> c:\BigGolf_release\G1L5.ini
+11/14/03 10:10:36 - Inform: asset (RelevantFiles) filename (G1L6.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: G1L6.ini -> c:\BigGolf_release\G1L6.ini
+11/14/03 10:10:36 - Inform: asset (RelevantFiles) filename (G1L7.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: G1L7.ini -> c:\BigGolf_release\G1L7.ini
+11/14/03 10:10:36 - *Error: asset (RelevantFiles) file not found (G1L8.ini)
+11/14/03 10:10:36 - *Error: asset (RelevantFiles) file not found (G1L9.ini)
+11/14/03 10:10:36 - Inform: asset (RelevantFiles) filename (Games.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: Games.ini -> c:\BigGolf_release\Games.ini
+11/14/03 10:10:36 - *Error: asset (RelevantFiles) file not found (NoArchive)
+11/14/03 10:10:36 - *Error: asset (RelevantFiles) file not found (Type)
+11/14/03 10:10:36 - Inform: asset (rq_Assets) filename (Assets.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: Assets.ini -> c:\BigGolf_release\Assets.ini
+11/14/03 10:10:36 - Inform: asset (rq_BackgroundAssets) filename (BackgroundAssets.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: BackgroundAssets.ini -> c:\BigGolf_release\BackgroundAssets.ini
+11/14/03 10:10:36 - Inform: asset (rq_Defaults) filename (Defaults.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: Defaults.ini -> c:\BigGolf_release\Defaults.ini
+11/14/03 10:10:36 - Inform: asset (rq_DialogIni) filename (UI/dialogs.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: UI/dialogs.ini -> c:\BigGolf_release\UI\dialogs.ini
+11/14/03 10:10:36 - Inform: asset (rq_entdefs) filename (EntityDef.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: EntityDef.ini -> c:\BigGolf_release\EntityDef.ini
+11/14/03 10:10:36 - Inform: asset (rq_EntityAssets) filename (EntityAssets.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: EntityAssets.ini -> c:\BigGolf_release\EntityAssets.ini
+11/14/03 10:10:36 - Inform: asset (rq_EntityDef) filename (EntityDef.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: EntityDef.ini -> c:\BigGolf_release\EntityDef.ini
+11/14/03 10:10:36 - Inform: asset (rq_FaceDef) filename (FaceDef.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: FaceDef.ini -> c:\BigGolf_release\FaceDef.ini
+11/14/03 10:10:36 - Inform: asset (rq_Lib_JPG) filename (jpeg.dll) - seems to be valid
+11/14/03 10:10:36 - Inform: jpeg.dll -> c:\BigGolf_release\jpeg.dll
+11/14/03 10:10:36 - Inform: asset (rq_Lib_PNG) filename (libpng1.dll) - seems to be valid
+11/14/03 10:10:36 - Inform: libpng1.dll -> c:\BigGolf_release\libpng1.dll
+11/14/03 10:10:36 - Inform: asset (rq_Lib_ZLib) filename (zlib.dll) - seems to be valid
+11/14/03 10:10:36 - Inform: zlib.dll -> c:\BigGolf_release\zlib.dll
+11/14/03 10:10:36 - Inform: asset (rq_Mapper) filename (IGMapper.exe) - seems to be valid
+11/14/03 10:10:36 - Inform: IGMapper.exe -> c:\BigGolf_release\IGMapper.exe
+11/14/03 10:10:36 - Inform: asset (rq_MiscAssets) filename (MiscAssets.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: MiscAssets.ini -> c:\BigGolf_release\MiscAssets.ini
+11/14/03 10:10:36 - Inform: asset (rq_SDL) filename (SDL.dll) - seems to be valid
+11/14/03 10:10:36 - Inform: SDL.dll -> c:\BigGolf_release\SDL.dll
+11/14/03 10:10:36 - Inform: asset (rq_SDL_Image) filename (SDL_Image.dll) - seems to be valid
+11/14/03 10:10:36 - Inform: SDL_Image.dll -> c:\BigGolf_release\SDL_Image.dll
+11/14/03 10:10:36 - Inform: asset (rq_SDL_Mixer) filename (SDL_Mixer.dll) - seems to be valid
+11/14/03 10:10:36 - Inform: SDL_Mixer.dll -> c:\BigGolf_release\SDL_Mixer.dll
+11/14/03 10:10:36 - Inform: asset (rq_test1) filename (test8.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: test8.ini -> c:\BigGolf_release\test8.ini
+11/14/03 10:10:36 - Inform: asset (rq_test2) filename (test9.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: test9.ini -> c:\BigGolf_release\test9.ini
+11/14/03 10:10:36 - Inform: asset (rq_theexe) filename (BigGolf.exe) - seems to be valid
+11/14/03 10:10:36 - Inform: BigGolf.exe -> c:\BigGolf_release\BigGolf.exe
+11/14/03 10:10:36 - Inform: asset (rq_TileAssets) filename (TileAssets.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: TileAssets.ini -> c:\BigGolf_release\TileAssets.ini
+11/14/03 10:10:36 - Inform: asset (rq_TileDef) filename (TileDef.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: TileDef.ini -> c:\BigGolf_release\TileDef.ini
+11/14/03 10:10:36 - Inform: asset (rq_tiledefs) filename (TileDef.ini) - seems to be valid
+11/14/03 10:10:36 - Inform: TileDef.ini -> c:\BigGolf_release\TileDef.ini
+11/14/03 10:10:36 - Inform: asset (skn_240X60GreenAndBrown) filename (images\tiles\240X60GreenAndBrown.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\tiles\240X60GreenAndBrown.png -> c:\BigGolf_release\images\tiles\240X60GreenAndBrown.png
+11/14/03 10:10:36 - Inform: asset (skn_btn_Barrel) filename (ui\btn_barrel.png) - seems to be valid
+11/14/03 10:10:36 - Inform: ui\btn_barrel.png -> c:\BigGolf_release\ui\btn_barrel.png
+11/14/03 10:10:36 - Inform: asset (skn_ClosedDoor) filename (images\door\ClosedVDoor.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\door\ClosedVDoor.png -> c:\BigGolf_release\images\door\ClosedVDoor.png
+11/14/03 10:10:36 - Inform: asset (skn_Club) filename (images\club.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\club.png -> c:\BigGolf_release\images\club.png
+11/14/03 10:10:36 - Inform: asset (skn_ConsoleBackground) filename (UI\Console.jpg) - seems to be valid
+11/14/03 10:10:36 - Inform: UI\Console.jpg -> c:\BigGolf_release\UI\Console.jpg
+11/14/03 10:10:36 - Inform: asset (skn_Fairway_Flat) filename (images\tiles\fairway_flat.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\tiles\fairway_flat.png -> c:\BigGolf_release\images\tiles\fairway_flat.png
+11/14/03 10:10:36 - Inform: asset (skn_Fairway_Slope_Left) filename (images\tiles\fairway_slope_left.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\tiles\fairway_slope_left.png -> c:\BigGolf_release\images\tiles\fairway_slope_left.png
+11/14/03 10:10:36 - Inform: asset (skn_Fairway_Slope_Right) filename (images\tiles\fairway_slope_right.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\tiles\fairway_slope_right.png -> c:\BigGolf_release\images\tiles\fairway_slope_right.png
+11/14/03 10:10:36 - Inform: asset (skn_Goal) filename (images\tee.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\tee.png -> c:\BigGolf_release\images\tee.png
+11/14/03 10:10:36 - Inform: asset (skn_GolfBall) filename (images\ball60.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\ball60.png -> c:\BigGolf_release\images\ball60.png
+11/14/03 10:10:36 - Inform: asset (skn_None) filename (images\tiles\worldbackground.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\tiles\worldbackground.png -> c:\BigGolf_release\images\tiles\worldbackground.png
+11/14/03 10:10:36 - Inform: asset (skn_OpenDoor) filename (images\door\OpenVDoor.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\door\OpenVDoor.png -> c:\BigGolf_release\images\door\OpenVDoor.png
+11/14/03 10:10:36 - Inform: asset (skn_OscillatingFan_off) filename (images\fan\fan7.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\fan\fan7.png -> c:\BigGolf_release\images\fan\fan7.png
+11/14/03 10:10:36 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan2.png) - seems to be valid
+11/14/03 10:10:36 - Inform: images\fan\fan2.png -> c:\BigGolf_release\images\fan\fan2.png
+11/14/03 10:10:37 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan1.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\fan\fan1.png -> c:\BigGolf_release\images\fan\fan1.png
+11/14/03 10:10:37 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan2.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\fan\fan2.png -> c:\BigGolf_release\images\fan\fan2.png
+11/14/03 10:10:37 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan3.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\fan\fan3.png -> c:\BigGolf_release\images\fan\fan3.png
+11/14/03 10:10:37 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan4.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\fan\fan4.png -> c:\BigGolf_release\images\fan\fan4.png
+11/14/03 10:10:37 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan5.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\fan\fan5.png -> c:\BigGolf_release\images\fan\fan5.png
+11/14/03 10:10:37 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan6.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\fan\fan6.png -> c:\BigGolf_release\images\fan\fan6.png
+11/14/03 10:10:37 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan7.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\fan\fan7.png -> c:\BigGolf_release\images\fan\fan7.png
+11/14/03 10:10:37 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan6.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\fan\fan6.png -> c:\BigGolf_release\images\fan\fan6.png
+11/14/03 10:10:37 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan5.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\fan\fan5.png -> c:\BigGolf_release\images\fan\fan5.png
+11/14/03 10:10:37 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan4.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\fan\fan4.png -> c:\BigGolf_release\images\fan\fan4.png
+11/14/03 10:10:37 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan3.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\fan\fan3.png -> c:\BigGolf_release\images\fan\fan3.png
+11/14/03 10:10:37 - Inform: asset (skn_Star) filename (images\star\star1.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\star\star1.png -> c:\BigGolf_release\images\star\star1.png
+11/14/03 10:10:37 - Inform: asset (skn_Switch_off) filename (images\switch\downSwitch1.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\switch\downSwitch1.png -> c:\BigGolf_release\images\switch\downSwitch1.png
+11/14/03 10:10:37 - Inform: asset (skn_Switch_off) filename (images\switch\downSwitch2.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\switch\downSwitch2.png -> c:\BigGolf_release\images\switch\downSwitch2.png
+11/14/03 10:10:37 - Inform: asset (skn_Switch_on) filename (images\switch\downSwitch_on1.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\switch\downSwitch_on1.png -> c:\BigGolf_release\images\switch\downSwitch_on1.png
+11/14/03 10:10:37 - Inform: asset (skn_Switch_on) filename (images\switch\downSwitch_on2.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\switch\downSwitch_on2.png -> c:\BigGolf_release\images\switch\downSwitch_on2.png
+11/14/03 10:10:37 - Inform: asset (skn_Tee) filename (images\tee.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\tee.png -> c:\BigGolf_release\images\tee.png
+11/14/03 10:10:37 - Inform: asset (skn_Teleporter) filename (images\tele\tele1.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\tele\tele1.png -> c:\BigGolf_release\images\tele\tele1.png
+11/14/03 10:10:37 - Inform: asset (skn_WindMachine) filename (images\wind.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\wind.png -> c:\BigGolf_release\images\wind.png
+11/14/03 10:10:37 - Inform: asset (skn_World_Background) filename (images\tiles\worldbackground.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\tiles\worldbackground.png -> c:\BigGolf_release\images\tiles\worldbackground.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_downswing) filename (images\anim\wb_upswing3.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_upswing3.png -> c:\BigGolf_release\images\anim\wb_upswing3.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_downswing) filename (images\anim\wb_upswing2.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_upswing2.png -> c:\BigGolf_release\images\anim\wb_upswing2.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_downswing) filename (images\anim\wb_upswing1.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_upswing1.png -> c:\BigGolf_release\images\anim\wb_upswing1.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_idle) filename (images\anim\wb_idle1.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_idle1.png -> c:\BigGolf_release\images\anim\wb_idle1.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power1.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_power1.png -> c:\BigGolf_release\images\anim\wb_power1.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power2.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_power2.png -> c:\BigGolf_release\images\anim\wb_power2.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power3.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_power3.png -> c:\BigGolf_release\images\anim\wb_power3.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power4.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_power4.png -> c:\BigGolf_release\images\anim\wb_power4.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power5.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_power5.png -> c:\BigGolf_release\images\anim\wb_power5.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power5.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_power5.png -> c:\BigGolf_release\images\anim\wb_power5.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power4.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_power4.png -> c:\BigGolf_release\images\anim\wb_power4.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power2.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_power2.png -> c:\BigGolf_release\images\anim\wb_power2.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power1.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_power1.png -> c:\BigGolf_release\images\anim\wb_power1.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_upswing) filename (images\anim\wb_upswing1.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_upswing1.png -> c:\BigGolf_release\images\anim\wb_upswing1.png
+11/14/03 10:10:37 - Inform: asset (skn_WreckingBall_upswing) filename (images\anim\wb_upswing2.png) - seems to be valid
+11/14/03 10:10:37 - Inform: images\anim\wb_upswing2.png -> c:\BigGolf_release\images\anim\wb_upswing2.png
+11/14/03 10:10:38 - Inform: asset (skn_WreckingBall_upswing) filename (images\anim\wb_upswing3.png) - seems to be valid
+11/14/03 10:10:38 - Inform: images\anim\wb_upswing3.png -> c:\BigGolf_release\images\anim\wb_upswing3.png
+11/14/03 10:10:38 - *Error: 92 file(s) processed - There were errors
+Error spawning c:\win2k\system32\cmd.exe
+
+
+
+<h3>Results</h3>
+Organizer - 1 error(s), 17 warning(s)
+<h3>
+--------------------Configuration: IGMapper - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2AB.tmp" with contents
+[
+/nologo /MLd /W3 /Gm /GX /Zi /Od /Ob1 /I "C:\PROJECTS\BERTSTOOLBOX" /I "c:\projects\gamelib_2\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "IGMAPPER" /Fp"IGMapper___Win32_Debug/IGMapper.pch" /YX /Fo"IGMapper___Win32_Debug/" /Fd"IGMapper___Win32_Debug/" /FD /GZ /c 
+"C:\projects\IndustrialGolf\Face.cpp"
+"C:\projects\IndustrialGolf\Globals.cpp"
+"C:\projects\IndustrialGolf\IGMapper.cpp"
+"C:\projects\IndustrialGolf\IGMapperChooseTileDlg.cpp"
+"C:\projects\IndustrialGolf\IGMapperEntiry.cpp"
+"C:\projects\IndustrialGolf\IGMapperListeners.cpp"
+"C:\projects\IndustrialGolf\IGMapperTile.cpp"
+"C:\projects\IndustrialGolf\Tile.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2AB.tmp" 
+Creating temporary file "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2AC.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"IGMapper___Win32_Debug/IGMapper.pdb" /debug /machine:I386 /out:"IGMapper___Win32_Debug/IGMapper.exe" /pdbtype:sept 
+.\IGMapper___Win32_Debug\CullFaces.obj
+.\IGMapper___Win32_Debug\Entity.obj
+.\IGMapper___Win32_Debug\Face.obj
+.\IGMapper___Win32_Debug\Globals.obj
+.\IGMapper___Win32_Debug\IGMapper.obj
+.\IGMapper___Win32_Debug\IGMapperChooseTileDlg.obj
+.\IGMapper___Win32_Debug\IGMapperEntiry.obj
+.\IGMapper___Win32_Debug\IGMapperGlobals.obj
+.\IGMapper___Win32_Debug\IGMapperListeners.obj
+.\IGMapper___Win32_Debug\IGMapperTile.obj
+.\IGMapper___Win32_Debug\PropertiesDialog.obj
+.\IGMapper___Win32_Debug\Tile.obj
+\projects\BertsToolBox\Debug\BertsToolBoxLib.lib
+\projects\GAMELIB_2\Debug\GameLib_2.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2AC.tmp"
+<h3>Output Window</h3>
+Compiling...
+Globals.cpp
+Skipping... (no relevant changes detected)
+Face.cpp
+IGMapper.cpp
+IGMapperChooseTileDlg.cpp
+IGMapperEntiry.cpp
+IGMapperListeners.cpp
+IGMapperTile.cpp
+Tile.cpp
+Linking...
+<h3>
+--------------------Configuration: Organizer - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2AD.bat" with contents
+[
+@echo off
+.\debugOrganize.bat
+]
+Creating command line "C:\DOCUME~1\HEYNOW~1\LOCALS~1\Temp\RSP2AD.bat"
+<h3>Output Window</h3>
+Performing Custom Build Step on .\debugOrganize.bat
+'rm' is not recognized as an internal or external command,
+operable program or batch file.
+'rm' is not recognized as an internal or external command,
+operable program or batch file.
+        1 file(s) copied.
+        1 file(s) copied.
+ running asseter
+11/14/03 10:10:52 - Inform: assetfilename : Assets.ini
+11/14/03 10:10:52 - Inform: destination   : c:\BigGolf_debug
+11/14/03 10:10:52 - Inform: testOnly      : False
+11/14/03 10:10:52 - Inform: asset (bg_BlueSky1) filename (images\backgroundTiles\BlueSky1.png) - seems to be valid
+11/14/03 10:10:52 - Inform: images\backgroundTiles\BlueSky1.png -> c:\BigGolf_debug\images\backgroundTiles\BlueSky1.png
+11/14/03 10:10:52 - Inform: asset (bg_BlueSky2) filename (images\backgroundTiles\BlueSky2.png) - seems to be valid
+11/14/03 10:10:52 - Inform: images\backgroundTiles\BlueSky2.png -> c:\BigGolf_debug\images\backgroundTiles\BlueSky2.png
+11/14/03 10:10:52 - Inform: asset (bg_BlueSky3) filename (images\backgroundTiles\BlueSky3.png) - seems to be valid
+11/14/03 10:10:52 - Inform: images\backgroundTiles\BlueSky3.png -> c:\BigGolf_debug\images\backgroundTiles\BlueSky3.png
+11/14/03 10:10:52 - Inform: asset (bg_BlueSky4) filename (images\backgroundTiles\BlueSky4.png) - seems to be valid
+11/14/03 10:10:52 - Inform: images\backgroundTiles\BlueSky4.png -> c:\BigGolf_debug\images\backgroundTiles\BlueSky4.png
+11/14/03 10:10:52 - Inform: asset (dlg_Game) filename (images\game.jpg) - seems to be valid
+11/14/03 10:10:52 - Inform: images\game.jpg -> c:\BigGolf_debug\images\game.jpg
+11/14/03 10:10:52 - Inform: asset (fnt_Default) filename (ui\sfont_comic_red.png) - seems to be valid
+11/14/03 10:10:52 - Inform: ui\sfont_comic_red.png -> c:\BigGolf_debug\ui\sfont_comic_red.png
+11/14/03 10:10:52 - Inform: asset (map_Test1) filename (test1.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: test1.ini -> c:\BigGolf_debug\test1.ini
+11/14/03 10:10:52 - Inform: asset (map_Test2) filename (test2.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: test2.ini -> c:\BigGolf_debug\test2.ini
+11/14/03 10:10:52 - Inform: asset (map_Test3) filename (test3.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: test3.ini -> c:\BigGolf_debug\test3.ini
+11/14/03 10:10:52 - Inform: asset (map_Test4) filename (test4.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: test4.ini -> c:\BigGolf_debug\test4.ini
+11/14/03 10:10:52 - Inform: asset (mouse_Default) filename (images\BullsEye.png) - seems to be valid
+11/14/03 10:10:52 - Inform: images\BullsEye.png -> c:\BigGolf_debug\images\BullsEye.png
+11/14/03 10:10:52 - Inform: asset (mouse_Square) filename (images\mouse.png) - seems to be valid
+11/14/03 10:10:52 - Inform: images\mouse.png -> c:\BigGolf_debug\images\mouse.png
+11/14/03 10:10:52 - Inform: asset (RelevantFiles) filename (G1L1.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: G1L1.ini -> c:\BigGolf_debug\G1L1.ini
+11/14/03 10:10:52 - Inform: asset (RelevantFiles) filename (G1L2.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: G1L2.ini -> c:\BigGolf_debug\G1L2.ini
+11/14/03 10:10:52 - Inform: asset (RelevantFiles) filename (G1L3.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: G1L3.ini -> c:\BigGolf_debug\G1L3.ini
+11/14/03 10:10:52 - Inform: asset (RelevantFiles) filename (G1L4.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: G1L4.ini -> c:\BigGolf_debug\G1L4.ini
+11/14/03 10:10:52 - Inform: asset (RelevantFiles) filename (G1L5.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: G1L5.ini -> c:\BigGolf_debug\G1L5.ini
+11/14/03 10:10:52 - Inform: asset (RelevantFiles) filename (G1L6.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: G1L6.ini -> c:\BigGolf_debug\G1L6.ini
+11/14/03 10:10:52 - Inform: asset (RelevantFiles) filename (G1L7.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: G1L7.ini -> c:\BigGolf_debug\G1L7.ini
+11/14/03 10:10:52 - *Error: asset (RelevantFiles) file not found (G1L8.ini)
+11/14/03 10:10:52 - *Error: asset (RelevantFiles) file not found (G1L9.ini)
+11/14/03 10:10:52 - Inform: asset (RelevantFiles) filename (Games.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: Games.ini -> c:\BigGolf_debug\Games.ini
+11/14/03 10:10:52 - *Error: asset (RelevantFiles) file not found (NoArchive)
+11/14/03 10:10:52 - *Error: asset (RelevantFiles) file not found (Type)
+11/14/03 10:10:52 - Inform: asset (rq_Assets) filename (Assets.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: Assets.ini -> c:\BigGolf_debug\Assets.ini
+11/14/03 10:10:52 - Inform: asset (rq_BackgroundAssets) filename (BackgroundAssets.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: BackgroundAssets.ini -> c:\BigGolf_debug\BackgroundAssets.ini
+11/14/03 10:10:52 - Inform: asset (rq_Defaults) filename (Defaults.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: Defaults.ini -> c:\BigGolf_debug\Defaults.ini
+11/14/03 10:10:52 - Inform: asset (rq_DialogIni) filename (UI/dialogs.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: UI/dialogs.ini -> c:\BigGolf_debug\UI\dialogs.ini
+11/14/03 10:10:52 - Inform: asset (rq_entdefs) filename (EntityDef.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: EntityDef.ini -> c:\BigGolf_debug\EntityDef.ini
+11/14/03 10:10:52 - Inform: asset (rq_EntityAssets) filename (EntityAssets.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: EntityAssets.ini -> c:\BigGolf_debug\EntityAssets.ini
+11/14/03 10:10:52 - Inform: asset (rq_EntityDef) filename (EntityDef.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: EntityDef.ini -> c:\BigGolf_debug\EntityDef.ini
+11/14/03 10:10:52 - Inform: asset (rq_FaceDef) filename (FaceDef.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: FaceDef.ini -> c:\BigGolf_debug\FaceDef.ini
+11/14/03 10:10:52 - Inform: asset (rq_Lib_JPG) filename (jpeg.dll) - seems to be valid
+11/14/03 10:10:52 - Inform: jpeg.dll -> c:\BigGolf_debug\jpeg.dll
+11/14/03 10:10:52 - Inform: asset (rq_Lib_PNG) filename (libpng1.dll) - seems to be valid
+11/14/03 10:10:52 - Inform: libpng1.dll -> c:\BigGolf_debug\libpng1.dll
+11/14/03 10:10:52 - Inform: asset (rq_Lib_ZLib) filename (zlib.dll) - seems to be valid
+11/14/03 10:10:52 - Inform: zlib.dll -> c:\BigGolf_debug\zlib.dll
+11/14/03 10:10:52 - Inform: asset (rq_Mapper) filename (IGMapper.exe) - seems to be valid
+11/14/03 10:10:52 - Inform: IGMapper.exe -> c:\BigGolf_debug\IGMapper.exe
+11/14/03 10:10:52 - Inform: asset (rq_MiscAssets) filename (MiscAssets.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: MiscAssets.ini -> c:\BigGolf_debug\MiscAssets.ini
+11/14/03 10:10:52 - Inform: asset (rq_SDL) filename (SDL.dll) - seems to be valid
+11/14/03 10:10:52 - Inform: SDL.dll -> c:\BigGolf_debug\SDL.dll
+11/14/03 10:10:52 - Inform: asset (rq_SDL_Image) filename (SDL_Image.dll) - seems to be valid
+11/14/03 10:10:52 - Inform: SDL_Image.dll -> c:\BigGolf_debug\SDL_Image.dll
+11/14/03 10:10:52 - Inform: asset (rq_SDL_Mixer) filename (SDL_Mixer.dll) - seems to be valid
+11/14/03 10:10:52 - Inform: SDL_Mixer.dll -> c:\BigGolf_debug\SDL_Mixer.dll
+11/14/03 10:10:52 - Inform: asset (rq_test1) filename (test8.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: test8.ini -> c:\BigGolf_debug\test8.ini
+11/14/03 10:10:52 - Inform: asset (rq_test2) filename (test9.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: test9.ini -> c:\BigGolf_debug\test9.ini
+11/14/03 10:10:52 - Inform: asset (rq_theexe) filename (BigGolf.exe) - seems to be valid
+11/14/03 10:10:52 - Inform: BigGolf.exe -> c:\BigGolf_debug\BigGolf.exe
+11/14/03 10:10:52 - Inform: asset (rq_TileAssets) filename (TileAssets.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: TileAssets.ini -> c:\BigGolf_debug\TileAssets.ini
+11/14/03 10:10:52 - Inform: asset (rq_TileDef) filename (TileDef.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: TileDef.ini -> c:\BigGolf_debug\TileDef.ini
+11/14/03 10:10:52 - Inform: asset (rq_tiledefs) filename (TileDef.ini) - seems to be valid
+11/14/03 10:10:52 - Inform: TileDef.ini -> c:\BigGolf_debug\TileDef.ini
+11/14/03 10:10:52 - Inform: asset (skn_240X60GreenAndBrown) filename (images\tiles\240X60GreenAndBrown.png) - seems to be valid
+11/14/03 10:10:52 - Inform: images\tiles\240X60GreenAndBrown.png -> c:\BigGolf_debug\images\tiles\240X60GreenAndBrown.png
+11/14/03 10:10:52 - Inform: asset (skn_btn_Barrel) filename (ui\btn_barrel.png) - seems to be valid
+11/14/03 10:10:52 - Inform: ui\btn_barrel.png -> c:\BigGolf_debug\ui\btn_barrel.png
+11/14/03 10:10:52 - Inform: asset (skn_ClosedDoor) filename (images\door\ClosedVDoor.png) - seems to be valid
+11/14/03 10:10:52 - Inform: images\door\ClosedVDoor.png -> c:\BigGolf_debug\images\door\ClosedVDoor.png
+11/14/03 10:10:52 - Inform: asset (skn_Club) filename (images\club.png) - seems to be valid
+11/14/03 10:10:52 - Inform: images\club.png -> c:\BigGolf_debug\images\club.png
+11/14/03 10:10:52 - Inform: asset (skn_ConsoleBackground) filename (UI\Console.jpg) - seems to be valid
+11/14/03 10:10:52 - Inform: UI\Console.jpg -> c:\BigGolf_debug\UI\Console.jpg
+11/14/03 10:10:52 - Inform: asset (skn_Fairway_Flat) filename (images\tiles\fairway_flat.png) - seems to be valid
+11/14/03 10:10:52 - Inform: images\tiles\fairway_flat.png -> c:\BigGolf_debug\images\tiles\fairway_flat.png
+11/14/03 10:10:53 - Inform: asset (skn_Fairway_Slope_Left) filename (images\tiles\fairway_slope_left.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\tiles\fairway_slope_left.png -> c:\BigGolf_debug\images\tiles\fairway_slope_left.png
+11/14/03 10:10:53 - Inform: asset (skn_Fairway_Slope_Right) filename (images\tiles\fairway_slope_right.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\tiles\fairway_slope_right.png -> c:\BigGolf_debug\images\tiles\fairway_slope_right.png
+11/14/03 10:10:53 - Inform: asset (skn_Goal) filename (images\tee.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\tee.png -> c:\BigGolf_debug\images\tee.png
+11/14/03 10:10:53 - Inform: asset (skn_GolfBall) filename (images\ball60.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\ball60.png -> c:\BigGolf_debug\images\ball60.png
+11/14/03 10:10:53 - Inform: asset (skn_None) filename (images\tiles\worldbackground.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\tiles\worldbackground.png -> c:\BigGolf_debug\images\tiles\worldbackground.png
+11/14/03 10:10:53 - Inform: asset (skn_OpenDoor) filename (images\door\OpenVDoor.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\door\OpenVDoor.png -> c:\BigGolf_debug\images\door\OpenVDoor.png
+11/14/03 10:10:53 - Inform: asset (skn_OscillatingFan_off) filename (images\fan\fan7.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\fan\fan7.png -> c:\BigGolf_debug\images\fan\fan7.png
+11/14/03 10:10:53 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan2.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\fan\fan2.png -> c:\BigGolf_debug\images\fan\fan2.png
+11/14/03 10:10:53 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan1.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\fan\fan1.png -> c:\BigGolf_debug\images\fan\fan1.png
+11/14/03 10:10:53 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan2.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\fan\fan2.png -> c:\BigGolf_debug\images\fan\fan2.png
+11/14/03 10:10:53 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan3.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\fan\fan3.png -> c:\BigGolf_debug\images\fan\fan3.png
+11/14/03 10:10:53 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan4.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\fan\fan4.png -> c:\BigGolf_debug\images\fan\fan4.png
+11/14/03 10:10:53 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan5.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\fan\fan5.png -> c:\BigGolf_debug\images\fan\fan5.png
+11/14/03 10:10:53 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan6.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\fan\fan6.png -> c:\BigGolf_debug\images\fan\fan6.png
+11/14/03 10:10:53 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan7.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\fan\fan7.png -> c:\BigGolf_debug\images\fan\fan7.png
+11/14/03 10:10:53 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan6.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\fan\fan6.png -> c:\BigGolf_debug\images\fan\fan6.png
+11/14/03 10:10:53 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan5.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\fan\fan5.png -> c:\BigGolf_debug\images\fan\fan5.png
+11/14/03 10:10:53 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan4.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\fan\fan4.png -> c:\BigGolf_debug\images\fan\fan4.png
+11/14/03 10:10:53 - Inform: asset (skn_OscillatingFan_on) filename (images\fan\fan3.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\fan\fan3.png -> c:\BigGolf_debug\images\fan\fan3.png
+11/14/03 10:10:53 - Inform: asset (skn_Star) filename (images\star\star1.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\star\star1.png -> c:\BigGolf_debug\images\star\star1.png
+11/14/03 10:10:53 - Inform: asset (skn_Switch_off) filename (images\switch\downSwitch1.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\switch\downSwitch1.png -> c:\BigGolf_debug\images\switch\downSwitch1.png
+11/14/03 10:10:53 - Inform: asset (skn_Switch_off) filename (images\switch\downSwitch2.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\switch\downSwitch2.png -> c:\BigGolf_debug\images\switch\downSwitch2.png
+11/14/03 10:10:53 - Inform: asset (skn_Switch_on) filename (images\switch\downSwitch_on1.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\switch\downSwitch_on1.png -> c:\BigGolf_debug\images\switch\downSwitch_on1.png
+11/14/03 10:10:53 - Inform: asset (skn_Switch_on) filename (images\switch\downSwitch_on2.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\switch\downSwitch_on2.png -> c:\BigGolf_debug\images\switch\downSwitch_on2.png
+11/14/03 10:10:53 - Inform: asset (skn_Tee) filename (images\tee.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\tee.png -> c:\BigGolf_debug\images\tee.png
+11/14/03 10:10:53 - Inform: asset (skn_Teleporter) filename (images\tele\tele1.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\tele\tele1.png -> c:\BigGolf_debug\images\tele\tele1.png
+11/14/03 10:10:53 - Inform: asset (skn_WindMachine) filename (images\wind.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\wind.png -> c:\BigGolf_debug\images\wind.png
+11/14/03 10:10:53 - Inform: asset (skn_World_Background) filename (images\tiles\worldbackground.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\tiles\worldbackground.png -> c:\BigGolf_debug\images\tiles\worldbackground.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_downswing) filename (images\anim\wb_upswing3.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_upswing3.png -> c:\BigGolf_debug\images\anim\wb_upswing3.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_downswing) filename (images\anim\wb_upswing2.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_upswing2.png -> c:\BigGolf_debug\images\anim\wb_upswing2.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_downswing) filename (images\anim\wb_upswing1.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_upswing1.png -> c:\BigGolf_debug\images\anim\wb_upswing1.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_idle) filename (images\anim\wb_idle1.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_idle1.png -> c:\BigGolf_debug\images\anim\wb_idle1.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power1.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_power1.png -> c:\BigGolf_debug\images\anim\wb_power1.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power2.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_power2.png -> c:\BigGolf_debug\images\anim\wb_power2.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power3.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_power3.png -> c:\BigGolf_debug\images\anim\wb_power3.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power4.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_power4.png -> c:\BigGolf_debug\images\anim\wb_power4.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power5.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_power5.png -> c:\BigGolf_debug\images\anim\wb_power5.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power5.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_power5.png -> c:\BigGolf_debug\images\anim\wb_power5.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power4.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_power4.png -> c:\BigGolf_debug\images\anim\wb_power4.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power2.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_power2.png -> c:\BigGolf_debug\images\anim\wb_power2.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_power) filename (images\anim\wb_power1.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_power1.png -> c:\BigGolf_debug\images\anim\wb_power1.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_upswing) filename (images\anim\wb_upswing1.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_upswing1.png -> c:\BigGolf_debug\images\anim\wb_upswing1.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_upswing) filename (images\anim\wb_upswing2.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_upswing2.png -> c:\BigGolf_debug\images\anim\wb_upswing2.png
+11/14/03 10:10:53 - Inform: asset (skn_WreckingBall_upswing) filename (images\anim\wb_upswing3.png) - seems to be valid
+11/14/03 10:10:53 - Inform: images\anim\wb_upswing3.png -> c:\BigGolf_debug\images\anim\wb_upswing3.png
+11/14/03 10:10:53 - *Error: 92 file(s) processed - There were errors
+Error spawning c:\win2k\system32\cmd.exe
+
+
+
+<h3>Results</h3>
+Organizer - 1 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

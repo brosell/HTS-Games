@@ -1,0 +1,49 @@
+10/06/03 16:59:26 - Inform: Starting class TweakableDialogTest1:EnsureLoad (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TweakableDialogTest1:AddItem (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TweakableDialogTest1:RemoveItem (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TweakableDialogTest2:SelectItem (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TweakableDialogTest2:SelectItem2 (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TweakableDialogTest2:SelectNothing (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TweakableDialogTest2:MoveItem (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TestListChooser1:CreateFromScratch (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TestListChooser1:CreateFromIterators (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TestListChooser2_Position:TestHeight (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TestListChooser2_Position:TestWidth (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TestListChooser2_Position:TestInitialPosition (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TestListChooser2_Position:TestInitialPositionWithMargin (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TestListChooser2_Position:TestInitialPositionTooLow (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TestListChooser2_Position:TestInitialPositionTooFarRight (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TestListChooser2_Position:TestInitialPositionBoth (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class TestListChooser2_Position:TestInitialPositionList (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class ChooserInteration:MouseOverHighlights (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class ChooserInteration:MouseClickChooses (iteration 1 of 1)
+10/06/03 16:59:26 - Inform: Starting class ChooserInteration:HumanTest (iteration 1 of 1)
+10/06/03 16:59:28 - Inform: 
+10/06/03 16:59:28 - Inform: 
+10/06/03 16:59:28 - Inform: TestFixture: class TweakableDialogTest1
+10/06/03 16:59:28 - Inform: ---------------------------------------------
+10/06/03 16:59:28 - Inform: Total: 010 (Pass: 010, Fail 000)
+10/06/03 16:59:28 - Inform: 
+10/06/03 16:59:28 - Inform: 
+10/06/03 16:59:28 - Inform: TestFixture: class TweakableDialogTest2
+10/06/03 16:59:28 - Inform: ---------------------------------------------
+10/06/03 16:59:28 - Inform: Total: 020 (Pass: 020, Fail 000)
+10/06/03 16:59:28 - Inform: 
+10/06/03 16:59:28 - Inform: 
+10/06/03 16:59:28 - Inform: TestFixture: class TestListChooser1
+10/06/03 16:59:28 - Inform: ---------------------------------------------
+10/06/03 16:59:28 - Inform: Total: 008 (Pass: 008, Fail 000)
+10/06/03 16:59:28 - Inform: 
+10/06/03 16:59:28 - Inform: 
+10/06/03 16:59:28 - Inform: TestFixture: class TestListChooser2_Position
+10/06/03 16:59:28 - Inform: ---------------------------------------------
+10/06/03 16:59:28 - Inform: Total: 010 (Pass: 010, Fail 000)
+10/06/03 16:59:28 - Inform: 
+10/06/03 16:59:28 - Inform: 
+10/06/03 16:59:28 - Inform: TestFixture: class ChooserInteration
+10/06/03 16:59:28 - Inform: ---------------------------------------------
+10/06/03 16:59:28 - Inform: Total: 006 (Pass: 006, Fail 000)
+10/06/03 16:59:28 - Inform: 
+10/06/03 16:59:28 - Inform: 
+10/06/03 16:59:28 - Inform: ---------------------------------------------------------
+10/06/03 16:59:28 - Inform: Suite Total: 000 (Pass: 000, Fail 000)

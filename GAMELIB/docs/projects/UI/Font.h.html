@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<TITLE>
+Font.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _Font_h
+<font color="blue">#define</font> _Font_h
+
+<font color="blue">#include</font> <font color="maroon">"Event/Keyboard-utils.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">const</font> <font color="blue">int</font> FONT_HEIGHT <font color="black">=</font> <font color="maroon">17</font>;
+<font color="blue">const</font> <font color="blue">int</font> FONT_WIDTH <font color="black">=</font> <font color="maroon">11</font>;
+
+<font color="blue">#ifndef</font> FontNoShift
+<font color="blue">#define</font> FontNoShift <font color="maroon">"images\\LettersNoShift.bmp"</font>
+<font color="blue">#define</font> FontShift <font color="maroon">"images\\LettersShift.bmp"</font>
+<font color="blue">#endif</font>
+
+<font color="blue">#include</font> <font color="maroon">"Graphics/Display.h"</font>
+
+<font color="blue">class</font> Display;
+
+
+<font color="blue">#include</font> <font color="maroon">"SFont.h"</font>
+ 
+<font color="blue">class</font> Font
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  
+  ~Font<font color="black">(</font><font color="black">)</font>;
+
+  virtual <font color="blue">int</font> getTextWidth<font color="black">(</font>string str<font color="black">)</font>;
+  virtual <font color="blue">int</font> getTextWidth<font color="black">(</font>string str, <font color="blue">int</font> offset, <font color="blue">int</font> count<font color="black">)</font>;
+  virtual <font color="blue">int</font> getFontHeight<font color="black">(</font><font color="black">)</font>;
+  
+  virtual <font color="blue">int</font> drawLine<font color="black">(</font>Display<font color="black">*</font> surface, string s, <font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font>;
+
+  virtual <font color="blue">int</font> drawLine<font color="black">(</font>SDL_Surface<font color="black">*</font> surface, string s, <font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font>;
+
+  <font color="blue">static</font> Font<font color="black">*</font> load<font color="black">(</font>string filename<font color="black">)</font>;
+  <font color="blue">static</font> Font<font color="black">*</font> getDefault<font color="black">(</font><font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> m_isValid;
+
+  SFont_FontInfo m_fontInfo;
+  SDL_Surface<font color="black">*</font> m_surface;
+
+  <font color="blue">static</font> map<font color="black">&#60;</font>string, Font<font color="black">*</font><font color="black">&#62;</font> s_fonts;
+
+  Font<font color="black">(</font>string filename<font color="black">)</font>;
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

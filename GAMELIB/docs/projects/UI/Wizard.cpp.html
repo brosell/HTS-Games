@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>
+Wizard.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"Wizard.h"</font>
+<font color="blue">#include</font> <font color="maroon">"StringTokenizer.h"</font>
+
+Wizard<font color="black">:</font><font color="black">:</font>Wizard<font color="black">(</font>IniFile<font color="black">&</font> ini, string <font color="blue">name</font><font color="black">)</font>
+<font color="black">{</font>
+  string dialogs <font color="black">=</font> ini<font color="black">[</font><font color="blue">name</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Dialogs"</font><font color="black">]</font>;
+  StringTokenizer st<font color="black">(</font>dialogs, <font color="maroon">" ,\r\n"</font><font color="black">)</font>;
+  IniBasedDialog<font color="black">*</font> db <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="blue">while</font> <font color="black">(</font>st.hasMoreTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    db <font color="black">=</font> <font color="blue">new</font> IniBasedDialog<font color="black">(</font>ini, st.nextToken<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    m_dialogs.push_back<font color="black">(</font>db<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+Wizard<font color="black">:</font><font color="black">:</font>~Wizard<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+ list<font color="black">&#60;</font>IniBasedDialog<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>m_dialogs.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>m_dialogs.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    IniBasedDialog<font color="black">*</font> db <font color="black">=</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+    <font color="blue">delete</font> db;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+  
+<font color="blue">int</font> Wizard<font color="black">:</font><font color="black">:</font>doModal<font color="black">(</font>Delegate<font color="black">*</font> loop<font color="black">)</font>
+<font color="black">{</font>
+  list<font color="black">&#60;</font>IniBasedDialog<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>m_dialogs.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>m_dialogs.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    IniBasedDialog<font color="black">*</font> db <font color="black">=</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>db<font color="black">-</font><font color="black">&#62;</font>doModal<font color="black">(</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">1</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="maroon">0</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

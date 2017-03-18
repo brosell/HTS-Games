@@ -1,0 +1,111 @@
+<HTML>
+<HEAD>
+<TITLE>
+FileManager.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"FileManager.h"</font>
+<font color="blue">#include</font> <font color="maroon">"PakFile.h"</font>
+<font color="blue">#include</font> <font color="maroon">"FileUtils.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+
+<font color="blue">int</font> loadFile<font color="black">(</font>string filename, <font color="blue">void</font><font color="black">*</font><font color="black">*</font> pto<font color="black">)</font>;
+
+<font color="blue">bool</font> fm_fileExists<font color="black">(</font>string filename<font color="black">)</font>;
+
+<font color="blue">bool</font> fm_fileExists<font color="black">(</font>string filename<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>fileExists<font color="black">(</font>filename<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">true</font>;
+  <font color="black">}</font>
+
+  CStdString pakfilename;
+
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> x<font color="black">=</font><font color="maroon">9</font>; x<font color="black">&#62;</font><font color="maroon">0</font>; x<font color="black">-</font><font color="black">-</font><font color="black">)</font>
+  <font color="black">{</font>
+    pakfilename.Format<font color="black">(</font><font color="maroon">"pak%d.package"</font>, x<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>fileExists<font color="black">(</font>pakfilename<font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      PakFile pak<font color="black">(</font>pakfilename, <font color="blue">true</font><font color="black">)</font>;
+      <font color="blue">if</font> <font color="black">(</font>pak.contains<font color="black">(</font>filename<font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">true</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+<font color="blue">int</font> loadFileToMemory<font color="black">(</font>string filename, <font color="blue">void</font><font color="black">*</font><font color="black">*</font> pto<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>fileExists<font color="black">(</font>filename<font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Debug, <font color="maroon">"loading %s from disk"</font>, filename.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> loadFile<font color="black">(</font>filename, pto<font color="black">)</font>;
+  <font color="black">}</font>
+  
+  CStdString pakfilename;
+
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> x<font color="black">=</font><font color="maroon">9</font>; x<font color="black">&#62;</font><font color="maroon">0</font>; x<font color="black">-</font><font color="black">-</font><font color="black">)</font>
+  <font color="black">{</font>
+    pakfilename.Format<font color="black">(</font><font color="maroon">"pak%d.package"</font>, x<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>fileExists<font color="black">(</font>pakfilename<font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      PakFile pak<font color="black">(</font>pakfilename, <font color="blue">true</font><font color="black">)</font>;
+      <font color="blue">if</font> <font color="black">(</font>pak.contains<font color="black">(</font>filename<font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        logError<font color="black">(</font>Debug, <font color="maroon">"loading %s from package%02d"</font>, filename.c_str<font color="black">(</font><font color="black">)</font>, x<font color="black">)</font>;
+        <font color="blue">int</font> size <font color="black">=</font> pak<font color="black">[</font>filename<font color="black">]</font>.getSize<font color="black">(</font><font color="black">)</font>;
+        <font color="black">*</font>pto <font color="black">=</font> malloc<font color="black">(</font>size<font color="black">+</font><font color="maroon">1</font><font color="black">)</font>;
+        memset<font color="black">(</font><font color="black">*</font>pto, <font color="maroon">0</font>, size<font color="black">+</font><font color="maroon">1</font><font color="black">)</font>;
+        pak.toMemory<font color="black">(</font>filename, <font color="black">*</font>pto<font color="black">)</font>;
+        <font color="blue">return</font> size;
+      <font color="black">}</font>
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  logError<font color="black">(</font>Error, <font color="maroon">"%s - file not found"</font>, filename.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+<font color="blue">int</font> loadFile<font color="black">(</font>string filename, <font color="blue">void</font><font color="black">*</font><font color="black">*</font> pto<font color="black">)</font>
+<font color="black">{</font>
+  FILE<font color="black">*</font> in<font color="black">=</font>fopen<font color="black">(</font>filename.c_str<font color="black">(</font><font color="black">)</font>, <font color="maroon">"rb"</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>in<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+ 
+  <font color="blue">int</font> size <font color="black">=</font> fileSize<font color="black">(</font>filename<font color="black">)</font>;
+
+  <font color="black">*</font>pto <font color="black">=</font> malloc<font color="black">(</font>size<font color="black">+</font><font color="maroon">1</font><font color="black">)</font>;
+  memset<font color="black">(</font><font color="black">*</font>pto, <font color="maroon">0</font>, size<font color="black">+</font><font color="maroon">1</font><font color="black">)</font>;
+
+  <font color="blue">char</font><font color="black">*</font> start <font color="black">=</font> <font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font><font color="black">*</font>pto;
+  <font color="blue">char</font><font color="black">*</font> to<font color="black">=</font><font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font><font color="black">*</font>pto;
+
+  <font color="blue">int</font> read <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="blue">while</font> <font color="black">(</font>to <font color="black">&#60;</font> start<font color="black">+</font>size<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> leftToRead <font color="black">=</font> size<font color="black">-</font>read;
+    <font color="blue">int</font> toRead <font color="black">=</font> min<font color="black">(</font><font color="maroon">1024</font>, leftToRead<font color="black">)</font>;
+    <font color="blue">int</font> justRead <font color="black">=</font> fread<font color="black">(</font>to, <font color="maroon">1</font>, toRead, in<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>justRead <font color="black">&#60;</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      free<font color="black">(</font><font color="black">*</font>pto<font color="black">)</font>;
+      <font color="blue">return</font> <font color="maroon">0</font>;
+    <font color="black">}</font>
+    to<font color="black">+</font><font color="black">=</font>justRead;
+    read<font color="black">+</font><font color="black">=</font>justRead;
+  <font color="black">}</font>
+
+  fclose<font color="black">(</font>in<font color="black">)</font>;
+  <font color="blue">return</font> size;
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

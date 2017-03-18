@@ -1,0 +1,61 @@
+<HTML>
+<HEAD>
+<TITLE>
+pcl.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/*
+ *  PCL by Davide Libenzi ( Portable Coroutine Library )
+ *  Copyright (C) 2003  Davide Libenzi
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *  Davide Libenzi &#60;davidel@xmailserver.org&#62;
+ *
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>PCL_H<font color="black">)</font>
+<font color="blue">#define</font> PCL_H
+
+<font color="blue">#ifdef</font> __cplusplus
+<font color="blue">extern</font> <font color="maroon">"C"</font> <font color="black">{</font>
+<font color="blue">#endif</font>
+
+
+<font color="blue">typedef</font> <font color="blue">void</font> <font color="black">*</font>coroutine_t;
+
+
+coroutine_t co_create<font color="black">(</font><font color="blue">void</font> <font color="black">(</font><font color="black">*</font>func<font color="black">)</font><font color="black">(</font><font color="blue">void</font> <font color="black">*</font><font color="black">)</font>, <font color="blue">void</font> <font color="black">*</font>data, <font color="blue">void</font> <font color="black">*</font>stack, <font color="blue">int</font> size<font color="black">)</font>;
+<font color="blue">void</font> co_delete<font color="black">(</font>coroutine_t coro<font color="black">)</font>;
+<font color="blue">void</font> co_call<font color="black">(</font>coroutine_t coro<font color="black">)</font>;
+<font color="blue">void</font> co_resume<font color="black">(</font><font color="blue">void</font><font color="black">)</font>;
+<font color="blue">void</font> co_exit_to<font color="black">(</font>coroutine_t coro<font color="black">)</font>;
+<font color="blue">void</font> co_exit<font color="black">(</font><font color="blue">void</font><font color="black">)</font>;
+coroutine_t co_current<font color="black">(</font><font color="blue">void</font><font color="black">)</font>;
+
+
+
+<font color="blue">#ifdef</font> __cplusplus
+<font color="black">}</font>
+<font color="blue">#endif</font>
+
+<font color="blue">#endif</font>
+
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,33 @@
+<HTML>
+<HEAD>
+<TITLE>
+HighlightButton.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> HighlightButton_h
+<font color="blue">#define</font> HighlightButton_h
+
+<font color="blue">#include</font> <font color="maroon">"UI/Button.h"</font>
+
+<font color="blue">class</font> HighlightButton<font color="black">:</font> <font color="blue">public</font> Button
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  HighlightButton<font color="black">(</font><font color="black">)</font>;
+  ~HighlightButton<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> setHighlight<font color="black">(</font>string filename<font color="black">)</font> <font color="black">{</font> m_highlight <font color="black">=</font> filename; <font color="black">}</font>
+  virtual <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>;
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> createHighlight<font color="black">(</font><font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  HTexture m_glass;
+  string m_highlight;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

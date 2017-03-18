@@ -1,0 +1,54 @@
+/* ****************************************************************************
+ *
+ *  BoardStates.icc
+ *  Created by Bert Rosell, on Sat Oct 25 2003, 23:22:07 Eastern Daylight Time
+ *
+ *  Copyright (c) 2003, Bert Rosell
+ *
+ *
+ *
+ *  File Contents: Inline definitions for the BoardStates component.
+ *  Please see BoardStates.h for full documentation of this class.
+ *
+ *************************************************************************** */
+ 
+BoardPlaying* BoardPlaying::instance()
+{
+  if (s_instance.get() == 0){ 
+    std::auto_ptr<BoardPlaying> temp(new BoardPlaying);
+    s_instance = temp;
+  }
+  return s_instance.get(); 
+}
+BoardPaused* BoardPaused::instance()
+{
+  if (s_instance.get() == 0){ 
+    std::auto_ptr<BoardPaused> temp(new BoardPaused);
+    s_instance = temp;
+  }
+  return s_instance.get(); 
+}
+BoardGameOver* BoardGameOver::instance()
+{
+  if (s_instance.get() == 0){ 
+    std::auto_ptr<BoardGameOver> temp(new BoardGameOver);
+    s_instance = temp;
+  }
+  return s_instance.get(); 
+}
+BoardBonus* BoardBonus::instance()
+{
+  if (s_instance.get() == 0){ 
+    std::auto_ptr<BoardBonus> temp(new BoardBonus);
+    s_instance = temp;
+  }
+  return s_instance.get(); 
+}
+BoardPreLevel* BoardPreLevel::instance()
+{
+  if (s_instance.get() == 0){ 
+    std::auto_ptr<BoardPreLevel> temp(new BoardPreLevel);
+    s_instance = temp;
+  }
+  return s_instance.get(); 
+}

@@ -1,0 +1,214 @@
+<HTML>
+<HEAD>
+<TITLE>
+ThingCollection.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"ThingCollection.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;stdlib.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;memory.h&#62;</font>
+
+<font color="blue">#include</font> <font color="maroon">"Thing.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Misc/GameMath.h"</font>
+
+
+
+ThingCollection<font color="black">:</font><font color="black">:</font>ThingCollection<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  clear<font color="black">(</font><font color="black">)</font>;  
+<font color="black">}</font>
+
+ThingCollection<font color="black">:</font><font color="black">:</font>~ThingCollection<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+
+<font color="black">}</font>
+
+<font color="blue">void</font> ThingCollection<font color="black">:</font><font color="black">:</font>clear<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  memset<font color="black">(</font>things, <font color="maroon">0</font>, MAX_ELEMS <font color="black">*</font> <font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font><font color="black">)</font>;
+  memset<font color="black">(</font>thingsByX, <font color="maroon">0</font>, MAX_ELEMS <font color="black">*</font> <font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font><font color="black">)</font>;
+  memset<font color="black">(</font>thingsByY, <font color="maroon">0</font>, MAX_ELEMS <font color="black">*</font> <font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font><font color="black">)</font>;
+  memset<font color="black">(</font>thingsByZ, <font color="maroon">0</font>, MAX_ELEMS <font color="black">*</font> <font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font><font color="black">)</font>;
+  memset<font color="black">(</font>workArray, <font color="maroon">0</font>, MAX_ELEMS <font color="black">*</font> <font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> ThingCollection<font color="black">:</font><font color="black">:</font>add<font color="black">(</font>Thing<font color="black">*</font> thing<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> c;
+  <font color="blue">for</font> <font color="black">(</font>c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>MAX_ELEMS; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>things<font color="black">[</font>c<font color="black">]</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      things<font color="black">[</font>c<font color="black">]</font> <font color="black">=</font> thing;
+      <font color="blue">return</font> <font color="blue">true</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> ThingCollection<font color="black">:</font><font color="black">:</font>remove<font color="black">(</font>Thing<font color="black">*</font> thing<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> c;
+  <font color="blue">for</font> <font color="black">(</font>c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>MAX_ELEMS; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>things<font color="black">[</font>c<font color="black">]</font> <font color="black">=</font><font color="black">=</font> thing<font color="black">)</font>
+    <font color="black">{</font>
+      things<font color="black">[</font>c<font color="black">]</font> <font color="black">=</font> <font color="maroon">0</font>;
+      <font color="blue">return</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">int</font> ThingCollection<font color="black">:</font><font color="black">:</font>count<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> ret<font color="black">=</font><font color="maroon">0</font>;
+  <font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>;
+  <font color="blue">for</font> <font color="black">(</font>c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>MAX_ELEMS; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>things<font color="black">[</font>c<font color="black">]</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      ret<font color="black">+</font><font color="black">+</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+<font color="blue">void</font> ThingCollection<font color="black">:</font><font color="black">:</font>compress<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  memset<font color="black">(</font>workArray, <font color="maroon">0</font>, MAX_ELEMS <font color="black">*</font> <font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>;
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> x<font color="black">=</font><font color="maroon">0</font>; x<font color="black">&#60;</font>MAX_ELEMS; x<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>things<font color="black">[</font>x<font color="black">]</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      workArray<font color="black">[</font>c<font color="black">]</font> <font color="black">=</font> things<font color="black">[</font>x<font color="black">]</font>;
+      c<font color="black">+</font><font color="black">+</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  memcpy<font color="black">(</font>things, workArray, MAX_ELEMS<font color="black">*</font><font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>;
+ 
+
+<font color="blue">void</font> ThingCollection<font color="black">:</font><font color="black">:</font>sort<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  m_count<font color="black">=</font>count<font color="black">(</font><font color="black">)</font>;
+  compress<font color="black">(</font><font color="black">)</font>;
+  memcpy<font color="black">(</font>thingsByX, things, A_SIZE<font color="black">)</font>;
+  qsort<font color="black">(</font>thingsByX, m_count, <font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font>, ThingCollection<font color="black">:</font><font color="black">:</font>sortX<font color="black">)</font>;
+
+  memcpy<font color="black">(</font>thingsByY, things, A_SIZE<font color="black">)</font>;
+  qsort<font color="black">(</font>thingsByY, m_count, <font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font>, ThingCollection<font color="black">:</font><font color="black">:</font>sortY<font color="black">)</font>;
+
+  memcpy<font color="black">(</font>thingsByZ, things, A_SIZE<font color="black">)</font>;
+  qsort<font color="black">(</font>thingsByZ, m_count, <font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font>, ThingCollection<font color="black">:</font><font color="black">:</font>sortZ<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> ThingCollection<font color="black">:</font><font color="black">:</font>sortX<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  m_count<font color="black">=</font>count<font color="black">(</font><font color="black">)</font>;
+  qsort<font color="black">(</font>thingsByX, m_count, <font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font>, ThingCollection<font color="black">:</font><font color="black">:</font>sortX<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">int</font> ThingCollection<font color="black">:</font><font color="black">:</font>getByRectSortX<font color="black">(</font>Rect<font color="black">*</font> r, Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> max, <font color="blue">int</font> minZ, <font color="blue">int</font> maxZ<font color="black">)</font>
+<font color="black">{</font>
+  sortX<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">return</font> getByRect<font color="black">(</font>r, array, max, minZ, maxZ<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">int</font> ThingCollection<font color="black">:</font><font color="black">:</font>getByRect<font color="black">(</font>Rect<font color="black">*</font> r, Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> max, <font color="blue">int</font> minZ, <font color="blue">int</font> maxZ<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> ret<font color="black">=</font><font color="maroon">0</font>;
+  Rect tRect;
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> x<font color="black">=</font><font color="maroon">0</font>; x<font color="black">&#60;</font>MAX_ELEMS; x<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    Thing<font color="black">*</font> cur<font color="black">=</font>thingsByX<font color="black">[</font>x<font color="black">]</font>;
+    <font color="blue">if</font> <font color="black">(</font>cur <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> <font color="blue">continue</font>;
+    <font color="blue">if</font> <font color="black">(</font>cur<font color="black">-</font><font color="black">&#62;</font>getX<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">(</font>cur<font color="black">-</font><font color="black">&#62;</font>getWidth<font color="black">(</font><font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font> <font color="black">&#62;</font> r<font color="black">-</font><font color="black">&#62;</font>x<font color="black">+</font>r<font color="black">-</font><font color="black">&#62;</font>w<font color="black">)</font> <font color="blue">break</font>; <font color="green">// sorted this way</font>
+
+
+    tRect.x<font color="black">=</font>cur<font color="black">-</font><font color="black">&#62;</font>getX<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">(</font>cur<font color="black">-</font><font color="black">&#62;</font>getWidth<font color="black">(</font><font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+    tRect.y<font color="black">=</font>cur<font color="black">-</font><font color="black">&#62;</font>getY<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">(</font>cur<font color="black">-</font><font color="black">&#62;</font>getHeight<font color="black">(</font><font color="black">)</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+    tRect.w<font color="black">=</font>cur<font color="black">-</font><font color="black">&#62;</font>getWidth<font color="black">(</font><font color="black">)</font>;
+    tRect.h<font color="black">=</font>cur<font color="black">-</font><font color="black">&#62;</font>getHeight<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font>cur<font color="black">-</font><font color="black">&#62;</font>getZ<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font><font color="black">=</font> minZ <font color="black">&</font><font color="black">&</font> cur<font color="black">-</font><font color="black">&#62;</font>getZ<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">=</font> maxZ <font color="black">&</font><font color="black">&</font> Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font>r, <font color="black">&</font>tRect<font color="black">)</font> <font color="black">)</font>
+<font color="green">//    if (cur-&#62;getZ() &#62;= minZ && cur-&#62;getZ() &#60;= maxZ && r-&#62;containsPoint(cur-&#62;getPositioni()) )</font>
+    <font color="black">{</font>
+      <font color="blue">if</font> <font color="black">(</font>array<font color="black">)</font>
+      <font color="black">{</font>
+        array<font color="black">[</font>ret<font color="black">]</font><font color="black">=</font>cur;
+        ret<font color="black">+</font><font color="black">+</font>;
+      <font color="black">}</font>
+      <font color="blue">else</font>
+      <font color="black">{</font>
+        ret <font color="black">=</font> <font color="maroon">1</font>;
+        <font color="blue">break</font>;
+      <font color="black">}</font>
+      
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+<font color="blue">int</font> ThingCollection<font color="black">:</font><font color="black">:</font>get<font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font> dest, <font color="blue">const</font> Thing<font color="black">*</font><font color="black">*</font> src, <font color="blue">int</font> max<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> s <font color="black">=</font> min<font color="black">(</font>max, count<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  memcpy<font color="black">(</font>dest, src, s<font color="black">*</font><font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> s;
+<font color="black">}</font>
+
+<font color="blue">int</font> ThingCollection<font color="black">:</font><font color="black">:</font>getByX<font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font> dest, <font color="blue">int</font> max<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> get<font color="black">(</font>dest, <font color="black">(</font><font color="blue">const</font> Thing<font color="black">*</font><font color="black">*</font><font color="black">)</font>thingsByX, max<font color="black">)</font>;
+<font color="black">}</font>
+<font color="blue">int</font> ThingCollection<font color="black">:</font><font color="black">:</font>getByY<font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font> dest, <font color="blue">int</font> max<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> get<font color="black">(</font>dest, <font color="black">(</font><font color="blue">const</font> Thing<font color="black">*</font><font color="black">*</font><font color="black">)</font>thingsByY, max<font color="black">)</font>;
+<font color="black">}</font>
+<font color="blue">int</font> ThingCollection<font color="black">:</font><font color="black">:</font>getByZ<font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font> dest, <font color="blue">int</font> max<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> get<font color="black">(</font>dest, <font color="black">(</font><font color="blue">const</font> Thing<font color="black">*</font><font color="black">*</font><font color="black">)</font>thingsByZ, max<font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="green">/* static */</font> <font color="blue">void</font> ThingCollection<font color="black">:</font><font color="black">:</font>sortByX<font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> num<font color="black">)</font>
+<font color="black">{</font>
+  qsort<font color="black">(</font>array, num, <font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font>, ThingCollection<font color="black">:</font><font color="black">:</font>sortX<font color="black">)</font>;
+<font color="black">}</font>
+<font color="green">/* static */</font> <font color="blue">void</font> ThingCollection<font color="black">:</font><font color="black">:</font>sortByY<font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> num<font color="black">)</font>
+<font color="black">{</font>
+  qsort<font color="black">(</font>array, num, <font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font>, ThingCollection<font color="black">:</font><font color="black">:</font>sortY<font color="black">)</font>;
+<font color="black">}</font>
+<font color="green">/* static */</font> <font color="blue">void</font> ThingCollection<font color="black">:</font><font color="black">:</font>sortByZ<font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font> array, <font color="blue">int</font> num<font color="black">)</font>
+<font color="black">{</font>
+  qsort<font color="black">(</font>array, num, <font color="blue">sizeof</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">)</font>, ThingCollection<font color="black">:</font><font color="black">:</font>sortZ<font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="green">/* static */</font> <font color="blue">int</font> ThingCollection<font color="black">:</font><font color="black">:</font>sortZ<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> one, <font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> two<font color="black">)</font>
+<font color="black">{</font>
+  Thing<font color="black">*</font> thing1<font color="black">=</font><font color="black">*</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font><font color="black">)</font>one;
+  Thing<font color="black">*</font> thing2<font color="black">=</font><font color="black">*</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font><font color="black">)</font>two;
+  <font color="blue">return</font> <font color="black">(</font>thing1<font color="black">-</font><font color="black">&#62;</font>getZ<font color="black">(</font><font color="black">)</font> <font color="black">-</font>thing2<font color="black">-</font><font color="black">&#62;</font>getZ<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="green">/* static */</font> <font color="blue">int</font> ThingCollection<font color="black">:</font><font color="black">:</font>sortX<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> one, <font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> two<font color="black">)</font>
+<font color="black">{</font>
+  Thing<font color="black">*</font> thing1<font color="black">=</font><font color="black">*</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font><font color="black">)</font>one;
+  Thing<font color="black">*</font> thing2<font color="black">=</font><font color="black">*</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font><font color="black">)</font>two;
+  <font color="blue">return</font> <font color="black">(</font>thing1<font color="black">-</font><font color="black">&#62;</font>getX<font color="black">(</font><font color="black">)</font> <font color="black">-</font>thing2<font color="black">-</font><font color="black">&#62;</font>getX<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="green">/* static */</font> <font color="blue">int</font> ThingCollection<font color="black">:</font><font color="black">:</font>sortY<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> one, <font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> two<font color="black">)</font>
+<font color="black">{</font>
+  Thing<font color="black">*</font> thing1<font color="black">=</font><font color="black">*</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font><font color="black">)</font>one;
+  Thing<font color="black">*</font> thing2<font color="black">=</font><font color="black">*</font><font color="black">(</font>Thing<font color="black">*</font><font color="black">*</font><font color="black">)</font>two;
+  <font color="blue">return</font> <font color="black">(</font>thing1<font color="black">-</font><font color="black">&#62;</font>getY<font color="black">(</font><font color="black">)</font> <font color="black">-</font>thing2<font color="black">-</font><font color="black">&#62;</font>getY<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

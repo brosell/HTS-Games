@@ -1,0 +1,46 @@
+The level loads and the ball is placed on the Tee. (The tee is responsable for initing the ball?)
+The Club menuvers to the ball and prepares to "swing"
+The Player is given the opertunity to change clubs.
+The player swing the club in a way that tell the system how hard it was swung. (like worms or scortched earth, etc)
+The Club cycles its animations and at the proper frame, applies its force to the Ball.
+When the ball comes to rest, the Club pathfinds towards the ball to prepare the next shot.
+
+
+MEANWHILE
+Ball logic: 
+move itself while there is velocity. (?)
+If it comes incontact with a Tile's Face, reflect off it allowing the tile to absorb or enhance the velocity
+A bunch of mojo with rolling resistance, etc.
+
+Entities logic:
+each tick:
+	if the ball is within influence range apply force to ball
+some entities may have more complex logic. ie a bird may have to swoop down and grab the ball.
+
+
+
+Level class
+- load the level's things. in order to avoid keeping a list in memory, 
+	write out all the ptr's to a tmp ini file. Populate the world.
+
+- Unload. read back the tmp file and delete/release everything. delete the file
+
+
+.......................
+
+player chooses to start on Level N
+
+show gamescreen
+while (game not done)
+{
+	load level
+	show message aboyt level (if any)
+	while(level not done)
+	{
+		do game logic and input
+	}
+	unload level
+	next level = current + 1
+}
+show game over
+show main menu

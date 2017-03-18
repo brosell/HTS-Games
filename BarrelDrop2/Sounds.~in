@@ -1,0 +1,73 @@
+::::::::::::::::::::::::::
+::::; SOUND EFFECTS
+::::::::::::::::::::::::::
+[snd_Blocks_Disappearing]
+Type = SoundEffect
+Group = FX
+Filename = audio\effect\block_disappearing.wav
+
+[snd_New_Level]
+Type = SoundEffect
+Group = FX
+Filename = audio\effect\new_level.wav
+
+[snd_Bonus_Multi_1]
+Type = SoundEffect
+Group = FX
+Filename = audio\effect\bonus_multi_1.wav
+
+[snd_Shape_Move]
+Type = SoundEffect
+Group = FX
+Filename = audio\effect\shape_move.wav
+
+[snd_Shape_Appears]
+Type = SoundEffect
+Group = FX
+Filename = audio\effect\shape_appear.wav
+
+[snd_Wild_Block_Effect]
+Type = SoundEffect
+Group = FX
+Filename = audio\effect\wild_effect.wav
+
+[snd_Clear_Board]
+Type = SoundEffect
+Group = FX
+Filename = audio\effect\clear_board.wav
+
+[snd_Level_Bonus]
+Type = SoundEffect
+Group = FX
+Filename = audio\effect\crowdcheer.wav
+xFilename = audio\effect\level_bonus.wav
+
+[snd_Game_Over]
+Type = SoundEffect
+Group = FX
+Filename = audio\effect\foghorn2.wav
+
+[snd_Start_Game]
+Type = SoundEffect
+Group = FX
+Filename = audio\effect\start_game.wav
+
+[snd_Quit_Game]
+Type = SoundEffect
+Group = FX
+Filename = audio\effect\quit_game.wav
+
+[snd_Screen_Mouseover]
+Type = SoundEffect
+Group = FX
+Filename = audio\effect\screen_mouseover.wav
+
+:::::::::::::::::::::::::
+:::::: MUSIC
+:::::::::::::::::::::::::::::::::::
+
+[mus_Background]
+Group = Music
+Type = SoundEffect
+Filename = audio\music\test\SweetDreams.wav
+

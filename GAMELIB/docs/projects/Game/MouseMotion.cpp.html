@@ -1,0 +1,27 @@
+<HTML>
+<HEAD>
+<TITLE>
+MouseMotion.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"MouseMotion.h"</font>
+
+<font color="blue">int</font> MouseMotion<font color="black">:</font><font color="black">:</font>s_x<font color="black">=</font><font color="maroon">100</font>;
+
+<font color="blue">void</font> MouseMotion<font color="black">:</font><font color="black">:</font>tickAndMove<font color="black">(</font><font color="blue">int</font> <font color="black">&</font>retX, <font color="blue">int</font><font color="black">&</font> retY<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> x;
+  SDL_GetMouseState<font color="black">(</font><font color="black">&</font>x, NULL<font color="black">)</font>;
+  retX<font color="black">=</font>x<font color="black">-</font><font color="black">(</font>m_w<font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>retX <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font> retX<font color="black">=</font><font color="maroon">0</font>;
+  <font color="blue">if</font> <font color="black">(</font>retX <font color="black">&#62;</font> <font color="black">(</font><font color="maroon">640</font><font color="black">-</font>m_w<font color="black">)</font><font color="black">)</font> retX<font color="black">=</font><font color="maroon">640</font><font color="black">-</font>m_w;
+  retY<font color="black">=</font><font color="black">(</font><font color="blue">int</font><font color="black">)</font>m_y;
+  setMoved<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+</PRE>
+</BODY>
+</HTML>

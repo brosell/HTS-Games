@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>
+Collision.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _Collision_h
+<font color="blue">#define</font> _Collision_h
+
+<font color="blue">#include</font> <font color="maroon">"Thing.h"</font>
+
+<font color="blue">enum</font> Side
+<font color="black">{</font>
+  TOP,
+  BOTTOM,
+  RIGHT,
+  LEFT
+<font color="black">}</font>;
+
+<font color="blue">class</font> Collision
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Collision<font color="black">(</font>Thing<font color="black">&</font> hitter, Thing<font color="black">&</font> hittee, <font color="blue">bool</font> useProportionalSides<font color="black">)</font>;
+
+<font color="green">//  static getCollision(Thing& hitter, Thing& hittee);</font>
+
+  Side getHitterSide<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_hitterSide; <font color="black">}</font>
+  Side getHitteeSide<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_hitteeSide; <font color="black">}</font>
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> m_useProportionalSides;
+  Thing<font color="black">&</font> m_hitter;
+  Thing<font color="black">&</font> m_hittee;
+
+  Side m_hitterSide;
+  Side m_hitteeSide;
+  
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

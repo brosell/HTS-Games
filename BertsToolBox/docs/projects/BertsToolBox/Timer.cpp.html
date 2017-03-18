@@ -1,0 +1,212 @@
+<HTML>
+<HEAD>
+<TITLE>
+Timer.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"Timer.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+
+set<font color="black">&#60;</font>Timer<font color="black">*</font>, CompareTimer<font color="black">&#62;</font> Timer<font color="black">:</font><font color="black">:</font>s_activeTimers;
+
+HTimer Timer<font color="black">:</font><font color="black">:</font>create<font color="black">(</font>string str, <font color="blue">int</font> id, <font color="blue">int</font> millis, TimerListener<font color="black">*</font> listener, <font color="blue">void</font><font color="black">*</font> param, <font color="blue">bool</font> recurring<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>listener <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Timer - NULL TimerListener (%s)"</font>, str.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>millis <font color="black">&#60;</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Timer - Millis invalid (%d)"</font>, millis<font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  Timer<font color="black">*</font> timer <font color="black">=</font> <font color="blue">new</font> Timer;
+  lassert<font color="black">(</font>timer <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+  timer<font color="black">-</font><font color="black">&#62;</font>m_event.id <font color="black">=</font> id;
+  timer<font color="black">-</font><font color="black">&#62;</font>m_event.param <font color="black">=</font> param;
+  timer<font color="black">-</font><font color="black">&#62;</font>m_event.timer <font color="black">=</font> <font color="black">(</font>HTimer<font color="black">)</font>timer;
+  timer<font color="black">-</font><font color="black">&#62;</font>m_millis <font color="black">=</font> millis;
+  timer<font color="black">-</font><font color="black">&#62;</font>m_expires <font color="black">=</font> timeGetTime<font color="black">(</font><font color="black">)</font> <font color="black">+</font> millis;
+  timer<font color="black">-</font><font color="black">&#62;</font>m_listener <font color="black">=</font> listener;
+  timer<font color="black">-</font><font color="black">&#62;</font>m_recurring <font color="black">=</font> recurring;
+  timer<font color="black">-</font><font color="black">&#62;</font>m_str <font color="black">=</font> str;
+
+  s_activeTimers.insert<font color="black">(</font>timer<font color="black">)</font>;
+
+  <font color="blue">return</font> <font color="black">(</font>HTimer<font color="black">)</font>timer;
+<font color="black">}</font>
+
+HTimer Timer<font color="black">:</font><font color="black">:</font>create<font color="black">(</font><font color="blue">int</font> id, <font color="blue">int</font> millis, TimerListener<font color="black">*</font> listener, <font color="blue">void</font><font color="black">*</font> param, <font color="blue">bool</font> recurring<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> Timer<font color="black">:</font><font color="black">:</font>create<font color="black">(</font><font color="maroon">"Anon"</font>, id, millis, listener, param, recurring<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">int</font> Timer<font color="black">:</font><font color="black">:</font>tick<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> ret <font color="black">=</font> <font color="maroon">0</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>s_activeTimers.size<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  DWORD now <font color="black">=</font> timeGetTime<font color="black">(</font><font color="black">)</font>;
+  set<font color="black">&#60;</font>Timer<font color="black">*</font>, CompareTimer<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator iTimer <font color="black">=</font> s_activeTimers.begin<font color="black">(</font><font color="black">)</font>;
+  Timer<font color="black">*</font> timer <font color="black">=</font> <font color="black">*</font>iTimer;
+  <font color="blue">while</font> <font color="black">(</font>s_activeTimers.size<font color="black">(</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font> <font color="black">&</font><font color="black">&</font> timer<font color="black">-</font><font color="black">&#62;</font>m_expires <font color="black">&#60;</font><font color="black">=</font> now<font color="black">)</font>
+  <font color="black">{</font>
+    s_activeTimers.erase<font color="black">(</font>iTimer<font color="black">)</font>;
+    timer<font color="black">-</font><font color="black">&#62;</font>expire<font color="black">(</font><font color="black">)</font>;
+    iTimer <font color="black">=</font> s_activeTimers.begin<font color="black">(</font><font color="black">)</font>;
+    timer <font color="black">=</font> <font color="black">*</font>iTimer;
+    ret<font color="black">+</font><font color="black">+</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+<font color="blue">void</font> Timer<font color="black">:</font><font color="black">:</font>report<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>Inform, <font color="maroon">""</font><font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Timer report"</font><font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"--------------------"</font><font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"There are %d active timers"</font>, getRunningTimerCount<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  set<font color="black">&#60;</font>Timer<font color="black">*</font>, CompareTimer<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>s_activeTimers.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>s_activeTimers.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    Timer<font color="black">*</font> timer <font color="black">=</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+    logError<font color="black">(</font>Inform, <font color="maroon">"Timer (%10s) expires: %d %s"</font>, timer<font color="black">-</font><font color="black">&#62;</font>m_str.c_str<font color="black">(</font><font color="black">)</font>, timer<font color="black">-</font><font color="black">&#62;</font>getExpires<font color="black">(</font><font color="black">)</font>, <font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font><font color="black">(</font>timer<font color="black">-</font><font color="black">&#62;</font>m_recurring?<font color="maroon">"Recurring"</font><font color="black">:</font><font color="maroon">""</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  logError<font color="black">(</font>Inform, <font color="maroon">"--------------------"</font><font color="black">)</font>;
+
+<font color="black">}</font>
+
+<font color="blue">void</font> Timer<font color="black">:</font><font color="black">:</font>cleanup<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  set<font color="black">&#60;</font>Timer<font color="black">*</font>, CompareTimer<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>s_activeTimers.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font> s_activeTimers.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    Timer<font color="black">*</font> timer <font color="black">=</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+    Timer<font color="black">:</font><font color="black">:</font>destroy<font color="black">(</font><font color="black">(</font>HTimer<font color="black">)</font>timer<font color="black">)</font>;
+    <font color="blue">delete</font> timer;
+  <font color="black">}</font>
+
+  s_activeTimers.clear<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+<font color="green">//</font>
+<font color="green">//bool stopTest(Message* e);</font>
+<font color="green">//bool timeFunc(Message* e);</font>
+<font color="green">//</font>
+<font color="green">//bool ___timerTesting = false;</font>
+<font color="green">//NonTypeDelegate timeDel(timeFunc);</font>
+<font color="green">//NonTypeDelegate testDone(stopTest);</font>
+<font color="green">//</font>
+<font color="green">//bool stopTest(Message* e)</font>
+<font color="green">//{</font>
+<font color="green">//  ___timerTesting = false;</font>
+<font color="green">//  return  true;</font>
+<font color="green">//}</font>
+<font color="green">//</font>
+<font color="green">//bool timeFunc(Message* e)</font>
+<font color="green">//{</font>
+<font color="green">//  static unsigned int count = 0;</font>
+<font color="green">//  count++;</font>
+<font color="green">//  if (count % 10000 == 0)</font>
+<font color="green">//  {</font>
+<font color="green">//    cerr &#60;&#60; ".";</font>
+<font color="green">//  }</font>
+<font color="green">//  Timer::create(1, rand()%1000, &timeDel, false);</font>
+<font color="green">//  return true;</font>
+<font color="green">//}</font>
+
+<font color="blue">class</font> TimerTester<font color="black">:</font> <font color="blue">public</font> TimerListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  TimerTester<font color="black">(</font><font color="black">)</font><font color="black">:</font> m_killTimer<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, m_running<font color="black">(</font><font color="blue">true</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+
+  <font color="blue">void</font> setKillTimer<font color="black">(</font>HTimer timer<font color="black">)</font> <font color="black">{</font> m_killTimer <font color="black">=</font> timer; <font color="black">}</font>
+  virtual <font color="blue">void</font> timeout<font color="black">(</font>TimerEvent<font color="black">*</font> event<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font><font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>timer <font color="black">=</font><font color="black">=</font> m_killTimer<font color="black">)</font>
+    <font color="black">{</font>
+      m_running <font color="black">=</font> <font color="blue">false</font>;
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+      <font color="blue">static</font> <font color="blue">unsigned</font> <font color="blue">int</font> count <font color="black">=</font> <font color="maroon">0</font>;
+      count<font color="black">+</font><font color="black">+</font>;
+      <font color="blue">if</font> <font color="black">(</font>count % <font color="maroon">10000</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+      <font color="black">{</font>
+        cerr <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"."</font>;
+      <font color="black">}</font>
+      Timer<font color="black">:</font><font color="black">:</font>create<font color="black">(</font><font color="maroon">1</font>, rand<font color="black">(</font><font color="black">)</font>%<font color="maroon">1000</font>, <font color="blue">this</font>, <font color="blue">false</font><font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  <font color="blue">bool</font> isRunning<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_running; <font color="black">}</font>
+
+<font color="blue">private</font><font color="black">:</font>
+  HTimer m_killTimer;
+  <font color="blue">bool</font> m_running;
+<font color="black">}</font>;
+
+<font color="blue">void</font> testTimer<font color="black">(</font><font color="blue">int</font> count<font color="black">)</font>
+<font color="black">{</font>
+  srand<font color="black">(</font><font color="maroon">1234</font><font color="black">)</font>; <font color="green">// need consistancy</font>
+  <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">255</font><font color="black">]</font>;
+  <font color="blue">int</font> c;
+
+  TimerTester tester;
+
+  <font color="green">// let test run for 30 seconds</font>
+  HTimer killTimer <font color="black">=</font> Timer<font color="black">:</font><font color="black">:</font>create<font color="black">(</font><font color="maroon">10000</font>, <font color="maroon">30000</font>, <font color="black">&</font>tester, <font color="blue">false</font><font color="black">)</font>;
+  tester.setKillTimer<font color="black">(</font>killTimer<font color="black">)</font>;
+
+
+  StopWatch phase1;
+  <font color="blue">for</font> <font color="black">(</font>c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>count; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    phase1.start<font color="black">(</font><font color="black">)</font>;
+    Timer<font color="black">:</font><font color="black">:</font>create<font color="black">(</font>c, rand<font color="black">(</font><font color="black">)</font>%<font color="maroon">1000</font>, <font color="black">&</font>tester, <font color="blue">false</font><font color="black">)</font>;
+    phase1.stop<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  
+
+  sprintf<font color="black">(</font>buf, <font color="maroon">"Phase1: ElapsedTime: %d (average: %f)"</font>, phase1.getElapsedTime<font color="black">(</font><font color="black">)</font>, phase1.getAverage<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  logError<font color="black">(</font>buf, Inform<font color="black">)</font>;
+
+  sprintf<font color="black">(</font>buf, <font color="maroon">"Number of Active Timers: %d"</font>, Timer<font color="black">:</font><font color="black">:</font>getRunningTimerCount<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  logError<font color="black">(</font>buf, Inform<font color="black">)</font>;
+
+
+  <font color="blue">int</font> totalFires<font color="black">=</font><font color="maroon">0</font>;
+  StopWatch phase2;
+  
+  
+  <font color="blue">while</font> <font color="black">(</font>tester.isRunning<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    phase2.start<font color="black">(</font><font color="black">)</font>;
+    totalFires <font color="black">+</font><font color="black">=</font> Timer<font color="black">:</font><font color="black">:</font>tick<font color="black">(</font><font color="black">)</font>;
+    phase2.stop<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  
+
+  cerr <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+
+  sprintf<font color="black">(</font>buf, <font color="maroon">"Phase2: ElapsedTime: %d (average of %d times: %f)\nTotalFires = %d"</font>, phase2.getElapsedTime<font color="black">(</font><font color="black">)</font>, phase2.getRunCount<font color="black">(</font><font color="black">)</font>, phase2.getAverage<font color="black">(</font><font color="black">)</font>, totalFires<font color="black">)</font>;
+  logError<font color="black">(</font>buf, Inform<font color="black">)</font>;
+
+  sprintf<font color="black">(</font>buf, <font color="maroon">"Number of Active Timers: %d"</font>, Timer<font color="black">:</font><font color="black">:</font>getRunningTimerCount<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  logError<font color="black">(</font>buf, Inform<font color="black">)</font>;
+
+
+<font color="black">}</font>
+
+
+</PRE>
+</BODY>
+</HTML>

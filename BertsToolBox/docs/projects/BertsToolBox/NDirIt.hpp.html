@@ -1,0 +1,114 @@
+<HTML>
+<HEAD>
+<TITLE>
+NDirIt.hpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+
+<font color="blue">#ifndef</font> _NDIRIT_H_
+<font color="blue">#define</font> _NDIRIT_H_
+
+<font color="blue">#include</font> <font color="maroon">"enumeration.hpp"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;windows.h&#62;</font>
+
+<font color="blue">class</font> CDirEnumeration<font color="black">:</font> <font color="blue">public</font> CEnumeration<font color="black">&#60;</font>CStdString<font color="black">&#62;</font>
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+    CDirEnumeration<font color="black">(</font>CStdString startDir, CStdString spec<font color="black">=</font><font color="maroon">"*.*"</font><font color="black">)</font>
+        <font color="black">:</font>startDir<font color="black">(</font>startDir<font color="black">)</font>, spec<font color="black">(</font>spec<font color="black">)</font>, more<font color="black">(</font><font color="blue">true</font><font color="black">)</font>, searchHandle<font color="black">(</font>INVALID_HANDLE_VALUE<font color="black">)</font>, inited<font color="black">(</font><font color="blue">false</font><font color="black">)</font>
+    <font color="black">{</font>
+        <font color="green">//init();</font>
+    <font color="black">}</font>
+
+    ~CDirEnumeration<font color="black">(</font><font color="black">)</font>
+    <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font>searchHandle<font color="black">!</font><font color="black">=</font>INVALID_HANDLE_VALUE<font color="black">)</font>
+        <font color="black">{</font>
+            FindClose<font color="black">(</font>searchHandle<font color="black">)</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+
+    <font color="blue">bool</font> hasMoreElements<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>inited<font color="black">)</font> init<font color="black">(</font><font color="black">)</font>; <font color="blue">return</font> more; <font color="black">}</font>;
+    
+    CStdString nextElement<font color="black">(</font><font color="black">)</font>
+    <font color="black">{</font>
+        ASSERT<font color="black">(</font>more<font color="black">)</font>;
+        CStdString next<font color="black">(</font>findData.cFileName<font color="black">)</font>;
+        more<font color="black">=</font>prepareNext<font color="black">(</font><font color="black">)</font>;
+        <font color="blue">return</font> next;
+    <font color="black">}</font>
+
+<font color="blue">protected</font><font color="black">:</font>
+    virtual <font color="blue">bool</font> filter<font color="black">(</font>LPWIN32_FIND_DATA fd<font color="black">)</font>
+    <font color="black">{</font>
+        ASSERT<font color="black">(</font>fd<font color="black">)</font>;
+        <font color="blue">return</font> <font color="blue">true</font>;
+    <font color="black">}</font>
+
+    virtual <font color="blue">bool</font> prepareNext<font color="black">(</font><font color="black">)</font>
+    <font color="black">{</font>
+        ASSERT<font color="black">(</font>searchHandle<font color="black">!</font><font color="black">=</font>INVALID_HANDLE_VALUE<font color="black">)</font>;
+        <font color="blue">int</font> good<font color="black">=</font><font color="maroon">0</font>;
+        good<font color="black">=</font>FindNextFile<font color="black">(</font>searchHandle, <font color="black">&</font>findData<font color="black">)</font>;
+        
+        <font color="blue">while</font> <font color="black">(</font>good <font color="black">&</font><font color="black">&</font> <font color="black">!</font>filter<font color="black">(</font><font color="black">&</font>findData<font color="black">)</font><font color="black">)</font>
+        <font color="black">{</font>
+            good<font color="black">=</font>FindNextFile<font color="black">(</font>searchHandle, <font color="black">&</font>findData<font color="black">)</font>;
+        <font color="black">}</font>
+        <font color="blue">return</font> <font color="black">(</font>good<font color="black">!</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+    <font color="black">}</font>
+    
+<font color="blue">private</font><font color="black">:</font>
+    <font color="blue">void</font> init<font color="black">(</font><font color="black">)</font>
+    <font color="black">{</font>
+        inited<font color="black">=</font><font color="blue">true</font>;
+        more<font color="black">=</font><font color="blue">false</font>;
+        CStdString fullSpec;
+        fullSpec.Format<font color="black">(</font><font color="maroon">"%s\\%s"</font>, <font color="black">(</font>LPCTSTR<font color="black">)</font>startDir, <font color="black">(</font>LPCTSTR<font color="black">)</font>spec<font color="black">)</font>;
+        
+        searchHandle<font color="black">=</font>FindFirstFile<font color="black">(</font>fullSpec, <font color="black">&</font>findData<font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font> <font color="black">(</font>more<font color="black">=</font><font color="black">(</font>searchHandle<font color="black">!</font><font color="black">=</font>INVALID_HANDLE_VALUE<font color="black">)</font><font color="black">)</font> <font color="black">)</font>
+        <font color="black">{</font>
+            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>filter<font color="black">(</font><font color="black">&</font>findData<font color="black">)</font><font color="black">)</font>
+            <font color="black">{</font>
+                more <font color="black">=</font> prepareNext<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font>
+        <font color="black">}</font>
+        
+    <font color="black">}</font>
+
+    CStdString startDir;
+    CStdString spec;
+
+    WIN32_FIND_DATA findData;
+    HANDLE searchHandle;
+    <font color="blue">bool</font> more;
+    <font color="blue">bool</font> inited;
+<font color="black">}</font>;
+
+
+<font color="blue">class</font> CFolderEnumeration<font color="black">:</font><font color="blue">public</font> CDirEnumeration
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+    CFolderEnumeration<font color="black">(</font>CStdString startDir<font color="black">)</font>
+        <font color="black">:</font>CDirEnumeration<font color="black">(</font>startDir, <font color="maroon">"*.*"</font><font color="black">)</font>
+    <font color="black">{</font>
+    <font color="black">}</font>
+
+<font color="blue">protected</font><font color="black">:</font>
+    virtual <font color="blue">bool</font> filter<font color="black">(</font>LPWIN32_FIND_DATA fd<font color="black">)</font>
+    <font color="black">{</font>
+        ASSERT<font color="black">(</font>fd<font color="black">)</font>;
+        CStdString n<font color="black">(</font>fd<font color="black">-</font><font color="black">&#62;</font>cFileName<font color="black">)</font>;
+        <font color="blue">return</font> <font color="black">(</font>n<font color="black">!</font><font color="black">=</font><font color="maroon">"."</font> <font color="black">&</font><font color="black">&</font> n<font color="black">!</font><font color="black">=</font><font color="maroon">".."</font> <font color="black">&</font><font color="black">&</font> <font color="black">(</font>fd<font color="black">-</font><font color="black">&#62;</font>dwFileAttributes <font color="black">&</font> FILE_ATTRIBUTE_DIRECTORY<font color="black">)</font> <font color="black">)</font>;
+    <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

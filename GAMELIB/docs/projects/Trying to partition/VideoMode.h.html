@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>
+VideoMode.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> VideoMode_h
+<font color="blue">#define</font> VideoMode_h
+
+<font color="blue">#include</font> <font color="maroon">"SDL.h"</font>
+
+<font color="blue">enum</font> DisplayType
+<font color="black">{</font>
+  UNDEFTYPE,
+  SDL,
+  OPENGL,
+  D3D
+<font color="black">}</font>;
+
+<font color="blue">class</font> VideoMode
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  VideoMode<font color="black">(</font><font color="black">)</font><font color="black">:</font> Width<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, Height<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, Bpp<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, Type<font color="black">(</font>UNDEFTYPE<font color="black">)</font>, Flags<font color="black">(</font><font color="maroon">0</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  <font color="blue">int</font> Width;
+  <font color="blue">int</font> Height;
+  <font color="blue">int</font> Bpp;
+  DisplayType Type;
+  Uint32 Flags;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

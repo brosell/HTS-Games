@@ -1,0 +1,186 @@
+<HTML>
+<HEAD>
+<TITLE>
+HSlider.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4503</font> <font color="maroon">4530</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"HSlider.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Misc/AssetManager.h"</font>
+
+HSlider<font color="black">:</font><font color="black">:</font>HSlider<font color="black">(</font><font color="black">)</font><font color="black">:</font>
+m_lowBound<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_highBound<font color="black">(</font><font color="maroon">255</font><font color="black">)</font>,
+m_position<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_slider<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_hotSlider<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_adjustTimer<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_useMouse<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+m_unitsPerTick<font color="black">(</font><font color="maroon">1</font><font color="black">)</font>
+<font color="black">{</font>
+  ae.thing <font color="black">=</font> <font color="blue">this</font>;
+  ae.adjustmentType <font color="black">=</font> ae.adjustmentType <font color="black">=</font> AdjustmentEvent<font color="black">:</font><font color="black">:</font>ADJUSTMENT_VALUE_CHANGED;
+<font color="black">}</font>
+
+HSlider<font color="black">:</font><font color="black">:</font>~HSlider<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_slider <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>releaseSkin<font color="black">(</font>m_slider<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>m_hotSlider <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>releaseSkin<font color="black">(</font>m_hotSlider<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> HSlider<font color="black">:</font><font color="black">:</font>setSliderSkin<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_slider<font color="black">)</font>
+  <font color="black">{</font>
+    theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>releaseSkin<font color="black">(</font>m_slider<font color="black">)</font>;
+    m_slider <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+  m_slider <font color="black">=</font> theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>getSkin<font color="black">(</font>assetName<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> HSlider<font color="black">:</font><font color="black">:</font>setHotSliderSkin<font color="black">(</font>string assetName<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_hotSlider<font color="black">)</font>
+  <font color="black">{</font>
+    theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>releaseSkin<font color="black">(</font>m_hotSlider<font color="black">)</font>;
+    m_hotSlider <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+  m_hotSlider <font color="black">=</font> theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>getSkin<font color="black">(</font>assetName<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> HSlider<font color="black">:</font><font color="black">:</font>paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>
+<font color="black">{</font>
+  Rect r <font color="black">=</font> getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">// draw slider</font>
+
+  <font color="blue">int</font> sliderRelX <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="blue">if</font> <font color="black">(</font>m_highBound <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font> <font color="black">&</font><font color="black">&</font> m_lowBound <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    sliderRelX <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    sliderRelX <font color="black">=</font> <font color="black">(</font><font color="black">(</font><font color="black">(</font><font color="blue">float</font><font color="black">)</font>m_position<font color="black">/</font><font color="black">(</font><font color="blue">float</font><font color="black">)</font><font color="black">(</font>m_highBound <font color="black">-</font>m_lowBound<font color="black">)</font><font color="black">)</font> <font color="black">*</font> <font color="black">(</font>r.w<font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  m_slider<font color="black">-</font><font color="black">&#62;</font>blit<font color="black">(</font>surface, r.x <font color="black">+</font> sliderRelX, r.y, <font color="blue">false</font><font color="black">)</font>;
+
+<font color="black">}</font>
+
+<font color="blue">void</font> HSlider<font color="black">:</font><font color="black">:</font>tickUp<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_position <font color="black">&#60;</font> m_highBound<font color="black">)</font>
+  <font color="black">{</font>
+    m_position<font color="black">+</font><font color="black">=</font>m_unitsPerTick;
+    <font color="blue">if</font> <font color="black">(</font>m_position <font color="black">&#62;</font> m_highBound<font color="black">)</font>
+    <font color="black">{</font>
+      m_position <font color="black">=</font> m_highBound;
+    <font color="black">}</font>
+    updateListeners<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> HSlider<font color="black">:</font><font color="black">:</font>tickDown<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_position <font color="black">&#62;</font> m_lowBound<font color="black">)</font>
+  <font color="black">{</font>
+    m_position<font color="black">-</font><font color="black">=</font>m_unitsPerTick;
+    <font color="blue">if</font> <font color="black">(</font>m_position <font color="black">&#60;</font> m_lowBound<font color="black">)</font>
+    <font color="black">{</font>
+      m_position <font color="black">=</font> m_lowBound;
+    <font color="black">}</font>
+    updateListeners<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+
+<font color="blue">void</font> HSlider<font color="black">:</font><font color="black">:</font>onMouseClick<font color="black">(</font>MouseClickEvent<font color="black">*</font> event<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>m_useMouse<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+  <font color="green">// get rel X and use it to set m_position</font>
+  <font color="blue">if</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button <font color="black">!</font><font color="black">=</font> <font color="maroon">1</font><font color="black">)</font>
+  <font color="black">{</font>
+    UIThing<font color="black">:</font><font color="black">:</font>onMouseClick<font color="black">(</font>event<font color="black">)</font>;
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+  
+  adjust<font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>x<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> HSlider<font color="black">:</font><font color="black">:</font>onMouseMove<font color="black">(</font>MouseMoveEvent<font color="black">*</font> event<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>m_useMouse<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>theGame.getButtonState<font color="black">(</font><font color="maroon">1</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+ 
+  adjust<font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>x<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> HSlider<font color="black">:</font><font color="black">:</font>adjust<font color="black">(</font><font color="blue">int</font> x<font color="black">)</font>
+<font color="black">{</font>
+  Rect r <font color="black">=</font> getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">int</font> mx <font color="black">=</font> x <font color="black">-</font>r.x;
+
+  lassert<font color="black">(</font>mx <font color="black">&#60;</font><font color="black">=</font> r.w<font color="black">)</font>;
+
+  <font color="blue">float</font> dif <font color="black">=</font> m_highBound <font color="black">-</font>m_lowBound;
+  <font color="blue">int</font> newPosition <font color="black">=</font> <font color="black">(</font><font color="black">(</font><font color="black">(</font><font color="blue">float</font><font color="black">)</font>mx<font color="black">/</font><font color="black">(</font><font color="blue">float</font><font color="black">)</font>r.w<font color="black">)</font> <font color="black">*</font> dif<font color="black">)</font> <font color="black">+</font> .<font color="maroon">5</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>newPosition <font color="black">=</font><font color="black">=</font> m_position<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+  
+  m_position <font color="black">=</font> newPosition;
+   
+  
+  <font color="green">//updateListeners();</font>
+  <font color="blue">if</font> <font color="black">(</font>m_adjustTimer <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    Timer<font color="black">:</font><font color="black">:</font>destroy<font color="black">(</font>m_adjustTimer<font color="black">)</font>;
+  <font color="black">}</font>
+  m_adjustTimer <font color="black">=</font> Timer<font color="black">:</font><font color="black">:</font>create<font color="black">(</font><font color="maroon">"HSlider::AdjustTimer"</font>, <font color="maroon">-1</font>, <font color="maroon">100</font>, <font color="blue">this</font>, <font color="maroon">0</font>, <font color="blue">false</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> HSlider<font color="black">:</font><font color="black">:</font>timeout<font color="black">(</font>TimerEvent<font color="black">*</font> event<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font><font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>timer <font color="black">=</font> m_adjustTimer<font color="black">)</font>
+  <font color="black">{</font>
+    updateListeners<font color="black">(</font><font color="black">)</font>;
+    m_adjustTimer <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> HSlider<font color="black">:</font><font color="black">:</font>updateListeners<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  ae.value <font color="black">=</font> m_position;
+
+  set<font color="black">&#60;</font>AdjustmentListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_adjustmentListeners<font color="black">)</font>;
+  set<font color="black">&#60;</font>AdjustmentListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>adjustmentValueChanged<font color="black">(</font><font color="black">&</font>ae<font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

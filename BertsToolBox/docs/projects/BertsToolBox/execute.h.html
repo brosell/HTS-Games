@@ -1,0 +1,66 @@
+<HTML>
+<HEAD>
+<TITLE>
+execute.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Execute.h: interface for the CExecute class.</font>
+<font color="green">//</font>
+<font color="green">//////////////////////////////////////////////////////////////////////</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_EXECUTE_H__99CC6A13_E975_11D2_9B28_004005649FB5__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_EXECUTE_H__99CC6A13_E975_11D2_9B28_004005649FB5__INCLUDED_
+
+<font color="blue">#if</font> _MSC_VER <font color="black">&#62;</font> <font color="maroon">1000</font>
+<font color="blue">#pragma</font> once
+<font color="blue">#endif</font> <font color="green">// _MSC_VER &#62; 1000</font>
+
+<font color="blue">class</font> CExecute  
+<font color="black">{</font>
+<font color="blue">private</font><font color="black">:</font>
+    HANDLE hChildStdinRd, hChildStdinWrDup, 
+        hChildStdoutWr, hChildStdoutRdDup;
+    CWinThread<font color="black">*</font> m_pReadThread;
+    DWORD dwProcessId;
+
+<font color="blue">public</font><font color="black">:</font>
+    <font color="green">// constructors</font>
+    CExecute<font color="black">(</font><font color="black">)</font>;
+    virtual ~CExecute<font color="black">(</font><font color="black">)</font>;
+    DWORD exitCode;
+    HANDLE hWaitEvent;
+    HANDLE hProcessId;
+
+    <font color="green">// operations</font>
+<font color="blue">public</font><font color="black">:</font>
+    virtual BOOL RedirectedStream<font color="black">(</font> BYTE<font color="black">*</font> stream, <font color="blue">int</font> nLen <font color="black">)</font>;
+    BOOL Execute<font color="black">(</font> LPCTSTR szApplication, LPCTSTR szParameter<font color="black">=</font>NULL,
+            LPCTSTR szWorkDir<font color="black">=</font>NULL, <font color="blue">int</font> nShow<font color="black">=</font>SW_SHOW, BOOL bCapture<font color="black">=</font>FALSE  <font color="black">)</font>;
+    BOOL StopExec<font color="black">(</font><font color="black">)</font>;
+<font color="blue">protected</font><font color="black">:</font>
+    <font color="blue">void</font> CloseAllRedirecthandles<font color="black">(</font><font color="black">)</font>;
+    BOOL CreateMoniterThread<font color="black">(</font><font color="black">)</font>;
+    BOOL CreateConsoleProcess<font color="black">(</font>DWORD <font color="black">&</font>dwProcessId, LPCTSTR szApplication, LPCTSTR szParameter, LPCTSTR
+szDir <font color="black">)</font>;
+    BOOL CreateChildProcess<font color="black">(</font>DWORD <font color="black">&</font>dwProcessId, LPCTSTR szApplication, LPCTSTR szParameter, LPCTSTR
+szDir, <font color="blue">int</font> nShow <font color="black">)</font>;
+    BOOL PrepareRedirect<font color="black">(</font>LPCTSTR szApplication, LPCTSTR szParameter, LPCTSTR szWorkDir<font color="black">)</font>;
+    <font color="blue">static</font> UINT ReadPipeThreadProc<font color="black">(</font> LPVOID pParam <font color="black">)</font>;
+    <font color="blue">static</font> UINT WaitProcessThreadProc<font color="black">(</font> LPVOID pParam <font color="black">)</font>;
+<font color="black">}</font>;
+
+<font color="blue">#define</font> ISCONSOLE<font color="black">(</font> attr <font color="black">)</font> <font color="black">(</font> <font color="black">(</font>LOWORD<font color="black">(</font>attr<font color="black">)</font><font color="black">=</font><font color="black">=</font><font color="maroon">'ZM'</font> <font color="black">|</font><font color="black">|</font> LOWORD<font color="black">(</font>attr<font color="black">)</font><font color="black">=</font><font color="black">=</font><font color="maroon">'EP'</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> HIWORD<font color="black">(</font>attr<font color="black">)</font><font color="black">=</font><font color="black">=</font><font color="maroon">0</font> <font color="black">)</font>
+<font color="blue">#define</font> ISVALIDAPP<font color="black">(</font> attr <font color="black">)</font> <font color="black">(</font> attr<font color="black">!</font><font color="black">=</font><font color="maroon">0</font> <font color="black">)</font>
+<font color="blue">#define</font> ISWINAPP<font color="black">(</font> attr <font color="black">)</font> <font color="black">(</font> <font color="black">(</font>LOWORD<font color="black">(</font>attr<font color="black">)</font><font color="black">=</font><font color="black">=</font><font color="maroon">'EN'</font> <font color="black">|</font><font color="black">|</font> LOWORD<font color="black">(</font>attr<font color="black">)</font><font color="black">=</font><font color="black">=</font><font color="maroon">'EP'</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> HIWORD<font color="black">(</font>attr<font color="black">)</font><font color="black">!</font><font color="black">=</font><font color="maroon">0</font> <font color="black">)</font>
+
+DWORD GetApplicationInfo<font color="black">(</font> LPCTSTR lpFullPath <font color="black">)</font>;
+CString ExtractFilePath<font color="black">(</font> LPCTSTR lpFullPath <font color="black">)</font>;
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_EXECUTE_H__99CC6A13_E975_11D2_9B28_004005649FB5__INCLUDED_)</font>
+
+
+</PRE>
+</BODY>
+</HTML>

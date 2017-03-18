@@ -1,0 +1,120 @@
+<HTML>
+<HEAD>
+<TITLE>
+Event.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _Event_h
+<font color="blue">#define</font> _Event_h
+
+<font color="green">//#include &#60;list&#62;</font>
+<font color="green">//#include &#60;string&#62;</font>
+<font color="green">//using namespace std;</font>
+<font color="green">//</font>
+<font color="green">//#include "Message.h"</font>
+<font color="green">//</font>
+<font color="green">//</font>
+<font color="green">//enum</font>
+<font color="green">//{</font>
+<font color="green">//  UNDEF_EVENT = FIRST_FREE_MESSAGE_ID,</font>
+<font color="green">//  MouseClick,</font>
+<font color="green">//  MouseDblClick,</font>
+<font color="green">//  MouseUp,</font>
+<font color="green">//  MouseDown,</font>
+<font color="green">//  MouseMove,</font>
+<font color="green">//  MouseDrag,</font>
+<font color="green">//  MouseEnter,</font>
+<font color="green">//  MouseExit,</font>
+<font color="green">//  KeyDown,</font>
+<font color="green">//  KeyUp,</font>
+<font color="green">//  KeyRepeat,</font>
+<font color="green">//  ConsoleCommand,</font>
+<font color="green">//  USER_MESSAGE</font>
+<font color="green">//};</font>
+<font color="green">//</font>
+<font color="green">//////////////</font>
+<font color="green">//// MOUSE</font>
+<font color="green">//////////////</font>
+<font color="green">//</font>
+<font color="green">//DEF_MSG(MouseDown, 5)</font>
+<font color="green">//NAMED_DBLBYTE(X, 0)</font>
+<font color="green">//NAMED_DBLBYTE(Y, 2)</font>
+<font color="green">//NAMED_BYTE(Button, 4)</font>
+<font color="green">//END_MSG</font>
+<font color="green">//</font>
+<font color="green">//DEF_MSG(MouseUp, 5)</font>
+<font color="green">//NAMED_DBLBYTE(X, 0)</font>
+<font color="green">//NAMED_DBLBYTE(Y, 2)</font>
+<font color="green">//NAMED_BYTE(Button, 4)</font>
+<font color="green">//END_MSG</font>
+<font color="green">//</font>
+<font color="green">//DEF_MSG(MouseClick, 5)</font>
+<font color="green">//NAMED_DBLBYTE(X, 0)</font>
+<font color="green">//NAMED_DBLBYTE(Y, 2)</font>
+<font color="green">//NAMED_BYTE(Button, 4)</font>
+<font color="green">//END_MSG</font>
+<font color="green">//</font>
+<font color="green">//DEF_MSG(MouseDblClick, 5)</font>
+<font color="green">//NAMED_DBLBYTE(X, 0)</font>
+<font color="green">//NAMED_DBLBYTE(Y, 2)</font>
+<font color="green">//NAMED_BYTE(Button, 4)</font>
+<font color="green">//END_MSG</font>
+<font color="green">//</font>
+<font color="green">//DEF_MSG(MouseMove, 8)</font>
+<font color="green">//NAMED_DBLBYTE(X, 0)</font>
+<font color="green">//NAMED_DBLBYTE(Y, 2)</font>
+<font color="green">//NAMED_DBLBYTE(RelX, 4)</font>
+<font color="green">//NAMED_DBLBYTE(RelY, 6)</font>
+<font color="green">//END_MSG</font>
+<font color="green">//</font>
+<font color="green">//DEF_MSG(MouseDrag, 8)</font>
+<font color="green">//NAMED_DBLBYTE(X, 0)</font>
+<font color="green">//NAMED_DBLBYTE(Y, 2)</font>
+<font color="green">//NAMED_DBLBYTE(RelX, 4)</font>
+<font color="green">//NAMED_DBLBYTE(RelY, 6)</font>
+<font color="green">//END_MSG</font>
+<font color="green">//</font>
+<font color="green">//DEF_MSG(MouseEnter, 8)</font>
+<font color="green">//NAMED_DBLBYTE(X, 0)</font>
+<font color="green">//NAMED_DBLBYTE(Y, 2)</font>
+<font color="green">//NAMED_DBLBYTE(RelX, 4)</font>
+<font color="green">//NAMED_DBLBYTE(RelY, 6)</font>
+<font color="green">//END_MSG</font>
+<font color="green">//</font>
+<font color="green">//DEF_MSG(MouseExit, 8)</font>
+<font color="green">//NAMED_DBLBYTE(X, 0)</font>
+<font color="green">//NAMED_DBLBYTE(Y, 2)</font>
+<font color="green">//NAMED_DBLBYTE(RelX, 4)</font>
+<font color="green">//NAMED_DBLBYTE(RelY, 6)</font>
+<font color="green">//END_MSG</font>
+<font color="green">//</font>
+<font color="green">//</font>
+<font color="green">////////////////</font>
+<font color="green">//// KEY</font>
+<font color="green">////////////////</font>
+<font color="green">//DEF_MSG(KeyUp, 2)</font>
+<font color="green">//NAMED_DBLBYTE(KeySym, 0)</font>
+<font color="green">//END_MSG</font>
+<font color="green">//</font>
+<font color="green">//DEF_MSG(KeyDown, 2)</font>
+<font color="green">//NAMED_DBLBYTE(KeySym, 0)</font>
+<font color="green">//END_MSG</font>
+<font color="green">//</font>
+<font color="green">//DEF_MSG(KeyRepeat, 2)</font>
+<font color="green">//NAMED_DBLBYTE(KeySym, 0)</font>
+<font color="green">//END_MSG</font>
+<font color="green">//</font>
+<font color="green">////////////////</font>
+<font color="green">//// CONSOLE COMMAND</font>
+<font color="green">////////////////</font>
+<font color="green">///* FIXME: messages that don't have to go on network? */</font>
+<font color="green">//DEF_MSG(ConsoleCommand, 64)</font>
+<font color="green">//NAMED_STRING(Command, 64, 0)</font>
+<font color="green">//END_MSG</font>
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

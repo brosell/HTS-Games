@@ -1,0 +1,143 @@
+#ifndef Timer_h
+#define Timer_h
+
+#include <time.h>
+#include <windows.h>
+#include <mmsystem.h>
+
+#include <set>
+using namespace std;
+
+#include "Delegate.h"
+
+typedef void* HTimer;
+
+class Timer;
+
+class CompareTimer
+{
+public:
+  bool operator() (const Timer* t1, const Timer* t2) const;
+};
+
+class StopWatch
+{
+public:
+  StopWatch()
+  {
+    reset();
+  }
+  ~StopWatch()
+  {
+  }
+
+  void start()
+  {
+    m_startTime = timeGetTime();
+  }
+
+  void stop()
+  {
+    m_elapsedTime += (timeGetTime() - m_startTime);
+    m_runCount++;
+  }
+
+  void reset()
+  {
+    m_runCount = 0;
+    m_startTime = 0;
+    m_elapsedTime = 0;
+  }
+
+  DWORD getElapsedTime() { return m_elapsedTime; }
+  float getAverage() { return (float)m_elapsedTime/(float)m_runCount; }
+
+  size_t getRunCount() { return m_runCount; }
+
+  
+private:
+  DWORD m_startTime;
+  DWORD m_elapsedTime;
+  size_t m_runCount;
+};
+
+
+class Timer
+{
+public:
+  Timer() {}
+  
+  static HTimer create(int id, int millis, Delegate* delegate, void* param, bool recurring = false);
+
+  static void destroy(HTimer timer)
+  {
+    s_activeTimers.erase((Timer*)timer);
+    delete (Timer*)timer;
+  }
+
+  
+  static int tick();
+
+  void expire()
+  {
+    m_delegate->invoke(&m_event);
+
+    if (m_recurring)
+    {
+      m_expires = m_expires + m_millis;
+ 	    s_activeTimers.insert(this);
+    }
+	  else
+	  {
+      delete this;
+  	}
+  }
+
+  void reclaim()
+  {
+    m_event.setId(0xffff);
+    m_event.setParam(0xffffffff);
+    m_millis = 0;
+    m_expires = 0;
+    m_delegate = 0;
+    m_recurring = false;
+  }
+
+  DWORD getExpires() const { return m_expires; }
+  static size_t getRunningTimerCount() { return s_activeTimers.size(); }
+
+protected:
+
+  bool isExpired(DWORD now) const { return m_expires >= now; }
+  bool isRecurring() const { return m_recurring; }
+  Delegate* getDelegate() const { return m_delegate; }
+
+private:
+  MSG_Timeout m_event;
+  int m_millis;
+  DWORD m_expires;
+  bool m_recurring;
+  Delegate* m_delegate;
+
+  static set<Timer*, CompareTimer> s_activeTimers;
+
+  Timer(const Timer&);
+};
+
+inline bool CompareTimer::operator() (const Timer* t1, const Timer* t2) const
+{
+  if (t1->getExpires() < t2->getExpires())
+  {
+    return true;
+  }
+  if (t1->getExpires() == t2->getExpires())
+  {
+    return t1 < t2;
+  }
+  return false;
+//  return (t1->getExpires() < t2->getExpires());
+}
+
+
+
+#endif

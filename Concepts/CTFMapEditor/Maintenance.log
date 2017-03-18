@@ -1,0 +1,92 @@
+04/21/03 12:52:32 - ++ DEBUG ++: Entering: BR_Game::initialize
+04/21/03 12:52:32 - ++ DEBUG ++: Entering: BR_Game::BR_Game
+04/21/03 12:52:32 - ++ DEBUG ++: Entering: Font::Font
+04/21/03 12:52:32 - ++ DEBUG ++: Creating Font: (Upper = images\LettersShift.bmp) (Lower = images\LettersNoShift.bmp)
+04/21/03 12:52:32 - ++ DEBUG ++: lower = 0x00917058, upper = 0x05d68d00
+04/21/03 12:52:32 - ++ DEBUG ++: Building Lower Textures
+04/21/03 12:52:32 - ++ DEBUG ++: Building Upper Textures
+04/21/03 12:52:32 - ++ DEBUG ++: Leaving: Font::Font
+04/21/03 12:52:32 - *Error: Failed Assertion: (surface != 0) c:\documents and settings\hey now\my documents\projects\gamelib\graphics\opengldisplay.cpp(165)
+04/21/03 12:52:32 - ++ DEBUG ++: Leaving: BR_Game::BR_Game
+04/21/03 12:52:32 - ++ DEBUG ++: Leaving: BR_Game::initialize
+04/21/03 12:52:34 - ++ DEBUG ++: FPS = 152.129817
+04/21/03 12:52:34 - ++ DEBUG ++: averageTime spent in 299 calls to BR_Game::pump: 4.61
+04/21/03 12:52:36 - ++ DEBUG ++: FPS = 158.478605
+04/21/03 12:52:36 - ++ DEBUG ++: averageTime spent in 300 calls to BR_Game::pump: 1477932.90
+04/21/03 12:52:36 - Inform: Reading ini file: map.ini
+04/21/03 12:52:36 - *Error: Malformed line: 
+04/21/03 12:52:36 - Inform: Section: test1
+04/21/03 12:52:36 - Inform: Read (Height = "4")
+04/21/03 12:52:36 - Inform: Read (Row0 = "1,0 1,0 1,0 1,0")
+04/21/03 12:52:36 - Inform: Read (Row1 = "2,0 0,0 2,0 1,0")
+04/21/03 12:52:36 - Inform: Read (Row2 = "2,0 3,0 0,0 3,0")
+04/21/03 12:52:36 - Inform: Read (Row3 = "5,2 0,0 5,1 3,0")
+04/21/03 12:52:36 - Inform: Read (Width = "4")
+04/21/03 12:52:36 - *Error: Malformed line: 
+04/21/03 12:52:36 - Inform: Section: test2
+04/21/03 12:52:36 - Inform: Read (Height = "4")
+04/21/03 12:52:36 - Inform: Read (Row0 = "1,0 1,0 1,0 1,0")
+04/21/03 12:52:36 - Inform: Read (Row1 = "2,0 0,0 2,0 1,0")
+04/21/03 12:52:36 - Inform: Read (Row2 = "2,0 3,0 0,0 3,0")
+04/21/03 12:52:36 - Inform: Read (Row3 = "5,2 0,0 5,1 3,0")
+04/21/03 12:52:36 - Inform: Read (Width = "4")
+04/21/03 12:52:38 - ++ DEBUG ++: FPS = 140.646976
+04/21/03 12:52:38 - ++ DEBUG ++: averageTime spent in 300 calls to BR_Game::pump: 1477940.03
+04/21/03 12:52:40 - ++ DEBUG ++: FPS = 163.666121
+04/21/03 12:52:40 - ++ DEBUG ++: averageTime spent in 300 calls to BR_Game::pump: 1477946.15
+04/21/03 12:52:41 - ++ DEBUG ++: FPS = 162.778079
+04/21/03 12:52:41 - ++ DEBUG ++: averageTime spent in 300 calls to BR_Game::pump: 1477952.28
+04/21/03 12:52:43 - ++ DEBUG ++: FPS = 159.404888
+04/21/03 12:52:43 - ++ DEBUG ++: averageTime spent in 300 calls to BR_Game::pump: 1477958.55
+04/21/03 12:52:45 - ++ DEBUG ++: FPS = 159.320234
+04/21/03 12:52:45 - ++ DEBUG ++: averageTime spent in 300 calls to BR_Game::pump: 1477964.83
+04/21/03 12:52:47 - ++ DEBUG ++: FPS = 159.320234
+04/21/03 12:52:47 - ++ DEBUG ++: averageTime spent in 300 calls to BR_Game::pump: 1477971.10
+04/21/03 12:52:49 - ++ DEBUG ++: FPS = 156.087409
+04/21/03 12:52:49 - ++ DEBUG ++: averageTime spent in 300 calls to BR_Game::pump: 1477977.53
+04/21/03 12:52:51 - ++ DEBUG ++: FPS = 156.821746
+04/21/03 12:52:51 - ++ DEBUG ++: averageTime spent in 300 calls to BR_Game::pump: 1477983.90
+04/21/03 12:52:52 - Inform: Reading ini file: map.ini
+04/21/03 12:52:52 - *Error: Malformed line: 
+04/21/03 12:52:52 - Inform: Section: test1
+04/21/03 12:52:52 - Inform: Read (Height = "4")
+04/21/03 12:52:52 - Inform: Read (Row0 = "1,0 1,0 1,0 1,0")
+04/21/03 12:52:52 - Inform: Read (Row1 = "2,0 0,0 2,0 1,0")
+04/21/03 12:52:52 - Inform: Read (Row2 = "2,0 3,0 0,0 3,0")
+04/21/03 12:52:52 - Inform: Read (Row3 = "5,2 0,0 5,1 3,0")
+04/21/03 12:52:52 - Inform: Read (Width = "4")
+04/21/03 12:52:52 - *Error: Malformed line: 
+04/21/03 12:52:52 - Inform: Section: test2
+04/21/03 12:52:52 - Inform: Read (Height = "4")
+04/21/03 12:52:52 - Inform: Read (Row0 = "1,0 1,0 1,0 1,0")
+04/21/03 12:52:52 - Inform: Read (Row1 = "2,0 0,0 2,0 1,0")
+04/21/03 12:52:52 - Inform: Read (Row2 = "2,0 3,0 0,0 3,0")
+04/21/03 12:52:52 - Inform: Read (Row3 = "5,2 0,0 5,1 3,0")
+04/21/03 12:52:52 - Inform: Read (Width = "4")
+04/21/03 12:52:53 - ++ DEBUG ++: FPS = 154.400412
+04/21/03 12:52:53 - ++ DEBUG ++: averageTime spent in 300 calls to BR_Game::pump: 1477990.37
+04/21/03 12:52:55 - ++ DEBUG ++: FPS = 156.006240
+04/21/03 12:52:55 - ++ DEBUG ++: averageTime spent in 300 calls to BR_Game::pump: 1477996.79
+04/21/03 12:52:56 - Inform: Reading ini file: map.ini
+04/21/03 12:52:56 - *Error: Malformed line: 
+04/21/03 12:52:56 - Inform: Section: test1
+04/21/03 12:52:56 - Inform: Read (Height = "4")
+04/21/03 12:52:56 - Inform: Read (Row0 = "1,0 1,0 1,0 1,0")
+04/21/03 12:52:56 - Inform: Read (Row1 = "2,0 0,0 2,0 1,0")
+04/21/03 12:52:56 - Inform: Read (Row2 = "2,0 3,0 0,0 3,0")
+04/21/03 12:52:56 - Inform: Read (Row3 = "5,2 4,0 5,1 3,0")
+04/21/03 12:52:56 - Inform: Read (Width = "4")
+04/21/03 12:52:56 - *Error: Malformed line: 
+04/21/03 12:52:56 - Inform: Section: test2
+04/21/03 12:52:56 - Inform: Read (Height = "4")
+04/21/03 12:52:56 - Inform: Read (Row0 = "1,0 1,0 1,0 1,0")
+04/21/03 12:52:56 - Inform: Read (Row1 = "2,0 0,0 2,0 1,0")
+04/21/03 12:52:56 - Inform: Read (Row2 = "2,0 3,0 0,0 3,0")
+04/21/03 12:52:56 - Inform: Read (Row3 = "5,2 0,0 5,1 3,0")
+04/21/03 12:52:56 - Inform: Read (Width = "4")
+04/21/03 12:52:57 - ++ DEBUG ++: FPS = 151.285930
+04/21/03 12:52:57 - ++ DEBUG ++: averageTime spent in 300 calls to BR_Game::pump: 1478003.39
+04/21/03 12:52:59 - ++ DEBUG ++: FPS = 157.728707
+04/21/03 12:52:59 - ++ DEBUG ++: averageTime spent in 300 calls to BR_Game::pump: 1478009.74
+04/21/03 12:53:01 - ++ DEBUG ++: FPS = 153.609831
+04/21/03 12:53:01 - ++ DEBUG ++: averageTime spent in 300 calls to BR_Game::pump: 1478016.24

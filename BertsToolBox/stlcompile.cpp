@@ -1,0 +1,1 @@
+#include "nocase_compare.h"

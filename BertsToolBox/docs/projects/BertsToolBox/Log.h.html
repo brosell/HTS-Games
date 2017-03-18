@@ -1,0 +1,151 @@
+<HTML>
+<HEAD>
+<TITLE>
+Log.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> Log_h
+<font color="blue">#define</font> Log_h
+
+<font color="blue">#include</font> <font color="maroon">&#60;fstream&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;iostream&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;map&#62;</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;windows.h&#62;</font>
+
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">const</font> <font color="blue">int</font> Inform  <font color="black">=</font> <font color="maroon">0x0001</font>;
+<font color="blue">const</font> <font color="blue">int</font> Warning <font color="black">=</font> <font color="maroon">0x0002</font>;
+<font color="blue">const</font> <font color="blue">int</font> Error   <font color="black">=</font> <font color="maroon">0x0004</font>;
+<font color="blue">const</font> <font color="blue">int</font> Fatal   <font color="black">=</font> <font color="maroon">0x0008</font>;
+<font color="blue">const</font> <font color="blue">int</font> Debug   <font color="black">=</font> <font color="maroon">0x0010</font>;
+<font color="blue">const</font> <font color="blue">int</font> Errors  <font color="black">=</font> Error <font color="black">|</font> Fatal;
+<font color="blue">const</font> <font color="blue">int</font> Warnings<font color="black">=</font> Errors <font color="black">|</font> Warning;
+<font color="blue">const</font> <font color="blue">int</font> All     <font color="black">=</font> Inform <font color="black">|</font> Warnings;
+<font color="blue">const</font> <font color="blue">int</font> AllDebug<font color="black">=</font> All <font color="black">|</font> Debug;
+
+
+
+<font color="blue">class</font> Log
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Log<font color="black">(</font>string filename<font color="black">)</font>;
+  <font color="blue">bool</font> printToConsole<font color="black">(</font><font color="blue">bool</font> b<font color="black">)</font> <font color="black">{</font> <font color="blue">bool</font> ret <font color="black">=</font> m_printToConsole; m_printToConsole <font color="black">=</font> b; <font color="blue">return</font> ret; <font color="black">}</font>
+
+  FILE<font color="black">*</font> getFilePtr<font color="black">(</font><font color="black">)</font>;
+
+  string getDateAndTime<font color="black">(</font><font color="black">)</font>;
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> doWrite<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> <font color="blue">line</font><font color="black">)</font>;
+<font color="green">//private:</font>
+  FILE<font color="black">*</font> m_stream;
+  <font color="green">//ofstream* m_stream;</font>
+  <font color="blue">bool</font> m_printToConsole;
+  string m_filename;
+<font color="black">}</font>;
+
+<font color="blue">class</font> MaintLog<font color="black">:</font> <font color="blue">public</font> Log
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+<font color="green">//  void write(int sev, string message);</font>
+  <font color="blue">void</font> write<font color="black">(</font><font color="blue">int</font> sev, <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> str, va_list vl<font color="black">)</font>;
+
+  <font color="blue">void</font> logError<font color="black">(</font><font color="blue">int</font> sev, <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> str, ...<font color="black">)</font><font color="black">{</font>
+  va_list vl;
+  va_start<font color="black">(</font> vl, str <font color="black">)</font>;
+  write<font color="black">(</font>sev, str, vl<font color="black">)</font>;
+  va_end<font color="black">(</font> vl <font color="black">)</font>;
+  <font color="black">}</font>
+
+
+  <font color="blue">int</font> setFilter<font color="black">(</font><font color="blue">int</font> f<font color="black">)</font> <font color="black">{</font> <font color="blue">int</font> ret <font color="black">=</font> m_filter; m_filter <font color="black">=</font> f; <font color="blue">return</font> ret;<font color="black">}</font>
+
+  <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> getSevString<font color="black">(</font><font color="blue">int</font> sev<font color="black">)</font>;
+  
+  <font color="blue">static</font> MaintLog<font color="black">&</font> get<font color="black">(</font>string filename <font color="black">=</font> <font color="maroon">"Maintenance.log"</font><font color="black">)</font>;
+  <font color="blue">static</font> <font color="blue">void</font> closeall<font color="black">(</font><font color="black">)</font>;
+
+<font color="blue">protected</font><font color="black">:</font>
+  MaintLog<font color="black">(</font>string filename <font color="black">=</font> <font color="maroon">"Maintenance.log"</font><font color="black">)</font><font color="black">:</font> Log<font color="black">(</font>filename<font color="black">)</font>, m_filter<font color="black">(</font>Errors<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">int</font> m_filter;
+  <font color="blue">static</font> map<font color="black">&#60;</font>string, MaintLog<font color="black">*</font><font color="black">&#62;</font> s_logs;
+<font color="black">}</font>;
+
+<font color="blue">class</font> SocketLog<font color="black">:</font> <font color="blue">public</font> Log
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  SocketLog<font color="black">(</font><font color="black">)</font><font color="black">:</font> Log<font color="black">(</font><font color="maroon">"Socket.log"</font><font color="black">)</font> <font color="black">{</font> printToConsole<font color="black">(</font><font color="blue">false</font><font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">void</font> write<font color="black">(</font><font color="blue">char</font><font color="black">*</font> bytes, <font color="blue">int</font> size<font color="black">)</font>;
+<font color="black">}</font>;
+
+<font color="blue">inline</font> <font color="blue">void</font> logError<font color="black">(</font><font color="blue">int</font> sev, <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> str, ...<font color="black">)</font>
+<font color="black">{</font>
+  va_list vl;
+  va_start<font color="black">(</font> vl, str <font color="black">)</font>;
+  MaintLog<font color="black">:</font><font color="black">:</font>get<font color="black">(</font><font color="black">)</font>.write<font color="black">(</font>sev, str, vl<font color="black">)</font>;
+  va_end<font color="black">(</font> vl <font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">inline</font> <font color="blue">void</font> logError<font color="black">(</font>string message, <font color="blue">int</font> sev <font color="black">=</font> Inform <font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>sev, message.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">class</font> LogScope
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  LogScope<font color="black">(</font>string what, string filename <font color="black">=</font> <font color="maroon">"Maintenance.log"</font><font color="black">)</font><font color="black">:</font> m_log<font color="black">(</font>filename<font color="black">)</font>, m_what<font color="black">(</font>what<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">255</font><font color="black">]</font>;
+    sprintf<font color="black">(</font>buf, <font color="maroon">"Entering: %s"</font>, m_what.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="green">//MaintLog::get(m_log).write(Debug, buf);</font>
+    logError<font color="black">(</font>buf, Debug<font color="black">)</font>;
+  <font color="black">}</font>
+  ~LogScope<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font> 
+    <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">255</font><font color="black">]</font>;
+    sprintf<font color="black">(</font>buf, <font color="maroon">"Leaving: %s"</font>, m_what.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    logError<font color="black">(</font>buf, Debug<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="blue">private</font><font color="black">:</font>
+  string m_log;
+  string m_what;
+<font color="black">}</font>;
+
+
+<font color="blue">#define</font> logScope<font color="black">(</font>what<font color="black">)</font> LogScope __ls<font color="black">(</font>what<font color="black">)</font>;
+
+<font color="blue">#ifdef</font> _DEBUG
+<font color="blue">#define</font> lassert<font color="black">(</font>x<font color="black">)</font>\
+  <font color="blue">if</font> <font color="black">(</font> <font color="black">!</font><font color="black">(</font>x<font color="black">)</font> <font color="black">)</font>\
+<font color="black">{</font> logError<font color="black">(</font>Error, <font color="maroon">"Failed Assertion: (%s) %s(%d)"</font>, #x, __FILE__, __LINE__<font color="black">)</font>;<font color="black">}</font>
+
+<font color="blue">#define</font> lassert2<font color="black">(</font>x, s<font color="black">)</font>\
+  <font color="blue">if</font> <font color="black">(</font> <font color="black">!</font><font color="black">(</font>x<font color="black">)</font> <font color="black">)</font>\
+<font color="black">{</font> logError<font color="black">(</font>Error, <font color="maroon">"Failed Assertion (%s): \"%s\" %s(%d)"</font>, #x, <font color="black">(</font>s<font color="black">)</font>, __FILE__, __LINE__<font color="black">)</font>; <font color="black">}</font>
+
+<font color="blue">#define</font> lassertWithReturn<font color="black">(</font>x, s, r<font color="black">)</font>\
+  <font color="blue">if</font> <font color="black">(</font> <font color="black">!</font><font color="black">(</font>x<font color="black">)</font> <font color="black">)</font>\
+<font color="black">{</font> logError<font color="black">(</font>Error, <font color="maroon">"Failed Assertion (%s): \"%s\" %s(%d)"</font>, #x, <font color="black">(</font>s<font color="black">)</font>, __FILE__, __LINE__<font color="black">)</font>; <font color="blue">return</font> <font color="black">(</font>r<font color="black">)</font>; <font color="black">}</font>
+
+
+<font color="blue">#else</font>
+<font color="blue">#define</font> lassert<font color="black">(</font>x<font color="black">)</font>
+<font color="blue">#define</font> lassert2<font color="black">(</font>x, s<font color="black">)</font>
+<font color="blue">#define</font> lassertWithReturn<font color="black">(</font>x, s, r<font color="black">)</font>
+<font color="blue">#endif</font>
+
+
+
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,192 @@
+<HTML>
+<HEAD>
+<TITLE>
+Log.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+<font color="blue">#include</font> <font color="maroon">"fileUtils.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;sstream&#62;</font>
+
+Log<font color="black">:</font><font color="black">:</font>Log<font color="black">(</font>string filename<font color="black">)</font><font color="black">:</font>
+<font color="green">//m_stream(filename.c_str()),</font>
+m_stream<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_filename<font color="black">(</font>filename<font color="black">)</font>,
+m_printToConsole<font color="black">(</font><font color="blue">true</font><font color="black">)</font>
+<font color="black">{</font>
+  remove<font color="black">(</font>filename.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+string Log<font color="black">:</font><font color="black">:</font>getDateAndTime<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">char</font> timeBuffer<font color="black">[</font><font color="maroon">9</font><font color="black">]</font>;
+  <font color="blue">char</font> dateBuffer<font color="black">[</font><font color="maroon">9</font><font color="black">]</font>;
+
+  <font color="green">// get data/time</font>
+  _strdate<font color="black">(</font>dateBuffer<font color="black">)</font>;
+  _strtime<font color="black">(</font>timeBuffer<font color="black">)</font>;
+
+  <font color="green">// and write</font>
+  stringstream ss;
+  ss <font color="black">&#60;</font><font color="black">&#60;</font> dateBuffer <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">" "</font> <font color="black">&#60;</font><font color="black">&#60;</font> timeBuffer;
+
+  <font color="blue">return</font> ss.str<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+FILE<font color="black">*</font> Log<font color="black">:</font><font color="black">:</font>getFilePtr<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_stream <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_stream <font color="black">=</font> fopen<font color="black">(</font>m_filename.c_str<font color="black">(</font><font color="black">)</font>, <font color="maroon">"w"</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> m_stream;
+<font color="black">}</font>
+
+<font color="blue">void</font> Log<font color="black">:</font><font color="black">:</font>doWrite<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> <font color="blue">line</font><font color="black">)</font>
+<font color="black">{</font>
+
+  <font color="blue">if</font> <font color="black">(</font>getFilePtr<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+
+  string dateTime <font color="black">=</font> getDateAndTime<font color="black">(</font><font color="black">)</font>;
+
+  fprintf<font color="black">(</font>m_stream, <font color="maroon">"%s - "</font>, dateTime.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  fprintf<font color="black">(</font>m_stream, <font color="maroon">"%s\n"</font>, <font color="blue">line</font><font color="black">)</font>;
+
+  fflush<font color="black">(</font>m_stream<font color="black">)</font>;
+  fflush<font color="black">(</font>m_stream<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>m_printToConsole<font color="black">)</font>
+  <font color="black">{</font>
+    fprintf<font color="black">(</font>stderr, <font color="maroon">"%s - "</font>, dateTime.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    fprintf<font color="black">(</font>stderr, <font color="maroon">"%s\n"</font>, <font color="blue">line</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+  
+map<font color="black">&#60;</font>string, MaintLog<font color="black">*</font><font color="black">&#62;</font> MaintLog<font color="black">:</font><font color="black">:</font>s_logs;
+
+MaintLog<font color="black">&</font> MaintLog<font color="black">:</font><font color="black">:</font>get<font color="black">(</font>string filename<font color="black">)</font>
+<font color="black">{</font>
+  MaintLog<font color="black">*</font> ml <font color="black">=</font> <font color="maroon">0</font>;
+  map<font color="black">&#60;</font>string, MaintLog<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  pair <font color="black">=</font> s_logs.find<font color="black">(</font>filename<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>pair <font color="black">=</font><font color="black">=</font> s_logs.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    ml <font color="black">=</font> <font color="blue">new</font> MaintLog<font color="black">(</font>filename<font color="black">)</font>;
+    s_logs<font color="black">[</font>filename<font color="black">]</font> <font color="black">=</font> ml;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    ml <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="black">*</font>ml;
+<font color="black">}</font>
+
+<font color="blue">void</font> MaintLog<font color="black">:</font><font color="black">:</font>closeall<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  map<font color="black">&#60;</font>string, MaintLog<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  <font color="blue">for</font> <font color="black">(</font>pair <font color="black">=</font> s_logs.begin<font color="black">(</font><font color="black">)</font>; pair<font color="black">!</font><font color="black">=</font>s_logs.end<font color="black">(</font><font color="black">)</font>; pair<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    MaintLog<font color="black">*</font> ml <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+    FILE<font color="black">*</font> fp <font color="black">=</font> ml<font color="black">-</font><font color="black">&#62;</font>getFilePtr<font color="black">(</font><font color="black">)</font>;
+    fflush<font color="black">(</font>fp<font color="black">)</font>;
+    fclose<font color="black">(</font>fp<font color="black">)</font>;
+    <font color="blue">delete</font> ml;
+  <font color="black">}</font>
+  s_logs.clear<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> MaintLog<font color="black">:</font><font color="black">:</font>getSevString<font color="black">(</font><font color="blue">int</font> sev<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">switch</font><font color="black">(</font>sev<font color="black">)</font>
+  <font color="black">{</font>
+  <font color="blue">case</font> Inform<font color="black">:</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="maroon">"Inform"</font>;
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="blue">case</font> Warning<font color="black">:</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="maroon">"Warning"</font>;
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="blue">case</font> Error<font color="black">:</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="maroon">"*Error"</font>;
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="blue">case</font> Fatal<font color="black">:</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="maroon">"*FATAL ERROR"</font>;
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="blue">case</font> Debug<font color="black">:</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="maroon">"++ DEBUG ++"</font>;
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="blue">default</font><font color="black">:</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="maroon">"*** Unknown Severity"</font>;
+    <font color="black">}</font>
+    <font color="blue">break</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+
+
+<font color="green">//void MaintLog::write(int sev, string message)</font>
+<font color="green">//{</font>
+<font color="green">//  if ( (m_filter & sev) == 0)</font>
+<font color="green">//  {</font>
+<font color="green">//    return;</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">////  ss &#60;&#60; ": " &#60;&#60; message;</font>
+<font color="green">////  doWrite(ss.str().c_str());</font>
+<font color="green">//  write(sev, "%s: %s", getSevString(sev), message.c_str());</font>
+<font color="green">//}</font>
+
+<font color="blue">void</font> MaintLog<font color="black">:</font><font color="black">:</font>write<font color="black">(</font><font color="blue">int</font> sev, <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> str, va_list vl<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font> <font color="black">(</font>m_filter <font color="black">&</font> sev<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+
+  FILE<font color="black">*</font> stream <font color="black">=</font> getFilePtr<font color="black">(</font><font color="black">)</font>;
+  fprintf<font color="black">(</font>stream, <font color="maroon">"%s - %s: "</font>, getDateAndTime<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font>, getSevString<font color="black">(</font>sev<font color="black">)</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>m_printToConsole<font color="black">)</font>
+  <font color="black">{</font> 
+    fprintf<font color="black">(</font>stderr, <font color="maroon">"%s - %s: "</font>, getDateAndTime<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font>, getSevString<font color="black">(</font>sev<font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  vfprintf<font color="black">(</font>stream, str, vl<font color="black">)</font>;
+  fprintf<font color="black">(</font>stream, <font color="maroon">"\n"</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>m_printToConsole<font color="black">)</font>
+  <font color="black">{</font> 
+    vfprintf<font color="black">(</font>stderr, str, vl<font color="black">)</font>;
+    fprintf<font color="black">(</font>stderr, <font color="maroon">"\n"</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> SocketLog<font color="black">:</font><font color="black">:</font>write<font color="black">(</font><font color="blue">char</font><font color="black">*</font> bytes, <font color="blue">int</font> size<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">1024</font><font color="black">]</font>;
+  <font color="blue">char</font><font color="black">*</font> ptr <font color="black">=</font> buf;
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>size <font color="black">&</font><font color="black">&</font> c<font color="black">&#60;</font><font color="maroon">1024</font>; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    ptr <font color="black">+</font><font color="black">=</font> sprintf<font color="black">(</font>ptr, <font color="maroon">"%02x "</font>, bytes<font color="black">[</font>c<font color="black">]</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  doWrite<font color="black">(</font>buf<font color="black">)</font>;
+<font color="black">}</font>
+
+
+</PRE>
+</BODY>
+</HTML>

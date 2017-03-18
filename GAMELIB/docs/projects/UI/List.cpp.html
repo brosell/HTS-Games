@@ -1,0 +1,233 @@
+<HTML>
+<HEAD>
+<TITLE>
+List.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable<font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4530</font> <font color="maroon">4503</font><font color="black">)</font>
+
+<font color="blue">#include</font> <font color="maroon">"List.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Font.h"</font>
+<font color="blue">#include</font> <font color="maroon">"SDL_gfxPrimitives.h"</font>
+<font color="blue">#include</font> <font color="maroon">"StringTokenizer.h"</font>
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+<font color="blue">#include</font> <font color="maroon">"SDL_rotozoom.h"</font>
+
+List<font color="black">:</font><font color="black">:</font>List<font color="black">(</font><font color="black">)</font><font color="black">:</font> 
+Container<font color="black">(</font><font color="black">)</font>, 
+m_margin<font color="black">(</font><font color="maroon">5</font><font color="black">)</font>,
+m_selectedItem<font color="black">(</font><font color="maroon">-1</font><font color="black">)</font>,
+m_topIndex<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>
+<font color="black">{</font> 
+  addUIThing<font color="black">(</font><font color="black">&</font>m_scroll<font color="black">)</font>;
+  m_scroll.addAdjustmentListener<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+  isce.thing <font color="black">=</font> <font color="blue">this</font>;
+<font color="black">}</font>
+
+List<font color="black">:</font><font color="black">:</font>~List<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+<font color="black">}</font>
+
+
+<font color="blue">void</font> List<font color="black">:</font><font color="black">:</font>paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> highBound <font color="black">=</font> m_items.size<font color="black">(</font><font color="black">)</font> <font color="black">-</font>getVisibleLines<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>highBound <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+    highBound <font color="black">=</font> <font color="maroon">0</font>;
+  m_scroll.setBounds<font color="black">(</font><font color="maroon">0</font>, highBound<font color="black">)</font>;
+    
+
+  Rect r<font color="black">=</font>getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+  r.w <font color="black">-</font><font color="black">=</font> <font color="maroon">12</font>; <font color="green">// scroll bar</font>
+  Font<font color="black">*</font> font <font color="black">=</font> getFont<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">int</font> y<font color="black">=</font>r.y <font color="black">+</font> m_margin;<font color="green">// + ((m_items.size()-1) * font-&#62;getHeight()) + r.y;</font>
+  vector<font color="black">&#60;</font>ListItem<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">int</font> cur<font color="black">=</font><font color="maroon">0</font>;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>m_items.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>m_items.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font>, cur<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>cur <font color="black">&#60;</font> m_topIndex<font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">continue</font>;
+    <font color="black">}</font>
+    <font color="blue">if</font> <font color="black">(</font>cur <font color="black">&#62;</font><font color="black">=</font> m_topIndex <font color="black">+</font> getVisibleLines<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">break</font>;
+    <font color="black">}</font>
+
+    font<font color="black">-</font><font color="black">&#62;</font>drawLine<font color="black">(</font>surface, <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>.str, m_margin <font color="black">+</font> r.x, y<font color="black">)</font>;
+        
+    <font color="blue">if</font> <font color="black">(</font>cur <font color="black">=</font><font color="black">=</font> m_selectedItem<font color="black">)</font>
+    <font color="black">{</font>
+      surface<font color="black">-</font><font color="black">&#62;</font>fillRect<font color="black">(</font>r.x, y, r.w, font<font color="black">-</font><font color="black">&#62;</font>getFontHeight<font color="black">(</font><font color="black">)</font>, <font color="maroon">255</font>, <font color="maroon">255</font>, <font color="maroon">255</font>, <font color="maroon">127</font><font color="black">)</font>;
+    <font color="black">}</font>
+    y<font color="black">+</font><font color="black">=</font>font<font color="black">-</font><font color="black">&#62;</font>getFontHeight<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  m_scroll.paint<font color="black">(</font>surface<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> List<font color="black">:</font><font color="black">:</font>adjustmentValueChanged<font color="black">(</font>AdjustmentEvent<font color="black">*</font> event<font color="black">)</font>
+<font color="black">{</font>
+  lassert<font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>thing <font color="black">=</font><font color="black">=</font> <font color="black">&</font>m_scroll<font color="black">)</font>;
+  m_topIndex <font color="black">=</font> event<font color="black">-</font><font color="black">&#62;</font>value;
+<font color="black">}</font>
+
+<font color="blue">void</font> List<font color="black">:</font><font color="black">:</font>onKeyPress<font color="black">(</font>KeyPressEvent<font color="black">*</font> event<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>keySym <font color="black">=</font><font color="black">=</font> SDLK_UP<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>m_selectedItem <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      m_selectedItem<font color="black">-</font><font color="black">-</font>;
+      updateItemListeners<font color="black">(</font><font color="black">)</font>;
+      <font color="blue">if</font><font color="black">(</font>m_selectedItem <font color="black">&#60;</font> m_topIndex<font color="black">)</font>
+      <font color="black">{</font>
+        m_topIndex<font color="black">-</font><font color="black">-</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>keySym <font color="black">=</font><font color="black">=</font> SDLK_DOWN<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>m_selectedItem <font color="black">&#60;</font> m_items.size<font color="black">(</font><font color="black">)</font> <font color="maroon">-1</font> <font color="black">)</font>
+    <font color="black">{</font>
+      m_selectedItem<font color="black">+</font><font color="black">+</font>;
+      updateItemListeners<font color="black">(</font><font color="black">)</font>;
+      <font color="blue">if</font> <font color="black">(</font>m_selectedItem <font color="black">&#62;</font> m_topIndex <font color="black">+</font> min<font color="black">(</font>getVisibleLines<font color="black">(</font><font color="black">)</font><font color="maroon">-1</font>, m_items.size<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        m_topIndex<font color="black">+</font><font color="black">+</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+  <font color="black">}</font>
+  Container<font color="black">:</font><font color="black">:</font>onKeyPress<font color="black">(</font>event<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> List<font color="black">:</font><font color="black">:</font>onMouseClick<font color="black">(</font>MouseClickEvent <font color="black">*</font>event<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button <font color="black">=</font><font color="black">=</font> <font color="maroon">1</font><font color="black">)</font>
+  <font color="black">{</font>
+    Rect r <font color="black">=</font> getPosition<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">int</font> x <font color="black">=</font> event<font color="black">-</font><font color="black">&#62;</font>x;
+    Rect sr <font color="black">=</font> m_scroll.getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>sr.containsPoint<font color="black">(</font>Point<font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>x, event<font color="black">-</font><font color="black">&#62;</font>y<font color="black">)</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">int</font> y <font color="black">=</font> event<font color="black">-</font><font color="black">&#62;</font>y <font color="black">-</font>r.y <font color="black">-</font>m_parent<font color="black">-</font><font color="black">&#62;</font>getPosition<font color="black">(</font><font color="black">)</font>.y <font color="maroon">-5</font>;
+      <font color="blue">int</font> listPos <font color="black">=</font> y<font color="black">/</font>Font<font color="black">:</font><font color="black">:</font>getDefault<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>getFontHeight<font color="black">(</font><font color="black">)</font>;
+      
+      <font color="blue">if</font> <font color="black">(</font>listPos <font color="black">&#62;</font> getVisibleLines<font color="black">(</font><font color="black">)</font> <font color="maroon">-1</font><font color="black">)</font>
+      <font color="black">{</font>
+        m_selectedItem <font color="black">=</font> <font color="maroon">-1</font>;
+      <font color="black">}</font>
+      <font color="blue">else</font>
+      <font color="black">{</font>
+        m_selectedItem <font color="black">=</font> m_topIndex <font color="black">+</font> listPos;
+      <font color="black">}</font>
+      updateItemListeners<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  Container<font color="black">:</font><font color="black">:</font>onMouseClick<font color="black">(</font>event<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> List<font color="black">:</font><font color="black">:</font>addItem<font color="black">(</font><font color="blue">int</font> id, string item<font color="black">)</font> 
+<font color="black">{</font> 
+  m_items.push_back<font color="black">(</font>ListItem<font color="black">(</font>id, item<font color="black">)</font><font color="black">)</font>; 
+<font color="black">}</font>
+
+<font color="blue">void</font> List<font color="black">:</font><font color="black">:</font>removeItem<font color="black">(</font><font color="blue">int</font> id<font color="black">)</font>
+<font color="black">{</font>
+  vector<font color="black">&#60;</font>ListItem<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>m_items.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>m_items.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="black">(</font><font color="black">*</font>i<font color="black">)</font>.id <font color="black">=</font><font color="black">=</font> id<font color="black">)</font>
+    <font color="black">{</font>
+      m_items.erase<font color="black">(</font>i<font color="black">)</font>;
+      <font color="blue">if</font> <font color="black">(</font>m_selectedItem <font color="black">&#62;</font> m_items.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        m_selectedItem <font color="black">=</font> m_items.size<font color="black">(</font><font color="black">)</font> <font color="maroon">-1</font>;
+        updateItemListeners<font color="black">(</font><font color="black">)</font>;
+      <font color="black">}</font>
+      <font color="blue">if</font> <font color="black">(</font>m_topIndex <font color="black">&#62;</font> m_items.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        m_topIndex <font color="black">=</font> m_items.size<font color="black">(</font><font color="black">)</font> <font color="maroon">-1</font>;
+      <font color="black">}</font>
+      m_scroll.setBounds<font color="black">(</font><font color="maroon">0</font>, m_items.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      <font color="blue">return</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> List<font color="black">:</font><font color="black">:</font>clear<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  m_items.clear<font color="black">(</font><font color="black">)</font>;
+  m_selectedItem <font color="black">=</font> <font color="maroon">0</font>;
+  m_topIndex <font color="black">=</font> <font color="maroon">0</font>;
+  m_scroll.setBounds<font color="black">(</font><font color="maroon">0</font>, m_items.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  updateItemListeners<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> List<font color="black">:</font><font color="black">:</font>setSelected<font color="black">(</font><font color="blue">int</font> pos<font color="black">)</font>
+<font color="black">{</font>
+  lassert<font color="black">(</font>pos <font color="black">&#60;</font> m_items.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  lassert<font color="black">(</font>pos <font color="black">&#62;</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+
+  m_selectedItem <font color="black">=</font> pos;
+  <font color="blue">if</font> <font color="black">(</font>m_topIndex <font color="black">&#62;</font> m_selectedItem<font color="black">)</font>
+  <font color="black">{</font>
+    m_topIndex <font color="black">=</font> m_selectedItem;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>m_selectedItem <font color="black">&#62;</font> m_topIndex <font color="black">+</font> getVisibleLines<font color="black">(</font><font color="black">)</font> <font color="maroon">-1</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_topIndex <font color="black">=</font> m_selectedItem <font color="black">-</font>getVisibleLines<font color="black">(</font><font color="black">)</font> <font color="maroon">-1</font>;
+  <font color="black">}</font>
+  updateItemListeners<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> List<font color="black">:</font><font color="black">:</font>hasSelection<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_items.size<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>m_selectedItem <font color="black">=</font><font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+<font color="blue">int</font> List<font color="black">:</font><font color="black">:</font>getSelectedId<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  lassert<font color="black">(</font>m_items.size<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>;
+  lassert<font color="black">(</font>m_selectedItem <font color="black">&#60;</font> m_items.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+  <font color="blue">return</font> m_items.at<font color="black">(</font>m_selectedItem<font color="black">)</font>.id;
+<font color="black">}</font>
+
+string List<font color="black">:</font><font color="black">:</font>getSelectedString<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  lassert<font color="black">(</font>m_items.size<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>;
+  lassert<font color="black">(</font>m_selectedItem <font color="black">&#60;</font> m_items.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>m_selectedItem <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="maroon">""</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> m_items.at<font color="black">(</font>m_selectedItem<font color="black">)</font>.str;
+<font color="black">}</font>
+
+<font color="blue">void</font> List<font color="black">:</font><font color="black">:</font>updateItemListeners<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  isce.commandId <font color="black">=</font> getId<font color="black">(</font><font color="black">)</font>;
+  isce.item <font color="black">=</font> m_selectedItem;
+  
+  set<font color="black">&#60;</font>ItemListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_itemListeners<font color="black">)</font>;
+  set<font color="black">&#60;</font>ItemListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>itemStateChanged<font color="black">(</font><font color="black">&</font>isce<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

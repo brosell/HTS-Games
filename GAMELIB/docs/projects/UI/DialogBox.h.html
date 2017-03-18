@@ -1,0 +1,193 @@
+<HTML>
+<HEAD>
+<TITLE>
+DialogBox.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _DialogBox_h
+<font color="blue">#define</font> _DialogBox_h
+
+<font color="blue">#include</font> <font color="maroon">"Container.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Button.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Label.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;algorithm&#62;</font>
+
+<font color="blue">#ifdef</font> DialogBox
+<font color="blue">#undef</font> DialogBox
+<font color="blue">#endif</font>
+
+<font color="blue">class</font> DialogBox;
+
+<font color="blue">class</font> DialogEvent
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  DialogBox<font color="black">*</font> dialog;
+<font color="black">}</font>;
+
+<font color="blue">class</font> DialogListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">void</font> onOk<font color="black">(</font>DialogEvent<font color="black">*</font> event<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  virtual <font color="blue">void</font> onCancel<font color="black">(</font>DialogEvent<font color="black">*</font> event<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">class</font> DialogBox<font color="black">:</font> <font color="blue">public</font> Container, <font color="blue">public</font> DialogListener, <font color="blue">public</font> ActionListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="green">/**
+  @param background asset name of background. Must be a skin.
+  */</font>
+  DialogBox<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> background<font color="black">)</font>;
+
+  virtual ~DialogBox<font color="black">(</font><font color="black">)</font>;
+
+  virtual string getName<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="maroon">"DialogBox"</font>; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> setText<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> s<font color="black">)</font><font color="black">{</font> Container<font color="black">:</font><font color="black">:</font>setText<font color="black">(</font>s<font color="black">)</font>; m_title.setText<font color="black">(</font>s<font color="black">)</font>; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> show<font color="black">(</font><font color="black">)</font> <font color="black">{</font> Container<font color="black">:</font><font color="black">:</font>show<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> setPosition<font color="black">(</font>Rect<font color="black">&</font> pos<font color="black">)</font> 
+  <font color="black">{</font> 
+    m_title.setPosition<font color="black">(</font>Rect<font color="black">(</font><font color="maroon">0</font>, <font color="maroon">0</font>, pos.w, <font color="maroon">20</font><font color="black">)</font><font color="black">)</font>; 
+    Container<font color="black">:</font><font color="black">:</font>setPosition<font color="black">(</font>pos<font color="black">)</font>; 
+  <font color="black">}</font>
+
+  <font color="green">/**
+    * cause this dialog to be shown. Also this dialog is the only one
+    * that can accept input.
+    * If loop is non-NULL, then that delegate will be called
+    * once per game tick while modal.
+    */</font>
+  virtual <font color="blue">int</font> doModal<font color="black">(</font>Delegate<font color="black">*</font> loop <font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+
+  <font color="green">/**
+    * called when the default button is pressed
+    */</font>
+  virtual <font color="blue">void</font> onOK<font color="black">(</font><font color="black">)</font>;
+  
+  <font color="green">/**
+    * called when the cancel button is pressed
+    */</font>
+  virtual <font color="blue">void</font> onCancel<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">/** from DialogListener used in modal processing */</font>
+  virtual <font color="blue">void</font> onOk<font color="black">(</font>DialogEvent<font color="black">*</font> event<font color="black">)</font>;
+  <font color="green">/** from DialogListener used in modal processing */</font>
+  virtual <font color="blue">void</font> onCancel<font color="black">(</font>DialogEvent<font color="black">*</font> event<font color="black">)</font>;
+
+  <font color="green">/** from ActionListener. */</font>
+  virtual <font color="blue">void</font> actionPerformed<font color="black">(</font>ActionEvent<font color="black">*</font> event<font color="black">)</font>;
+
+  <font color="green">/**
+    * set the onButtonNClick delegate for the button whose id is passed
+    */</font>
+  <font color="blue">void</font> setButtonHandler<font color="black">(</font><font color="blue">int</font> buttonID, ActionListener<font color="black">*</font> listener<font color="black">)</font>;
+
+  <font color="blue">void</font> onKeyPress<font color="black">(</font>KeyPressEvent<font color="black">*</font> event<font color="black">)</font>;
+  
+  virtual <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>;
+
+  <font color="green">/**
+    * set the default button. The Default button responds to the enter key.
+    * when the default button is pressed, the onOk() method is called
+    */</font>
+  <font color="blue">void</font> setDefault<font color="black">(</font>Button<font color="black">*</font> def<font color="black">)</font>
+  <font color="black">{</font>
+    def<font color="black">-</font><font color="black">&#62;</font>addActionListener<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+    m_defaultButton <font color="black">=</font> def;
+    def<font color="black">-</font><font color="black">&#62;</font>setId<font color="black">(</font><font color="maroon">1</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">/**
+    * set the cancel button. The cancel button responds to the ESC key.
+    * when the cancel button is pressed, the onCancel() method is called
+    */</font>
+  <font color="blue">void</font> setCancel<font color="black">(</font>Button<font color="black">*</font> cancel<font color="black">)</font>
+  <font color="black">{</font>
+    cancel<font color="black">-</font><font color="black">&#62;</font>addActionListener<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+    m_cancelButton <font color="black">=</font> cancel;
+    cancel<font color="black">-</font><font color="black">&#62;</font>setId<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  
+  <font color="green">/**
+    * get the control on this dialog with the id=id
+    */</font>
+  UIThing<font color="black">*</font> getControl<font color="black">(</font><font color="blue">int</font> id<font color="black">)</font>;
+
+  <font color="blue">void</font> addListener<font color="black">(</font>DialogListener<font color="black">*</font> listener<font color="black">)</font>
+  <font color="black">{</font>
+    m_listeners.insert<font color="black">(</font>listener<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">void</font> removeListener<font color="black">(</font>DialogListener<font color="black">*</font> listener<font color="black">)</font>
+  <font color="black">{</font>
+    m_listeners.erase<font color="black">(</font>listener<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> setUseKeys<font color="black">(</font><font color="blue">bool</font> useKeys<font color="black">)</font> <font color="black">{</font> m_useKeys <font color="black">=</font> useKeys; <font color="black">}</font>
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="green">/**
+    * called during modalness once per game tick.
+    * overrridden version would return false to end the modal dialog
+    */</font>
+  virtual <font color="blue">bool</font> modalLoop<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">true</font>; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> terminateModal<font color="black">(</font><font color="blue">int</font> retValue<font color="black">)</font>;
+  
+  <font color="green">/**
+    * the return value for doModal. it is set however you want. MsgBoxes set it
+    * to the value of the button pressed (OK or Cancel)
+    */</font>
+  <font color="blue">int</font> m_modalReturn;
+  
+  <font color="green">// these are used by the IniDialog</font>
+  DialogBox<font color="black">(</font><font color="black">)</font><font color="black">:</font>
+  Container<font color="black">(</font><font color="black">)</font>, 
+  m_defaultButton<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, 
+  m_cancelButton<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+  m_background<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>    
+<font color="green">//    m_title.setHorizJust(JUST_CENTER);</font>
+<font color="green">//    m_title.setVertJust(JUST_MIDDLE);</font>
+<font color="green">//    m_title.setDrawBorder(true);</font>
+<font color="green">//    addUIThing(&m_title);</font>
+    m_event.dialog <font color="black">=</font> <font color="blue">this</font>;
+  <font color="black">}</font>
+
+  <font color="green">/**
+  @param background name of the background asset. Asset must be a Skin
+  */</font>
+  <font color="blue">void</font> setBackground<font color="black">(</font>string background<font color="black">)</font>;
+  
+  Skin<font color="black">*</font> getBackground<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_background; <font color="black">}</font>
+
+<font color="blue">private</font><font color="black">:</font>
+  DialogEvent m_event;
+  Button<font color="black">*</font> m_defaultButton;
+  Button<font color="black">*</font> m_cancelButton;
+
+  <font color="blue">bool</font> m_useKeys;
+  
+  set<font color="black">&#60;</font>DialogListener<font color="black">*</font><font color="black">&#62;</font> m_listeners;
+  
+  
+
+  Label m_title;
+  <font color="blue">bool</font> m_isModal;
+
+  Skin<font color="black">*</font> m_background;
+
+<font color="black">}</font>;
+
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

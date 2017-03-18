@@ -1,0 +1,250 @@
+<HTML>
+<HEAD>
+<TITLE>
+BR_Game.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> BR_Game_h
+<font color="blue">#define</font> BR_Game_h
+
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable<font color="black">:</font> <font color="maroon">4786</font><font color="black">)</font>
+
+<font color="blue">#include</font> <font color="maroon">"UI.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Graphics/Skin.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Graphics/Display.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Timer.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Utils.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"CoroutineDelegates.h"</font>
+
+
+<font color="blue">const</font> <font color="blue">int</font> BR_OK <font color="black">=</font> <font color="maroon">0x0001</font>;
+<font color="blue">const</font> <font color="blue">int</font> BR_CANCEL <font color="black">=</font> <font color="maroon">0x0002</font>;
+<font color="blue">const</font> <font color="blue">int</font> BR_OK_CANCEL <font color="black">=</font> BR_OK <font color="black">|</font> BR_CANCEL;
+
+<font color="blue">class</font> AssetManager;
+
+<font color="green">/**
+The user subclasses this and registers to 
+recieve notifications about screen drawing
+  */</font>
+<font color="blue">class</font> DrawListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="green">/**
+  preDraw is called just before the UISystem draws the screen
+  */</font>
+  virtual <font color="blue">void</font> preDraw<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+
+  <font color="green">/**
+  postDraw is called just after the UISystem draws the screen
+  */</font>
+  virtual <font color="blue">void</font> postDraw<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">/**
+The main interface to the engine
+  */</font>
+<font color="blue">class</font> BR_Game<font color="black">:</font> <font color="blue">public</font> TimerListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  ~BR_Game<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">/** the instance of the display */</font>
+  Display<font color="black">*</font> screen;
+  <font color="green">/** the instance of the User Interface system */</font>
+  UISystem<font color="black">&</font> uiSystem;
+  <font color="green">/**
+  user supplied AssetManager containing several required 
+  assets (so far fnt_Default is the only required asset)
+  */</font>
+  AssetManager<font color="black">*</font> assetManager;
+
+  StopWatch glFlipTimer;
+  StopWatch frameTimer;
+
+  <font color="green">/** returns the instance of the BR_Game object. Also the macro theGame does this. */</font>
+  <font color="blue">static</font> BR_Game<font color="black">&</font> instance<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">/**
+  Initializes the game engine. 
+  This includes the console, display, UI, MaintenanceLog
+  @param  w pixel width of screen
+  @param  h pixel height of screen
+  @param  bpp bits per pixel (0 means desktop bpp)
+  @param  type  either OPENGL or SDL
+  @param  flags SDL_DOUBLEBUF | SDL_FULLSCREEN
+
+  @return true on success or false
+  */</font>
+  <font color="blue">static</font> <font color="blue">bool</font> initialize<font color="black">(</font><font color="blue">int</font> w, <font color="blue">int</font> h, <font color="blue">int</font> bpp, DisplayType type, Uint32 flags<font color="black">)</font>;
+
+  <font color="blue">void</font> setWindowInfo<font color="black">(</font>SDL_Surface<font color="black">*</font> icon, string text<font color="black">)</font>;
+  <font color="green">/////////////////////////</font>
+  <font color="green">// General //////////////</font>
+  <font color="green">/////////////////////////</font>
+  
+  <font color="green">/**
+  Polls and dispatches any event in the UI event queue.
+  @returns  the number of events processed
+  */</font>
+  <font color="blue">int</font> pollEvents<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">/**
+  Pumps UI input, network links, the Timer, draws the screen
+  */</font>
+  <font color="blue">void</font> pump<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> draw<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> capture<font color="black">(</font><font color="blue">bool</font> c<font color="black">)</font> <font color="black">{</font> m_capture <font color="black">=</font> c; <font color="blue">if</font> <font color="black">(</font>m_capture<font color="black">)</font> m_frameNum <font color="black">=</font> <font color="maroon">0</font>;<font color="black">}</font> 
+  virtual <font color="blue">void</font> timeout<font color="black">(</font>TimerEvent<font color="black">*</font> event<font color="black">)</font>;
+
+  <font color="green">/////////////////////////</font>
+  <font color="green">// Input ////////////////</font>
+  <font color="green">/////////////////////////</font>
+
+  <font color="green">/**
+  determines whether a key is currently pressed
+  @param keySym the keysym to test
+  @return true if the key is pressed, false otherwise
+  */</font>
+  <font color="blue">bool</font> isKey<font color="black">(</font><font color="blue">int</font> keySym<font color="black">)</font>;
+
+  <font color="green">/** sets the mouse position. */</font>
+  <font color="blue">bool</font> warpMouse<font color="black">(</font>Uint16 x, Uint16 y<font color="black">)</font>;
+
+  <font color="green">/** gets the mouse position */</font>
+  Point getMousePos<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">/**
+  sets the mouse grabbed state
+  @param grab true to grab the mouse, false to free it
+  @return the previous grab state
+  */</font>
+  <font color="blue">bool</font> grabInput<font color="black">(</font><font color="blue">bool</font> grab<font color="black">)</font>;
+
+  <font color="green">/**
+  sets the mouse graphics
+  @param texture - a texture
+  @param hotX,hotY the hot spot of the texture
+  */</font>
+  <font color="blue">void</font> setMouse<font color="black">(</font>string assetName, <font color="blue">int</font> hotX, <font color="blue">int</font> hotY<font color="black">)</font>;
+  
+  <font color="green">/**
+  shows or hide the mouse cursor
+  @param show true to show or false to hide
+  @return previous show state
+  */</font>
+  <font color="blue">bool</font> showCursor<font color="black">(</font><font color="blue">bool</font> show<font color="black">)</font>;
+  
+  <font color="green">/**
+  gets a mouse button state
+  @param b the button number
+  @return the state
+  */</font>
+  <font color="blue">int</font> getButtonState<font color="black">(</font><font color="blue">int</font> b<font color="black">)</font>;
+
+  <font color="green">////////////////////////</font>
+  <font color="green">// INTERACTION////////</font>
+  <font color="green">///////////////////////</font>
+
+  <font color="green">/**
+  Shows a Modal Message Box on the display
+  @param str the message
+  @param title the string for the title bar
+  @flags options for the message box
+  @return the id of the control used to dispatch the msgbox
+  */</font>
+  <font color="blue">int</font> msgBox<font color="black">(</font>string str, string title, <font color="blue">int</font> flags <font color="black">=</font> BR_OK<font color="black">)</font>;
+
+  <font color="green">/**
+  sets the draw listener for the game
+  @param listener
+  */</font>
+  <font color="blue">void</font> setDrawListener<font color="black">(</font>DrawListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_drawListener <font color="black">=</font> listener; <font color="black">}</font>
+
+  <font color="green">/**
+  set the handler for app focus changes
+  */</font>
+  <font color="blue">void</font> setAppListener<font color="black">(</font>AppListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_appListener <font color="black">=</font> listener; <font color="black">}</font>
+
+  <font color="blue">void</font> showFPS<font color="black">(</font><font color="blue">bool</font> b<font color="black">)</font> <font color="black">{</font> m_showFPS <font color="black">=</font> b; <font color="black">}</font>
+  <font color="blue">void</font> setThrottle<font color="black">(</font><font color="blue">bool</font> b<font color="black">)</font> <font color="black">{</font> m_throttle <font color="black">=</font> b; <font color="black">}</font>
+
+  <font color="blue">void</font> timeReport<font color="black">(</font><font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> m_capture;
+  <font color="blue">int</font> m_frameNum;
+  <font color="blue">int</font> m_numKeys;
+  Uint8<font color="black">*</font> m_keyboard;
+  <font color="blue">int</font> m_buttonState<font color="black">[</font><font color="maroon">8</font><font color="black">]</font>;
+  Point m_mouse;
+
+  Uint16 m_sdlMetaKeyState;
+  
+  DialogBox<font color="black">*</font> m_msgBox;
+  Button<font color="black">*</font> m_msgBoxOk;
+  Button<font color="black">*</font> m_msgBoxCancel;
+  Label<font color="black">*</font> m_msgBoxLabel;
+
+  Skin<font color="black">*</font> m_mouseCursor;
+  <font color="blue">int</font> m_hotX;
+  <font color="blue">int</font> m_hotY;
+  <font color="blue">bool</font> m_mouseShowing;
+  <font color="blue">bool</font> m_throttle;
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> initializeInput<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> pumpInput<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> drawMouse<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> setButtonState<font color="black">(</font><font color="blue">int</font> b, <font color="blue">int</font> s<font color="black">)</font>;
+
+  <font color="blue">void</font> co_tickGameFrame<font color="black">(</font><font color="black">)</font>;
+  SpawnableCoroutineTypeDelegate<font color="black">&#60;</font>BR_Game<font color="black">&#62;</font> m_co_gameTick;
+<font color="blue">private</font><font color="black">:</font>
+  BR_Game<font color="black">(</font>Display<font color="black">*</font> disp<font color="black">)</font>; <font color="green">// enforce singleton</font>
+  BR_Game<font color="black">(</font><font color="blue">const</font> BR_Game<font color="black">&</font> other<font color="black">)</font>; <font color="green">// unimplemented</font>
+  
+  <font color="green">//static auto_ptr&#60;BR_Game&#62; s_instance;</font>
+  <font color="blue">static</font> BR_Game<font color="black">*</font> s_instance;
+  
+  DrawListener<font color="black">*</font> m_drawListener;
+  AppListener<font color="black">*</font> m_appListener;
+
+  <font color="blue">bool</font> m_showFPS;
+  <font color="blue">char</font> m_fpsStringBuf<font color="black">[</font><font color="maroon">255</font><font color="black">]</font>;
+
+  HTimer m_grabTimer;
+
+  <font color="blue">int</font> m_sw_draw;
+  <font color="blue">int</font> m_sw_input;
+  <font color="blue">int</font> m_sw_network;
+  <font color="blue">int</font> m_sw_timer;
+  <font color="blue">int</font> m_sw_coroutine;
+  <font color="blue">int</font> m_sw_pump;
+<font color="black">}</font>;
+
+
+<font color="blue">#define</font> theGame BR_Game<font color="black">:</font><font color="black">:</font>instance<font color="black">(</font><font color="black">)</font>
+
+<font color="blue">const</font> <font color="blue">int</font> LEFT_BUTTON <font color="black">=</font> <font color="maroon">1</font>;
+<font color="blue">const</font> <font color="blue">int</font> RIGHT_BUTTON <font color="black">=</font> <font color="maroon">2</font>;
+<font color="blue">const</font> <font color="blue">int</font> MIDDLE_BUTTON <font color="black">=</font> <font color="maroon">3</font>;
+<font color="blue">const</font> <font color="blue">int</font> MWHEEL_UP <font color="black">=</font> <font color="maroon">4</font>;
+<font color="blue">const</font> <font color="blue">int</font> MWHEEL_DOWN <font color="black">=</font> <font color="maroon">5</font>;
+
+<font color="blue">const</font> <font color="blue">int</font> FREE<font color="black">=</font><font color="maroon">0</font>;
+<font color="blue">const</font> <font color="blue">int</font> DOWN<font color="black">=</font><font color="maroon">1</font>;
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

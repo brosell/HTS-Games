@@ -1,0 +1,593 @@
+<HTML>
+<HEAD>
+<TITLE>
+OpenGLDisplay.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable<font color="black">:</font> <font color="maroon">4503</font> <font color="maroon">4530</font> <font color="maroon">4786</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+<font color="blue">#include</font> <font color="maroon">"OpenGLDisplay.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;iostream&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">#include</font> <font color="maroon">"SDL_rotozoom.h"</font>
+
+map<font color="black">&#60;</font><font color="blue">int</font>, <font color="blue">int</font><font color="black">&#62;</font> numTexDrawn;
+
+<font color="blue">int</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>maxTextureSize <font color="black">=</font> <font color="maroon">256</font>;
+
+<font color="green">/* OpenGL
+1) texture width and heights must be powers of 2.
+2) maximum size is 256X256
+3) dimensions smaller that 256 will be scaled up 
+  to the next power of 2. they will be shunk again 
+  when they get drawn to the screen.
+4) bigger images must be split into smaller ones.
+5) maybe it makes sense to take all images and chop 
+  them into pieces that are powers of two, not just 
+  big ones... that way there is no stretching and 
+  shrinking which may distort the texture badly...
+
+6) Alpha- we can use the alpha channel (see old surface code)
+7) Fake Alpha - using the colorkey of 0xf000f0. whenever we see
+    that color in an image, we will set the alpha of that
+    pixel to transparent
+  */</font>
+
+<font color="blue">void</font> checkGLError<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> file, <font color="blue">int</font> <font color="blue">line</font><font color="black">)</font>;
+<font color="blue">#define</font> CheckErr<font color="black">(</font><font color="black">)</font> checkGLError<font color="black">(</font>__FILE__, __LINE__<font color="black">)</font>
+
+OpenGLDisplay<font color="black">:</font><font color="black">:</font>OpenGLDisplay<font color="black">(</font><font color="blue">int</font> width, <font color="blue">int</font> height, <font color="blue">int</font> bpp, Uint32 flags<font color="black">)</font><font color="black">:</font>
+m_numberToDraw<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>
+<font color="black">{</font>
+  SDL_InitSubSystem<font color="black">(</font>SDL_INIT_VIDEO<font color="black">)</font>;
+  m_width <font color="black">=</font> width;
+  m_height<font color="black">=</font>height;
+  flags <font color="black">|</font><font color="black">=</font> SDL_OPENGL;
+
+<font color="green">//  SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 0 );</font>
+
+  m_surface <font color="black">=</font> SDL_SetVideoMode<font color="black">(</font>width, height, bpp, flags<font color="black">)</font>;
+  <font color="blue">if</font><font color="black">(</font><font color="black">!</font>m_surface<font color="black">)</font>
+  <font color="black">{</font>
+    setValid<font color="black">(</font><font color="blue">false</font><font color="black">)</font>;
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+  setValid<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+
+
+  glViewport<font color="black">(</font><font color="maroon">0</font>, <font color="maroon">0</font>, width, height<font color="black">)</font>;
+  glClearColor<font color="black">(</font><font color="maroon">0</font>.0f, <font color="maroon">0</font>.0f, <font color="maroon">0</font>.0f, <font color="maroon">0</font>.0f<font color="black">)</font>;     <font color="green">// This Will Clear The Background Color To Black</font>
+  glClearDepth<font color="black">(</font><font color="maroon">1</font>.<font color="maroon">0</font><font color="black">)</font>;                <font color="green">// Enables Clearing Of The Depth Buffer</font>
+  glDepthFunc<font color="black">(</font>GL_LESS<font color="black">)</font>;             <font color="green">// The Type Of Depth Test To Do</font>
+  <font color="green">//glEnable(GL_DEPTH_TEST);            // Enables Depth Testing</font>
+  glShadeModel<font color="black">(</font>GL_SMOOTH<font color="black">)</font>;          <font color="green">// Enables Smooth Color Shading</font>
+
+  glMatrixMode<font color="black">(</font>GL_PROJECTION<font color="black">)</font>;
+  glLoadIdentity<font color="black">(</font><font color="black">)</font>;             <font color="green">// Reset The Projection Matrix</font>
+
+  <font color="blue">float</font> r <font color="black">=</font> <font color="black">(</font>GLfloat<font color="black">)</font>width<font color="black">/</font><font color="black">(</font>GLfloat<font color="black">)</font>height;
+  gluPerspective<font color="black">(</font><font color="maroon">45</font>.0f, r, <font color="maroon">0</font>.1f, <font color="maroon">100</font>.0f<font color="black">)</font>;   <font color="green">// Calculate The Aspect Ratio Of The Window</font>
+
+  glTexEnvf<font color="black">(</font>GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE<font color="black">)</font>;
+
+  glMatrixMode<font color="black">(</font>GL_MODELVIEW<font color="black">)</font>;
+  glEnable<font color="black">(</font>GL_SCISSOR_TEST<font color="black">)</font>;
+  CheckErr<font color="black">(</font><font color="black">)</font>;
+
+  glTranslatef<font color="black">(</font><font color="maroon">0</font>.0f, <font color="maroon">0</font>.0f, <font color="maroon">-2</font>.<font color="maroon">81</font><font color="black">)</font>; <font color="green">//-1.81f);</font>
+ 
+  m_display <font color="black">=</font> Display<font color="black">:</font><font color="black">:</font>getInstance<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+OpenGLDisplay<font color="black">:</font><font color="black">:</font>~OpenGLDisplay<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>Inform, <font color="maroon">"Tearing down OpenGLDisplay"</font><font color="black">)</font>;
+  map<font color="black">&#60;</font>HTexture, <font color="blue">void</font><font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  <font color="blue">while</font><font color="black">(</font>textureMap.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    pair <font color="black">=</font> textureMap.begin<font color="black">(</font><font color="black">)</font>;
+    freeTexture<font color="black">(</font>pair<font color="black">-</font><font color="black">&#62;</font>first<font color="black">)</font>;
+  <font color="black">}</font>
+  textureMap.clear<font color="black">(</font><font color="black">)</font>;
+  SDL_QuitSubSystem<font color="black">(</font>SDL_INIT_VIDEO<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>clear<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  glClear<font color="black">(</font>GL_COLOR_BUFFER_BIT <font color="black">|</font> GL_DEPTH_BUFFER_BIT<font color="black">)</font>;       <font color="green">// Clear The Screen And The Depth Buffer</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>drawQuad<font color="black">(</font><font color="blue">int</font> id, <font color="blue">int</font> x1, <font color="blue">int</font> y1, <font color="blue">int</font> x2, <font color="blue">int</font> y2<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">static</font> <font color="blue">int</font> lastId <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="blue">if</font> <font color="black">(</font>lastId <font color="black">!</font><font color="black">=</font> id<font color="black">)</font>
+  <font color="black">{</font>
+    lastId <font color="black">=</font> id;
+    glBindTexture<font color="black">(</font>GL_TEXTURE_2D, id<font color="black">)</font>;
+  <font color="black">}</font>
+
+  glEnable<font color="black">(</font>GL_BLEND<font color="black">)</font>;
+  glEnable<font color="black">(</font>GL_TEXTURE_2D<font color="black">)</font>;
+  glBegin<font color="black">(</font>GL_QUADS<font color="black">)</font>;
+  FPoint topLeft <font color="black">=</font> translate<font color="black">(</font>x1, y1<font color="black">)</font>;
+  FPoint topRight <font color="black">=</font> translate<font color="black">(</font>x2, y1<font color="black">)</font>;
+  FPoint bottomLeft <font color="black">=</font> translate<font color="black">(</font>x1, y2<font color="black">)</font>;
+  FPoint bottomRight <font color="black">=</font> translate<font color="black">(</font>x2, y2<font color="black">)</font>;
+
+  glTexCoord2f<font color="black">(</font><font color="maroon">0</font>, <font color="maroon">0</font><font color="black">)</font>;
+  glVertex3f<font color="black">(</font>bottomLeft.x, bottomLeft.y, <font color="maroon">1</font>.0f<font color="black">)</font>;
+
+  glTexCoord2f<font color="black">(</font><font color="maroon">1</font>.0f, <font color="maroon">0</font>.0f<font color="black">)</font>;
+  glVertex3f<font color="black">(</font>bottomRight.x, bottomRight.y, <font color="maroon">1</font>.0f<font color="black">)</font>;
+
+  glTexCoord2f<font color="black">(</font><font color="maroon">1</font>.0f, <font color="maroon">1</font>.0f<font color="black">)</font>;
+  glVertex3f<font color="black">(</font>topRight.x, topRight.y, <font color="maroon">1</font>.0f<font color="black">)</font>;
+  
+  glTexCoord2f<font color="black">(</font><font color="maroon">0</font>.0f, <font color="maroon">1</font>.0f<font color="black">)</font>;
+  glVertex3f<font color="black">(</font>topLeft.x, topLeft.y, <font color="maroon">1</font>.0f<font color="black">)</font>;
+  glEnd<font color="black">(</font><font color="black">)</font>;
+  glDisable<font color="black">(</font>GL_TEXTURE_2D<font color="black">)</font>;
+  glDisable<font color="black">(</font>GL_BLEND<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>scissor<font color="black">(</font><font color="blue">int</font> id, <font color="blue">int</font> x1, <font color="blue">int</font> y1, <font color="blue">int</font> x2, <font color="blue">int</font> y2<font color="black">)</font>
+<font color="black">{</font>
+  <font color="green">// openGL Viewports are upside down (0,0) is lower left.</font>
+  glScissor<font color="black">(</font>x1, m_height<font color="black">-</font><font color="black">(</font>y1<font color="black">+</font>y2<font color="black">)</font>, x2, y2<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>flip<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  SDL_GL_SwapBuffers<font color="black">(</font><font color="black">)</font>;
+  glBlendFunc<font color="black">(</font> GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA <font color="black">)</font>;
+  
+<font color="black">}</font>
+
+<font color="blue">void</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>blit<font color="black">(</font>HTexture textureId, <font color="blue">int</font> destX, <font color="blue">int</font> destY<font color="black">)</font>
+<font color="black">{</font>
+<font color="green">//  lassert(textureId &#62;= 0);</font>
+
+
+
+  list<font color="black">&#60;</font>GLSubTexture<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+
+  GLTexture<font color="black">*</font> tex <font color="black">=</font> <font color="black">(</font>GLTexture<font color="black">*</font><font color="black">)</font>textureMap<font color="black">[</font>textureId<font color="black">]</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>tex <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+
+  <font color="blue">int</font> texX <font color="black">=</font> destX;
+  <font color="blue">int</font> texY <font color="black">=</font> destY;
+
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>tex<font color="black">-</font><font color="black">&#62;</font>begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>tex<font color="black">-</font><font color="black">&#62;</font>end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    GLSubTexture<font color="black">&</font> subT <font color="black">=</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+    
+    <font color="blue">int</font> finX <font color="black">=</font> texX <font color="black">+</font> subT.x;
+    <font color="blue">int</font> finY <font color="black">=</font> texY <font color="black">+</font> subT.y;
+
+    drawQuad<font color="black">(</font>subT.glId, finX, finY, finX<font color="black">+</font>subT.w, finY<font color="black">+</font>subT.h<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>setClipRect<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font>
+<font color="black">{</font>
+  glScissor<font color="black">(</font>x, m_height<font color="black">-</font><font color="black">(</font>y<font color="black">+</font>h<font color="black">)</font>, w, h<font color="black">)</font>;
+<font color="black">}</font>
+
+HTexture OpenGLDisplay<font color="black">:</font><font color="black">:</font>loadTexture<font color="black">(</font>SDL_Surface<font color="black">*</font> surface<font color="black">)</font>
+<font color="black">{</font>
+  HTexture ret <font color="black">=</font> <font color="maroon">0</font>;
+  lassert<font color="black">(</font>surface <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>surface<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+  
+  <font color="blue">int</font> w <font color="black">=</font> surface<font color="black">-</font><font color="black">&#62;</font>w;
+  <font color="blue">int</font> h <font color="black">=</font> surface<font color="black">-</font><font color="black">&#62;</font>h;
+
+  SDL_Surface<font color="black">*</font> zoomed <font color="black">=</font> <font color="maroon">0</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>surface<font color="black">-</font><font color="black">&#62;</font>w <font color="black">&#60;</font><font color="black">=</font> maxTextureSize <font color="black">&</font><font color="black">&</font> surface<font color="black">-</font><font color="black">&#62;</font>h <font color="black">&#60;</font><font color="black">=</font>maxTextureSize<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">double</font> newW <font color="black">=</font> min<font color="black">(</font>nextPowerOf2<font color="black">(</font>w<font color="black">*</font><font color="maroon">4</font>, maxTextureSize<font color="black">)</font>, maxTextureSize<font color="black">)</font>;
+    <font color="blue">double</font> newH <font color="black">=</font> min<font color="black">(</font>nextPowerOf2<font color="black">(</font>h<font color="black">*</font><font color="maroon">4</font>, maxTextureSize<font color="black">)</font>, maxTextureSize<font color="black">)</font>;
+    zoomed <font color="black">=</font> zoomSurface<font color="black">(</font>surface, newW<font color="black">/</font>w, newH<font color="black">/</font>h, <font color="maroon">0</font><font color="black">)</font>;
+    SDL_Surface<font color="black">*</font> conv <font color="black">=</font> SDL_DisplayFormatAlpha<font color="black">(</font>zoomed<font color="black">)</font>;
+    swap<font color="black">(</font>conv, zoomed<font color="black">)</font>;
+    SDL_FreeSurface<font color="black">(</font>conv<font color="black">)</font>;
+    ret <font color="black">=</font> loadTexture<font color="black">(</font>zoomed<font color="black">-</font><font color="black">&#62;</font>pixels, zoomed<font color="black">-</font><font color="black">&#62;</font>w, zoomed<font color="black">-</font><font color="black">&#62;</font>h, w, h<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>surface<font color="black">-</font><font color="black">&#62;</font>w <font color="black">&#60;</font><font color="black">=</font> maxTextureSize<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">double</font> newW <font color="black">=</font> min<font color="black">(</font>nextPowerOf2<font color="black">(</font>w<font color="black">*</font><font color="maroon">4</font>, maxTextureSize<font color="black">)</font>, maxTextureSize<font color="black">)</font>;
+    <font color="blue">double</font> newH <font color="black">=</font> h;
+    zoomed <font color="black">=</font> zoomSurface<font color="black">(</font>surface, newW<font color="black">/</font>w, newH<font color="black">/</font>h, <font color="maroon">0</font><font color="black">)</font>;
+    SDL_Surface<font color="black">*</font> conv <font color="black">=</font> SDL_DisplayFormatAlpha<font color="black">(</font>zoomed<font color="black">)</font>;
+    swap<font color="black">(</font>conv, zoomed<font color="black">)</font>;
+    SDL_FreeSurface<font color="black">(</font>conv<font color="black">)</font>;
+    ret <font color="black">=</font> loadTexture<font color="black">(</font>zoomed<font color="black">-</font><font color="black">&#62;</font>pixels, zoomed<font color="black">-</font><font color="black">&#62;</font>w, zoomed<font color="black">-</font><font color="black">&#62;</font>h, w, h<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>surface<font color="black">-</font><font color="black">&#62;</font>h <font color="black">&#60;</font><font color="black">=</font> maxTextureSize<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">double</font> newW <font color="black">=</font> w;
+    <font color="blue">double</font> newH <font color="black">=</font> min<font color="black">(</font>nextPowerOf2<font color="black">(</font>h<font color="black">*</font><font color="maroon">4</font>, maxTextureSize<font color="black">)</font>, maxTextureSize<font color="black">)</font>;
+    zoomed <font color="black">=</font> zoomSurface<font color="black">(</font>surface,  newW<font color="black">/</font>w, newH<font color="black">/</font>h, <font color="maroon">0</font><font color="black">)</font>;
+    SDL_Surface<font color="black">*</font> conv <font color="black">=</font> SDL_DisplayFormatAlpha<font color="black">(</font>zoomed<font color="black">)</font>;
+    swap<font color="black">(</font>conv, zoomed<font color="black">)</font>;
+    SDL_FreeSurface<font color="black">(</font>conv<font color="black">)</font>;
+    ret <font color="black">=</font> loadTexture<font color="black">(</font>zoomed<font color="black">-</font><font color="black">&#62;</font>pixels, zoomed<font color="black">-</font><font color="black">&#62;</font>w, zoomed<font color="black">-</font><font color="black">&#62;</font>h, w, h<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="green">// both bigger</font>
+  <font color="black">{</font>
+    SDL_Surface<font color="black">*</font> conv <font color="black">=</font> SDL_DisplayFormatAlpha<font color="black">(</font>surface<font color="black">)</font>;
+<font color="green">//    if (conv != surface)</font>
+<font color="green">//    {</font>
+<font color="green">////      swap(conv, surface);</font>
+<font color="green">////      SDL_FreeSurface(conv);</font>
+<font color="green">//      surface = conv;</font>
+<font color="green">//    }</font>
+    ret <font color="black">=</font> loadTexture<font color="black">(</font>conv<font color="black">-</font><font color="black">&#62;</font>pixels, surface<font color="black">-</font><font color="black">&#62;</font>w, surface<font color="black">-</font><font color="black">&#62;</font>h, surface<font color="black">-</font><font color="black">&#62;</font>w, surface<font color="black">-</font><font color="black">&#62;</font>h<font color="black">)</font>;
+    SDL_FreeSurface<font color="black">(</font>conv<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">if</font> <font color="black">(</font>zoomed<font color="black">)</font>
+  <font color="black">{</font>
+    SDL_FreeSurface<font color="black">(</font>zoomed<font color="black">)</font>;  
+  <font color="black">}</font>
+
+  <font color="blue">return</font> ret;
+
+<font color="black">}</font>
+
+HTexture OpenGLDisplay<font color="black">:</font><font color="black">:</font>loadTexture<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename<font color="black">)</font>
+<font color="black">{</font>
+  HTexture ret <font color="black">=</font> <font color="maroon">0</font>;
+
+  SDL_Surface<font color="black">*</font> surface <font color="black">=</font> loadSDLSurface<font color="black">(</font>filename<font color="black">)</font>;
+
+  ret <font color="black">=</font> loadTexture<font color="black">(</font>surface<font color="black">)</font>;
+
+  SDL_FreeSurface<font color="black">(</font>surface<font color="black">)</font>;
+
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+HTexture OpenGLDisplay<font color="black">:</font><font color="black">:</font>loadTexture<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> pixels, <font color="blue">int</font> width, <font color="blue">int</font> height, <font color="blue">int</font> realW, <font color="blue">int</font> realH<font color="black">)</font>
+<font color="black">{</font>
+  GLTexture<font color="black">*</font> tex<font color="black">=</font><font color="blue">new</font> GLTexture<font color="black">(</font>realW, realH<font color="black">)</font>;
+
+  <font color="green">// have to bust it up in to dimension that are powers of 2 and</font>
+  <font color="green">//  no bigger then maxTextureSize..</font>
+
+  <font color="green">// first make list of w's and h's</font>
+  <font color="blue">int</font> w<font color="black">=</font>width;
+  <font color="blue">int</font> sw <font color="black">=</font> width;
+  <font color="blue">int</font> w2<font color="black">=</font><font color="maroon">0</font>;
+  list<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font> xs;
+  list<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font> ys;
+
+  <font color="blue">while</font> <font color="black">(</font>w<font color="black">&#62;</font><font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> q<font color="black">=</font>previousPowerOf2<font color="black">(</font>w, maxTextureSize<font color="black">)</font>;
+    xs.push_back<font color="black">(</font>q<font color="black">)</font>;
+    w<font color="black">-</font><font color="black">=</font>q;
+    w2<font color="black">+</font><font color="black">=</font>q;
+  <font color="black">}</font>
+  lassert<font color="black">(</font>sw <font color="black">=</font><font color="black">=</font> w2<font color="black">)</font>;
+
+  <font color="blue">int</font> h<font color="black">=</font>height;
+  <font color="blue">int</font> sh <font color="black">=</font> height;
+  <font color="blue">int</font> h2<font color="black">=</font><font color="maroon">0</font>;
+  <font color="blue">while</font> <font color="black">(</font>h<font color="black">&#62;</font><font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> q<font color="black">=</font>previousPowerOf2<font color="black">(</font>h, maxTextureSize<font color="black">)</font>;
+    ys.push_back<font color="black">(</font>q<font color="black">)</font>;
+    h<font color="black">-</font><font color="black">=</font>q;
+    h2<font color="black">+</font><font color="black">=</font>q;
+  <font color="black">}</font>
+  lassert<font color="black">(</font>sh <font color="black">=</font><font color="black">=</font> h2<font color="black">)</font>;
+
+  <font color="green">// next, iterate through lists and alloc some buffers with the sub textures</font>
+  list<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator ix;
+  list<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator iy;
+  
+  <font color="blue">int</font> curX<font color="black">=</font><font color="maroon">0</font>;
+  <font color="blue">for</font> <font color="black">(</font>ix<font color="black">=</font>xs.begin<font color="black">(</font><font color="black">)</font>; ix<font color="black">!</font><font color="black">=</font>xs.end<font color="black">(</font><font color="black">)</font>; ix<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> curY<font color="black">=</font><font color="maroon">0</font>;
+    <font color="blue">for</font><font color="black">(</font>iy<font color="black">=</font>ys.begin<font color="black">(</font><font color="black">)</font>; iy<font color="black">!</font><font color="black">=</font>ys.end<font color="black">(</font><font color="black">)</font>; iy<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">int</font> iw <font color="black">=</font> <font color="black">(</font><font color="black">*</font>ix<font color="black">)</font>;
+      <font color="blue">int</font> ih <font color="black">=</font> <font color="black">(</font><font color="black">*</font>iy<font color="black">)</font>;
+      Uint8<font color="black">*</font> glPixels <font color="black">=</font> copyBits<font color="black">(</font><font color="black">(</font>Uint8<font color="black">*</font><font color="black">)</font>pixels, width, curX, curY, iw, ih<font color="black">)</font>;
+      <font color="green">// create subTexture</font>
+      GLSubTexture subT;
+      subT.x <font color="black">=</font> curX;
+      subT.y <font color="black">=</font> curY;
+      subT.w <font color="black">=</font> <font color="black">(</font><font color="black">*</font>ix<font color="black">)</font><font color="black">*</font><font color="black">(</font><font color="black">(</font><font color="blue">float</font><font color="black">)</font>realW<font color="black">/</font><font color="black">(</font><font color="blue">float</font><font color="black">)</font>width<font color="black">)</font>;
+      subT.h <font color="black">=</font> <font color="black">(</font><font color="black">*</font>iy<font color="black">)</font><font color="black">*</font><font color="black">(</font><font color="black">(</font><font color="blue">float</font><font color="black">)</font>realH<font color="black">/</font><font color="black">(</font><font color="blue">float</font><font color="black">)</font>height<font color="black">)</font>;
+      subT.glId <font color="black">=</font> setTexture<font color="black">(</font>glPixels, <font color="black">(</font><font color="black">*</font>ix<font color="black">)</font>, <font color="black">(</font><font color="black">*</font>iy<font color="black">)</font><font color="black">)</font>;
+      tex<font color="black">-</font><font color="black">&#62;</font>push_back<font color="black">(</font>subT<font color="black">)</font>;
+      curY<font color="black">+</font><font color="black">=</font><font color="black">(</font><font color="black">*</font>iy<font color="black">)</font>;  
+      <font color="blue">delete</font> <font color="black">[</font><font color="black">]</font> glPixels; <font color="green">///????</font>
+    <font color="black">}</font>
+    curX<font color="black">+</font><font color="black">=</font><font color="black">(</font><font color="black">*</font>ix<font color="black">)</font>;
+  <font color="black">}</font>
+
+  HTexture id <font color="black">=</font> nextTextureId<font color="black">+</font><font color="black">+</font>;
+  textureMap<font color="black">[</font>id<font color="black">]</font> <font color="black">=</font> <font color="black">(</font><font color="blue">void</font><font color="black">*</font><font color="black">)</font>tex;
+  CheckErr<font color="black">(</font><font color="black">)</font>;
+
+  m_display<font color="black">-</font><font color="black">&#62;</font>addTextureInfo<font color="black">(</font>id, <font color="blue">new</font> TextureInfo<font color="black">(</font>realW, realH<font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> id;
+<font color="black">}</font>
+
+<font color="blue">void</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>freeTexture<font color="black">(</font>HTexture textureId<font color="black">)</font>
+<font color="black">{</font>
+  GLTexture<font color="black">*</font> tex <font color="black">=</font> <font color="black">(</font>GLTexture<font color="black">*</font><font color="black">)</font>textureMap<font color="black">[</font>textureId<font color="black">]</font>;
+  lassert <font color="black">(</font>tex <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+
+  list<font color="black">&#60;</font>GLSubTexture<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>tex<font color="black">-</font><font color="black">&#62;</font>begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>tex<font color="black">-</font><font color="black">&#62;</font>end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    glDeleteTextures<font color="black">(</font><font color="maroon">1</font>, <font color="black">&</font><font color="black">(</font><font color="black">*</font>i<font color="black">)</font>.glId<font color="black">)</font>;
+  <font color="black">}</font>
+
+  TextureInfo<font color="black">*</font> ti <font color="black">=</font> <font color="black">(</font>TextureInfo<font color="black">*</font><font color="black">)</font><font color="black">(</font>m_display<font color="black">-</font><font color="black">&#62;</font>getTextureInfo<font color="black">(</font>textureId<font color="black">)</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>ti<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">delete</font> ti;
+    m_display<font color="black">-</font><font color="black">&#62;</font>removeTextureInfo<font color="black">(</font>textureId<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Trying to free texture but TextureInfo for textureId %d is null"</font>, textureId<font color="black">)</font>;
+  <font color="black">}</font>
+
+
+  <font color="blue">delete</font> tex;
+  textureMap.erase<font color="black">(</font>textureId<font color="black">)</font>;
+<font color="black">}</font>  
+
+Uint8<font color="black">*</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>copyBits<font color="black">(</font><font color="blue">const</font> Uint8<font color="black">*</font> src, <font color="blue">int</font> sWidth, <font color="blue">int</font> sx, <font color="blue">int</font> sy, <font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font>
+<font color="black">{</font>
+  Uint8<font color="black">*</font> pixels <font color="black">=</font> <font color="blue">new</font> Uint8<font color="black">[</font>w<font color="black">*</font>h<font color="black">*</font><font color="maroon">4</font><font color="black">]</font>;
+  <font color="blue">int</font> dy<font color="black">=</font><font color="maroon">0</font>;
+
+  Uint8<font color="black">*</font> destp <font color="black">=</font> pixels;
+  
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> y <font color="black">=</font> sy; y<font color="black">&#60;</font>sy<font color="black">+</font>h; y<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> offset <font color="black">=</font> <font color="black">(</font>y<font color="black">*</font>sWidth<font color="black">*</font><font color="maroon">4</font><font color="black">)</font> <font color="black">+</font> <font color="black">(</font>sx<font color="black">*</font><font color="maroon">4</font><font color="black">)</font>;
+    <font color="blue">const</font> Uint8<font color="black">*</font> srcp <font color="black">=</font> <font color="black">&</font><font color="black">(</font>src<font color="black">[</font>offset<font color="black">]</font><font color="black">)</font>;
+    memcpy<font color="black">(</font>destp, srcp, w<font color="black">*</font><font color="maroon">4</font><font color="black">)</font>;
+    destp <font color="black">+</font><font color="black">=</font> <font color="black">(</font>w<font color="black">*</font><font color="maroon">4</font><font color="black">)</font>;
+    dy<font color="black">+</font><font color="black">+</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> pixels;
+<font color="black">}</font>
+
+Uint8<font color="black">*</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>copyBitsWithBorder<font color="black">(</font><font color="blue">const</font> Uint8<font color="black">*</font> src, <font color="blue">int</font> sWidth, <font color="blue">int</font> sx, <font color="blue">int</font> sy, <font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font>
+<font color="black">{</font>
+  Uint8<font color="black">*</font> pixels <font color="black">=</font> <font color="blue">new</font> Uint8<font color="black">[</font><font color="black">(</font>w<font color="black">+</font><font color="maroon">2</font><font color="black">)</font><font color="black">*</font><font color="black">(</font>h<font color="black">+</font><font color="maroon">2</font><font color="black">)</font><font color="black">*</font><font color="maroon">4</font><font color="black">]</font>;
+  
+  <font color="blue">int</font> dy<font color="black">=</font><font color="maroon">1</font>;
+  <font color="blue">int</font> y<font color="black">=</font><font color="maroon">0</font>;
+  Uint8<font color="black">*</font> destp <font color="black">=</font> pixels <font color="black">+</font> <font color="maroon">4</font>;
+  
+  <font color="blue">for</font> <font color="black">(</font>y <font color="black">=</font> sy; y<font color="black">&#60;</font>sy<font color="black">+</font>h; y<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> offset <font color="black">=</font> <font color="black">(</font>y<font color="black">*</font>sWidth<font color="black">*</font><font color="maroon">4</font><font color="black">)</font> <font color="black">+</font> <font color="black">(</font>sx<font color="black">*</font><font color="maroon">4</font><font color="black">)</font>;
+    <font color="blue">const</font> Uint8<font color="black">*</font> srcp <font color="black">=</font> <font color="black">&</font><font color="black">(</font>src<font color="black">[</font>offset<font color="black">]</font><font color="black">)</font>;
+    memcpy<font color="black">(</font>destp, srcp, w<font color="black">*</font><font color="maroon">4</font><font color="black">)</font>;
+    destp <font color="black">+</font><font color="black">=</font> <font color="black">(</font>w<font color="black">*</font><font color="maroon">4</font><font color="black">)</font><font color="black">+</font><font color="maroon">8</font>;
+    dy<font color="black">+</font><font color="black">+</font>;
+  <font color="black">}</font>
+
+  <font color="green">// make top and bottom border;</font>
+
+  Uint8<font color="black">*</font> srow <font color="black">=</font> <font color="black">&</font><font color="black">(</font>pixels<font color="black">[</font><font color="maroon">1</font><font color="black">*</font><font color="black">(</font>w<font color="black">+</font><font color="maroon">2</font><font color="black">)</font><font color="black">*</font><font color="maroon">4</font><font color="black">]</font><font color="black">)</font>; <font color="green">// first data row;</font>
+  Uint8<font color="black">*</font> drow <font color="black">=</font> pixels;
+  memcpy<font color="black">(</font>drow, srow, <font color="black">(</font>w<font color="black">+</font><font color="maroon">2</font><font color="black">)</font><font color="black">*</font><font color="maroon">4</font><font color="black">)</font>;
+
+  srow <font color="black">=</font> <font color="black">&</font><font color="black">(</font>pixels<font color="black">[</font><font color="black">(</font>h<font color="black">+</font><font color="maroon">1</font><font color="black">)</font><font color="black">*</font><font color="black">(</font>w<font color="black">+</font><font color="maroon">2</font><font color="black">)</font><font color="black">*</font><font color="maroon">4</font><font color="black">]</font><font color="black">)</font>; <font color="green">// last data row;</font>
+  drow <font color="black">=</font> <font color="black">&</font><font color="black">(</font>pixels<font color="black">[</font><font color="black">(</font>h<font color="black">+</font><font color="maroon">2</font><font color="black">)</font><font color="black">*</font><font color="black">(</font>w<font color="black">+</font><font color="maroon">2</font><font color="black">)</font><font color="black">*</font><font color="maroon">4</font><font color="black">]</font><font color="black">)</font>;
+  memcpy<font color="black">(</font>drow, srow, <font color="black">(</font>w<font color="black">+</font><font color="maroon">2</font><font color="black">)</font><font color="black">*</font><font color="maroon">4</font><font color="black">)</font>;
+
+
+  <font color="green">// make left and right border</font>
+  <font color="blue">for</font> <font color="black">(</font>y <font color="black">=</font> <font color="maroon">1</font>; y<font color="black">&#60;</font>h; y<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">int</font> offset <font color="black">=</font> <font color="maroon">0</font>;
+    Uint8<font color="black">*</font> row;
+    row <font color="black">=</font> <font color="black">&</font><font color="black">(</font>pixels<font color="black">[</font>y<font color="black">*</font><font color="black">(</font>w<font color="black">+</font><font color="maroon">2</font><font color="black">)</font><font color="black">*</font><font color="maroon">4</font><font color="black">]</font><font color="black">)</font>;
+    row<font color="black">[</font><font color="maroon">0</font><font color="black">+</font><font color="maroon">0</font><font color="black">]</font> <font color="black">=</font> row<font color="black">[</font><font color="maroon">4</font><font color="black">+</font><font color="maroon">0</font><font color="black">]</font>;
+    row<font color="black">[</font><font color="maroon">0</font><font color="black">+</font><font color="maroon">1</font><font color="black">]</font> <font color="black">=</font> row<font color="black">[</font><font color="maroon">4</font><font color="black">+</font><font color="maroon">1</font><font color="black">]</font>;
+    row<font color="black">[</font><font color="maroon">0</font><font color="black">+</font><font color="maroon">2</font><font color="black">]</font> <font color="black">=</font> row<font color="black">[</font><font color="maroon">4</font><font color="black">+</font><font color="maroon">2</font><font color="black">]</font>;
+    row<font color="black">[</font><font color="maroon">0</font><font color="black">+</font><font color="maroon">3</font><font color="black">]</font> <font color="black">=</font> row<font color="black">[</font><font color="maroon">4</font><font color="black">+</font><font color="maroon">3</font><font color="black">]</font>;
+
+    offset <font color="black">=</font> <font color="black">(</font>w<font color="black">+</font><font color="maroon">1</font><font color="black">)</font><font color="black">*</font><font color="maroon">4</font>;
+    row<font color="black">[</font>offset<font color="black">+</font><font color="maroon">0</font><font color="black">]</font> <font color="black">=</font> row<font color="black">[</font><font color="black">(</font>offset<font color="maroon">-4</font><font color="black">)</font><font color="black">+</font><font color="maroon">0</font><font color="black">]</font>;
+    row<font color="black">[</font>offset<font color="black">+</font><font color="maroon">1</font><font color="black">]</font> <font color="black">=</font> row<font color="black">[</font><font color="black">(</font>offset<font color="maroon">-4</font><font color="black">)</font><font color="black">+</font><font color="maroon">1</font><font color="black">]</font>;
+    row<font color="black">[</font>offset<font color="black">+</font><font color="maroon">2</font><font color="black">]</font> <font color="black">=</font> row<font color="black">[</font><font color="black">(</font>offset<font color="maroon">-4</font><font color="black">)</font><font color="black">+</font><font color="maroon">2</font><font color="black">]</font>;
+    row<font color="black">[</font>offset<font color="black">+</font><font color="maroon">3</font><font color="black">]</font> <font color="black">=</font> row<font color="black">[</font><font color="black">(</font>offset<font color="maroon">-4</font><font color="black">)</font><font color="black">+</font><font color="maroon">3</font><font color="black">]</font>;
+  <font color="black">}</font>
+
+
+
+  <font color="blue">return</font> pixels;
+<font color="black">}</font>
+
+
+
+<font color="blue">unsigned</font> <font color="blue">int</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>setTexture<font color="black">(</font><font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> pixels, <font color="blue">int</font> width, <font color="blue">int</font> height<font color="black">)</font>
+<font color="black">{</font>   
+  Uint8 <font color="black">*</font>rowhi, <font color="black">*</font>rowlo;
+  Uint8 <font color="black">*</font>tmpbuf;
+  Uint8 tmpch;
+
+  <font color="blue">int</font> pitch <font color="black">=</font> width<font color="black">*</font><font color="maroon">4</font>;
+  
+
+  <font color="blue">int</font> i, j;
+    <font color="green">/* GL surfaces are upsidedown and RGB, not BGR :-) */</font>
+  tmpbuf <font color="black">=</font> <font color="blue">new</font> Uint8<font color="black">[</font>pitch<font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font> tmpbuf <font color="black">=</font><font color="black">=</font> NULL <font color="black">)</font> <font color="black">{</font>
+    fprintf<font color="black">(</font>stderr, <font color="maroon">"Out of memory\n"</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  <font color="blue">int</font> size <font color="black">=</font> width<font color="black">*</font>height<font color="black">*</font><font color="maroon">4</font>;
+  Uint8<font color="black">*</font> glPixels <font color="black">=</font> <font color="blue">new</font> Uint8<font color="black">[</font>size<font color="black">]</font>;
+  memcpy<font color="black">(</font>glPixels, pixels, size<font color="black">)</font>;
+  <font color="blue">int</font> a, r, g, b;
+
+  rowhi <font color="black">=</font> <font color="black">(</font>Uint8 <font color="black">*</font><font color="black">)</font>glPixels;
+  rowlo <font color="black">=</font> rowhi <font color="black">+</font> <font color="black">(</font>height <font color="black">*</font> pitch<font color="black">)</font> <font color="black">-</font>pitch;
+  <font color="blue">for</font> <font color="black">(</font> i<font color="black">=</font><font color="maroon">0</font>; i<font color="black">&#60;</font>height<font color="black">/</font><font color="maroon">2</font>; <font color="black">+</font><font color="black">+</font>i <font color="black">)</font> <font color="black">{</font>
+    <font color="blue">for</font> <font color="black">(</font> j<font color="black">=</font><font color="maroon">0</font>; j<font color="black">&#60;</font>width; j<font color="black">+</font><font color="black">+</font> <font color="black">)</font> <font color="black">{</font>
+      b <font color="black">=</font> rowhi<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">0</font><font color="black">]</font>;
+      g <font color="black">=</font> rowhi<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">1</font><font color="black">]</font>;
+      r <font color="black">=</font> rowhi<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">2</font><font color="black">]</font>;
+      a <font color="black">=</font> rowhi<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">3</font><font color="black">]</font>;
+
+
+<font color="green">//      a = 255;</font>
+<font color="green">//      if (r == 0xf0 && g == 0x00 && b == 0xf0)</font>
+<font color="green">//      {</font>
+<font color="green">//        a = 0;</font>
+<font color="green">//      }</font>
+      
+      rowhi<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">0</font><font color="black">]</font> <font color="black">=</font> r;
+      rowhi<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">1</font><font color="black">]</font> <font color="black">=</font> g;
+      rowhi<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">2</font><font color="black">]</font> <font color="black">=</font> b;
+      rowhi<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">3</font><font color="black">]</font> <font color="black">=</font> a;
+
+      b <font color="black">=</font> rowlo<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">0</font><font color="black">]</font>;
+      g <font color="black">=</font> rowlo<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">1</font><font color="black">]</font>;
+      r <font color="black">=</font> rowlo<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">2</font><font color="black">]</font>;
+      a <font color="black">=</font> rowlo<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">3</font><font color="black">]</font>;
+
+<font color="green">//      a = 255;</font>
+<font color="green">//      if (r == 0xf0 && g == 0x00 && b == 0xf0)</font>
+<font color="green">//      {</font>
+<font color="green">//        a = 0;</font>
+<font color="green">//      }</font>
+      
+      
+      rowlo<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">0</font><font color="black">]</font> <font color="black">=</font> r;
+      rowlo<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">1</font><font color="black">]</font> <font color="black">=</font> g;
+      rowlo<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">2</font><font color="black">]</font> <font color="black">=</font> b;
+      rowlo<font color="black">[</font>j<font color="black">*</font><font color="maroon">4</font> <font color="black">+</font> <font color="maroon">3</font><font color="black">]</font> <font color="black">=</font> a;
+    <font color="black">}</font>
+    memcpy<font color="black">(</font>tmpbuf, rowhi, pitch<font color="black">)</font>;
+    memcpy<font color="black">(</font>rowhi, rowlo, pitch<font color="black">)</font>;
+    memcpy<font color="black">(</font>rowlo, tmpbuf, pitch<font color="black">)</font>;
+    rowhi <font color="black">+</font><font color="black">=</font> pitch;
+    rowlo <font color="black">-</font><font color="black">=</font> pitch;
+  <font color="black">}</font>
+  <font color="blue">delete</font> tmpbuf;
+
+  GLuint glTexture;
+  <font color="green">// Create Texture </font>
+  glGenTextures<font color="black">(</font><font color="maroon">1</font>, <font color="black">&</font>glTexture<font color="black">)</font>;
+  glBindTexture<font color="black">(</font>GL_TEXTURE_2D, glTexture<font color="black">)</font>;   <font color="green">// 2d texture (x and y size)</font>
+
+  glTexParameteri<font color="black">(</font>GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP<font color="black">)</font>;
+  glTexParameteri <font color="black">(</font>GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP<font color="black">)</font>;
+  
+  glTexParameteri<font color="black">(</font>GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR<font color="black">)</font>; <font color="green">// scale linearly when image bigger than texture</font>
+  glTexParameteri<font color="black">(</font>GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR<font color="black">)</font>; <font color="green">// scale linearly when image smalled than texture</font>
+  
+  <font color="green">// 2d texture, level of detail 0 (normal), 3 components (red, green, blue), x size from image, y size from image, </font>
+  <font color="green">// border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.</font>
+  glTexImage2D<font color="black">(</font>GL_TEXTURE_2D, <font color="maroon">0</font>, <font color="maroon">4</font>, width, height, <font color="maroon">0</font>, GL_RGBA, GL_UNSIGNED_BYTE, glPixels<font color="black">)</font>;
+  <font color="blue">delete</font> glPixels;
+
+  CheckErr<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">return</font> glTexture;
+<font color="black">}</font>
+
+<font color="blue">void</font> checkGLError<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> file, <font color="blue">int</font> <font color="blue">line</font><font color="black">)</font>
+<font color="black">{</font>
+  GLenum err <font color="black">=</font> glGetError<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>err <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">1024</font><font color="black">]</font>;
+    sprintf<font color="black">(</font>buf, <font color="maroon">"GLError: %02x - %s(%d)"</font>, err, file, <font color="blue">line</font><font color="black">)</font>;
+    logError<font color="black">(</font>buf, Error<font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="black">}</font>
+<font color="green">//</font>
+<font color="blue">void</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>drawVLine<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> h, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha<font color="black">)</font>
+<font color="black">{</font>
+<font color="green">//  fillRect(x, y, 1, h, red, green, blue);</font>
+  drawLine<font color="black">(</font>x, y, x, y<font color="black">+</font>h, red, green, blue, alpha<font color="black">)</font>;
+<font color="black">}</font>
+<font color="blue">void</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>drawHLine<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> w, <font color="blue">int</font> y, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha<font color="black">)</font>
+<font color="black">{</font>
+  drawLine<font color="black">(</font>x, y, w<font color="black">+</font>w, y, red, green, blue, alpha<font color="black">)</font>;
+<font color="green">//  fillRect(x, y, w, 1, red, green, blue);</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>drawLine<font color="black">(</font><font color="blue">int</font> x1, <font color="blue">int</font> y1, <font color="blue">int</font> x2, <font color="blue">int</font> y2, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha<font color="black">)</font>
+<font color="black">{</font>
+  glBegin<font color="black">(</font>GL_LINES<font color="black">)</font>;
+  FPoint topLeft <font color="black">=</font> translate<font color="black">(</font>x1, y1<font color="black">)</font>;
+  FPoint topRight <font color="black">=</font> translate<font color="black">(</font>x2, y2<font color="black">)</font>;
+  
+  glColor4ub<font color="black">(</font>red, green, blue, alpha<font color="black">)</font>;
+  glVertex3f<font color="black">(</font>topLeft.x, topLeft.y, <font color="maroon">1</font>.0f<font color="black">)</font>;
+  
+  glColor4ub<font color="black">(</font>red, green, blue, alpha<font color="black">)</font>;
+  glVertex3f<font color="black">(</font>topRight.x, topRight.y, <font color="maroon">1</font>.0f<font color="black">)</font>;
+  glEnd<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> OpenGLDisplay<font color="black">:</font><font color="black">:</font>fillRect<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> w, <font color="blue">int</font> h, <font color="blue">int</font> red, <font color="blue">int</font> green, <font color="blue">int</font> blue, <font color="blue">int</font> alpha<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">static</font> OpenGLDisplay<font color="black">*</font> disp<font color="black">=</font> <font color="maroon">0</font>;
+  <font color="blue">if</font> <font color="black">(</font>disp <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    disp <font color="black">=</font> <font color="black">(</font>OpenGLDisplay<font color="black">*</font><font color="black">)</font>Display<font color="black">:</font><font color="black">:</font>getInstance<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">int</font> x1 <font color="black">=</font> x;
+  <font color="blue">int</font> y1 <font color="black">=</font> y;
+  <font color="blue">int</font> x2 <font color="black">=</font> x <font color="black">+</font> w;
+  <font color="blue">int</font> y2 <font color="black">=</font> y <font color="black">+</font> h;
+
+  glBegin<font color="black">(</font>GL_QUADS<font color="black">)</font>;
+  FPoint topLeft <font color="black">=</font> disp<font color="black">-</font><font color="black">&#62;</font>translate<font color="black">(</font>x1, y1<font color="black">)</font>;
+  FPoint topRight <font color="black">=</font> disp<font color="black">-</font><font color="black">&#62;</font>translate<font color="black">(</font>x2, y1<font color="black">)</font>;
+  FPoint bottomLeft <font color="black">=</font> disp<font color="black">-</font><font color="black">&#62;</font>translate<font color="black">(</font>x1, y2<font color="black">)</font>;
+  FPoint bottomRight <font color="black">=</font> disp<font color="black">-</font><font color="black">&#62;</font>translate<font color="black">(</font>x2, y2<font color="black">)</font>;
+
+
+  glColor4ub<font color="black">(</font>red, green, blue, alpha<font color="black">)</font>;
+  glVertex3f<font color="black">(</font>bottomLeft.x, bottomLeft.y, <font color="maroon">1</font>.0f<font color="black">)</font>;
+
+  glColor4ub<font color="black">(</font>red, green, blue, alpha<font color="black">)</font>;
+  glVertex3f<font color="black">(</font>bottomRight.x, bottomRight.y, <font color="maroon">1</font>.0f<font color="black">)</font>;
+
+  glColor4ub<font color="black">(</font>red, green, blue, alpha<font color="black">)</font>;
+  glVertex3f<font color="black">(</font>topRight.x, topRight.y, <font color="maroon">1</font>.0f<font color="black">)</font>;
+  
+  glColor4ub<font color="black">(</font>red, green, blue, alpha<font color="black">)</font>;
+  glVertex3f<font color="black">(</font>topLeft.x, topLeft.y, <font color="maroon">1</font>.0f<font color="black">)</font>;
+
+  glEnd<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

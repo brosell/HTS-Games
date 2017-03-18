@@ -1,0 +1,27 @@
+10/06/03 16:59:23 - Inform: FLAG: test = True
+10/06/03 16:59:23 - Inform: Width: 640, Height: 480, Bpp: 32, Type: SDL, Flags: 0x00000000
+10/06/03 16:59:25 - Inform: HW Available: 1
+10/06/03 16:59:25 - Inform: Accelerated HW->HW Blits: 1
+10/06/03 16:59:25 - Inform: Accelerated HW->HW Colorkey Blits: 1
+10/06/03 16:59:25 - Inform: Accelerated HW->HW ALPHA Blits: 0
+10/06/03 16:59:25 - Inform: Accelerated SW->HW Blits: 1
+10/06/03 16:59:25 - Inform: Accelerated SW->HW Colorkey Blits: 1
+10/06/03 16:59:25 - Inform: Accelerated SW->HW ALPHA Blits: 0
+10/06/03 16:59:25 - Inform: Accelerated Fills :1
+10/06/03 16:59:26 - Inform: Screen is SW surface
+10/06/03 16:59:26 - Inform: Rmask 00ff0000
+10/06/03 16:59:26 - Inform: Gmask 0000ff00
+10/06/03 16:59:26 - Inform: Bmask 000000ff
+10/06/03 16:59:26 - Inform: Amask 00000000
+10/06/03 16:59:26 - Inform: SDLDisplay created.
+10/06/03 16:59:26 - *Error: images\UI\ScrollUp.png - file not found
+10/06/03 16:59:26 - *Error: Failed to load "images\UI\ScrollUp.png"
+10/06/03 16:59:26 - *Error: Failed Assertion: (false) C:\projects\GAMELIB\Graphics\SDLDisplay.cpp(169)
+10/06/03 16:59:26 - *Error: images\UI\ScrollDown.png - file not found
+10/06/03 16:59:26 - *Error: Failed to load "images\UI\ScrollDown.png"
+10/06/03 16:59:26 - *Error: Failed Assertion: (false) C:\projects\GAMELIB\Graphics\SDLDisplay.cpp(169)
+10/06/03 16:59:26 - *Error: images\UI\ScrollSlider.png - file not found
+10/06/03 16:59:26 - *Error: Failed to load "images\UI\ScrollSlider.png"
+10/06/03 16:59:26 - *Error: Failed Assertion: (false) C:\projects\GAMELIB\Graphics\SDLDisplay.cpp(169)
+10/06/03 16:59:28 - *Error: SharableSkin deleted with outstanding children (02afb010)
+10/06/03 16:59:28 - *Error: Asset "skn_ConsoleBackground" was never used

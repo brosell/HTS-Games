@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<TITLE>
+Button.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _Button_h
+<font color="blue">#define</font> _Button_h
+
+<font color="blue">#include</font> <font color="maroon">"UIThing.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Graphics/Display.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Graphics/SharedSkin.h"</font>
+
+<font color="green">/**
+a GUI button
+*/</font>
+<font color="blue">class</font> Button<font color="black">:</font> <font color="blue">public</font> UIThing
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Button<font color="black">(</font><font color="black">)</font>;
+  ~Button<font color="black">(</font><font color="black">)</font>;
+
+  virtual string getName<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="maroon">"Button"</font>; <font color="black">}</font>
+
+  <font color="green">/** Skin for unpressed button */</font>
+  <font color="blue">void</font> setUpTexture<font color="black">(</font>string assetName<font color="black">)</font>;
+  <font color="green">/** Skin for pressed button */</font>
+  <font color="blue">void</font> setDownTexture<font color="black">(</font>string assetName<font color="black">)</font>;
+  <font color="green">/** Skin for button with focus*/</font>
+  <font color="blue">void</font> setFocusTexture<font color="black">(</font>string assetName<font color="black">)</font>;
+  <font color="green">/** Skin for mouseovered button */</font>
+  <font color="blue">void</font> setOverTexture<font color="black">(</font>string assetName<font color="black">)</font>;
+
+  <font color="blue">void</font> addActionListener<font color="black">(</font>ActionListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_actionListeners.insert<font color="black">(</font>listener<font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">void</font> removeActionListener<font color="black">(</font>ActionListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_actionListeners.erase<font color="black">(</font>listener<font color="black">)</font>; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> onMousePress<font color="black">(</font>MousePressEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onMouseRelease<font color="black">(</font>MouseReleaseEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onMouseClick<font color="black">(</font>MouseClickEvent<font color="black">*</font> event<font color="black">)</font>;
+
+  <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>;
+
+<font color="blue">protected</font><font color="black">:</font>
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> m_isDown;
+
+  set<font color="black">&#60;</font>ActionListener<font color="black">*</font><font color="black">&#62;</font> m_actionListeners;
+  ActionEvent m_actionEvent;
+  
+  Skin<font color="black">*</font> m_buttonUp;
+  Skin<font color="black">*</font> m_buttonDown;
+  Skin<font color="black">*</font> m_buttonFocus;
+  Skin<font color="black">*</font> m_buttonOver;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

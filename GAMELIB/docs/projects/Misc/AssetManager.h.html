@@ -1,0 +1,166 @@
+<HTML>
+<HEAD>
+<TITLE>
+AssetManager.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> AssetManager_H
+<font color="blue">#define</font> AssetManager_H
+
+<font color="blue">#include</font> <font color="maroon">&#60;map&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">#include</font> <font color="maroon">"Audio/SoundEffect.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Graphics/SharedSkin.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Graphics/SharedRotateSkin.h"</font>
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Audio/Music.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Graphics/Display.h"</font>
+<font color="blue">#include</font> <font color="maroon">"IniFile.h"</font>
+
+<font color="green">/**
+internal use - The posible asset types
+*/</font>
+<font color="blue">enum</font> ASSET_TYPE
+<font color="black">{</font>
+  UNDEF,
+  SOUND_EFFECT,
+  MUSIC,
+  SKIN,
+  ROTATESKIN,
+  FONT,
+  TEXTURE,
+  RELEVANT,
+  TEXT
+<font color="black">}</font>;
+
+<font color="green">/** 
+internal use - represents an asset
+*/</font>
+<font color="blue">class</font> Asset
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Asset<font color="black">(</font><font color="black">)</font><font color="black">:</font>used<font color="black">(</font><font color="blue">false</font><font color="black">)</font>, references<font color="black">(</font><font color="maroon">0</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  <font color="green">/** the name from the ini file */</font>
+  string <font color="blue">name</font>;
+  <font color="green">/** the type derived from the inifile */</font>
+  ASSET_TYPE type;
+  <font color="green">/** the asset */</font>
+  <font color="blue">void</font><font color="black">*</font> asset;
+
+  <font color="blue">bool</font> used;
+
+  <font color="blue">int</font> references;
+<font color="black">}</font>;
+
+<font color="green">/**
+Manages games asset via an asset file in ini format.&#60;p&#62;
+The format of the file: &#60;p&#62;
+&#60;pre&#62;
+[assetName]
+Type = [SoundEffect | Music | Skin | RotateSkin | Font | Texture | Relevant]
+Filename (for SoundEffect | Music | Font | Texture | Relevant) = the assets filename
+FPS (for Skin, RotateSkin) = the Frames per second
+Frames (for Skin, RotateSkin) = the number of frames
+Frame01 (for Skin, RotateSkin) = the filename of the frame
+FrameNN
+
+Examples:
+[rq_GameOver]
+Type = Relevant
+Filename = UI\gameover.bmp
+
+[gfx_Block_Red_Idle]
+Type = Skin
+FPS = 1
+Frames = 1
+Frame01 = images\blocks\block_red_idle.bmp
+&#60;/pre&#62;
+
+&#60;ul&#62;
+&#60;li&#62;SoundEffect - a wav based sound effect
+&#60;li&#62;Music - a midi
+&#60;li&#62;Skin - a possibly animated texture
+&#60;li&#62;RotateSkin - a posibly animated and rotatable texture
+&#60;li&#62;Font - a SFont compatable font
+&#60;li&#62;Texture - a texture
+&#60;li&#62;Relevant - a required file. These aren't loaded, but the 
+"assetter" tool uses them to create a package
+&#60;/ul&#62;
+*/</font>
+<font color="blue">class</font> AssetManager
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  AssetManager<font color="black">(</font>string assetIniFn<font color="black">)</font>;
+  AssetManager<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  ~AssetManager<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> setAssetFn<font color="black">(</font>string fn<font color="black">)</font>;
+
+  <font color="blue">void</font> load<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> unload<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">bool</font> isAssetLoaded<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>;
+
+  <font color="blue">int</font> getIntAttribute<font color="black">(</font>string <font color="blue">name</font>, string attribute<font color="black">)</font>;
+  <font color="blue">float</font> getFloatAttribute<font color="black">(</font>string <font color="blue">name</font>, string attribute<font color="black">)</font>;
+  string getStringAttribute<font color="black">(</font>string <font color="blue">name</font>, string attribute<font color="black">)</font>;
+  <font color="green">/** the point of Point(-1, -1) if no such attribute */</font>
+  Point getPointAttribute<font color="black">(</font>string <font color="blue">name</font>, string attribute<font color="black">)</font>;
+  Rect getRectAttribute<font color="black">(</font>string <font color="blue">name</font>, string attribute<font color="black">)</font>;
+
+
+  <font color="green">/* futureuse. create a tool to create Asset lists
+  void save();*/</font>
+
+  <font color="green">/** returns a loaded sound effect */</font>
+  SoundEffect<font color="black">*</font> getSoundEffect<font color="black">(</font>string assetName<font color="black">)</font>;
+  <font color="blue">void</font> releaseSoundEffect<font color="black">(</font>SoundEffect<font color="black">*</font> effect<font color="black">)</font>;
+
+  <font color="green">/** returns a loaded music */</font>
+  Music<font color="black">*</font> getMusic<font color="black">(</font>string assestName<font color="black">)</font>;
+
+  <font color="green">/** returns a loaded texture */</font>
+  HTexture getTexture<font color="black">(</font>string assetName<font color="black">)</font>;
+  <font color="blue">void</font> releaseTexture<font color="black">(</font>HTexture texture<font color="black">)</font>;
+
+  <font color="green">/** returns a loaded SharedSkin */</font>
+  Skin<font color="black">*</font> getSkin<font color="black">(</font>string assetName<font color="black">)</font>;
+  <font color="blue">void</font> releaseSkin<font color="black">(</font>Skin<font color="black">*</font> skin<font color="black">)</font>;
+
+  <font color="green">/** returns a loaded RotateSkin */</font>
+  SharedRotateSkin<font color="black">*</font> getRotateSkin<font color="black">(</font>string assetName<font color="black">)</font>;
+  <font color="blue">void</font> releaseRotateSkin<font color="black">(</font>SharedRotateSkin<font color="black">*</font> skin<font color="black">)</font>;
+
+  <font color="green">/** returns a loaded Font */</font>
+  Font<font color="black">*</font> getFont<font color="black">(</font>string assetName<font color="black">)</font>;
+
+  string getText<font color="black">(</font>string assetName<font color="black">)</font>;
+
+  <font color="blue">bool</font> verify<font color="black">(</font><font color="black">)</font>;
+
+<font color="blue">protected</font><font color="black">:</font>
+  
+<font color="blue">private</font><font color="black">:</font>
+  Asset<font color="black">*</font> load<font color="black">(</font>string assetName<font color="black">)</font>;
+  <font color="blue">void</font> load2<font color="black">(</font>string assetName<font color="black">)</font>;
+  Asset<font color="black">*</font> loadSoundEffect<font color="black">(</font>string assetName<font color="black">)</font>;
+  Asset<font color="black">*</font> loadTexture<font color="black">(</font>string assetName<font color="black">)</font>;
+  Asset<font color="black">*</font> loadSkin<font color="black">(</font>string assetName<font color="black">)</font>;
+  Asset<font color="black">*</font> loadRotateSkin<font color="black">(</font>string assetName<font color="black">)</font>;
+  Asset<font color="black">*</font> loadMusic<font color="black">(</font>string assetName<font color="black">)</font>;
+  Asset<font color="black">*</font> loadFont<font color="black">(</font>string assetName<font color="black">)</font>;
+  Asset<font color="black">*</font> loadText<font color="black">(</font>string assetName<font color="black">)</font>;
+
+  IniFile<font color="black">*</font> m_ini;
+
+  map<font color="black">&#60;</font>string, Asset<font color="black">*</font><font color="black">&#62;</font> m_assetMap;
+  map<font color="black">&#60;</font><font color="blue">void</font><font color="black">*</font>, Asset<font color="black">*</font><font color="black">&#62;</font> m_assetToAssetMap; <font color="green">// the actual asset is the key</font>
+<font color="black">}</font>;
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

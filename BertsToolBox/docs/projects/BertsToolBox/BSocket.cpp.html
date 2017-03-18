@@ -1,0 +1,346 @@
+<HTML>
+<HEAD>
+<TITLE>
+BSocket.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"BSocket.h"</font>
+<font color="blue">#include</font> <font color="maroon">"ipc.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;assert.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+
+
+<font color="blue">extern</font> <font color="blue">int</font> errno;
+
+
+<font color="green">//////////////////////////////////////</font>
+<font color="green">// boot strap NT sockets</font>
+<font color="green">//////////////////////////////////////</font>
+<font color="blue">static</font> <font color="blue">class</font> StaticSocketInit
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  StaticSocketInit<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    WORD wVersionRequested;
+    WSADATA wsaData;
+    wVersionRequested <font color="black">=</font> MAKEWORD<font color="black">(</font> <font color="maroon">1</font>, <font color="maroon">1</font> <font color="black">)</font>;
+    WSAStartup<font color="black">(</font> wVersionRequested, <font color="black">&</font>wsaData <font color="black">)</font>;
+  <font color="black">}</font>
+  ~StaticSocketInit<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    WSACleanup<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font> staticSocketInit;
+<font color="green">////////////////////////////////////////</font>
+
+
+
+BSocket<font color="black">:</font><font color="black">:</font>BSocket<font color="black">(</font><font color="blue">int</font> sock<font color="black">)</font><font color="black">:</font> 
+m_socket<font color="black">(</font>sock<font color="black">)</font>, 
+m_address<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>, 
+m_port<font color="black">(</font><font color="maroon">-1</font><font color="black">)</font>, 
+m_failed<font color="black">(</font><font color="blue">false</font><font color="black">)</font>
+<font color="black">{</font>
+<font color="black">}</font>
+
+BSocket<font color="black">:</font><font color="black">:</font>BSocket<font color="black">(</font>string address, <font color="blue">int</font> port<font color="black">)</font><font color="black">:</font> 
+m_socket<font color="black">(</font><font color="maroon">-1</font><font color="black">)</font>, 
+m_address<font color="black">(</font>address<font color="black">)</font>, 
+m_port<font color="black">(</font>port<font color="black">)</font>, 
+m_failed<font color="black">(</font><font color="blue">false</font><font color="black">)</font>
+<font color="black">{</font>
+  open<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+BSocket<font color="black">:</font><font color="black">:</font>~BSocket<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_socket <font color="black">!</font><font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font>
+  <font color="black">{</font>
+    close<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  m_socket <font color="black">=</font> <font color="maroon">-1</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> BSocket<font color="black">:</font><font color="black">:</font>open<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  assert<font color="black">(</font>m_socket <font color="black">=</font><font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>m_socket <font color="black">=</font><font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>m_address <font color="black">!</font><font color="black">=</font> <font color="maroon">""</font> <font color="black">&</font><font color="black">&</font> m_port <font color="black">!</font><font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font>
+    <font color="black">{</font>
+      m_socket <font color="black">=</font> connect<font color="black">(</font>m_address.c_str<font color="black">(</font><font color="black">)</font>, m_port<font color="black">)</font>;
+      <font color="blue">if</font> <font color="black">(</font>m_socket <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+      <font color="black">{</font>
+        m_errno <font color="black">=</font> errno;
+        m_failed <font color="black">=</font> <font color="blue">true</font>;
+      <font color="black">}</font>
+      <font color="blue">else</font>
+      <font color="black">{</font>
+        m_failed <font color="black">=</font> <font color="blue">false</font>;
+      <font color="black">}</font>
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+      m_failed <font color="black">=</font> <font color="blue">true</font>;
+      m_socket <font color="black">=</font> <font color="maroon">-1</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> BSocket<font color="black">:</font><font color="black">:</font>close<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  assert<font color="black">(</font>m_socket <font color="black">!</font><font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font>;
+  <font color="blue">int</font> ret <font color="black">=</font> <font color="black">:</font><font color="black">:</font>closesocket<font color="black">(</font>m_socket<font color="black">)</font>;
+  m_socket <font color="black">=</font> <font color="maroon">-1</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> BSocket<font color="black">:</font><font color="black">:</font>isValid<font color="black">(</font><font color="black">)</font> 
+<font color="black">{</font> 
+  <font color="blue">return</font> <font color="black">!</font>m_failed <font color="black">&</font><font color="black">&</font> m_socket<font color="black">!</font><font color="black">=</font><font color="maroon">-1</font>;
+<font color="black">}</font>
+
+<font color="green">//static</font>
+<font color="blue">int</font> BSocket<font color="black">:</font><font color="black">:</font>connect<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> address, <font color="blue">int</font> port<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> err;  
+  <font color="blue">long</font> ip_addr <font color="black">=</font> <font color="maroon">-1</font>;
+    ip_addr  <font color="black">=</font> inet_addr<font color="black">(</font><font color="black">(</font><font color="blue">char</font> <font color="black">*</font><font color="black">)</font><font color="black">(</font><font color="blue">const</font> <font color="blue">char</font> <font color="black">*</font><font color="black">)</font>address<font color="black">)</font>;
+    
+  sockaddr_in sin;
+  sin.sin_family<font color="black">=</font>PF_INET;
+  sin.sin_port<font color="black">=</font>htons<font color="black">(</font>port<font color="black">)</font>;
+  sin.sin_addr.s_addr <font color="black">=</font> ip_addr;
+  
+  <font color="blue">int</font> sock_fd <font color="black">=</font> socket<font color="black">(</font>AF_INET,SOCK_STREAM,<font color="maroon">6</font><font color="black">)</font>;
+  <font color="black">:</font><font color="black">:</font>connect<font color="black">(</font>sock_fd, <font color="black">(</font><font color="blue">struct</font> sockaddr <font color="black">*</font><font color="black">)</font> <font color="black">&</font>sin, <font color="blue">sizeof</font> <font color="black">(</font><font color="blue">struct</font> sockaddr_in<font color="black">)</font><font color="black">)</font>;
+
+  err<font color="black">=</font>WSAGetLastError<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>err <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> 
+  <font color="black">{</font>
+    <font color="blue">return</font> sock_fd;
+  <font color="black">}</font>
+
+  <font color="blue">return</font> err;
+<font color="black">}</font>
+
+<font color="blue">bool</font> BSocket<font color="black">:</font><font color="black">:</font>isReadReady<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font><font color="black">(</font>m_readBuffer.size<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">true</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="black">!</font>wouldReadBlock<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> BSocket<font color="black">:</font><font color="black">:</font>isWriteReady<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> <font color="black">!</font>wouldWriteBlock<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+  
+<font color="blue">bool</font> BSocket<font color="black">:</font><font color="black">:</font>wouldReadBlock<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">struct</font> timeval timeout;
+  fd_set fdSet;
+
+  FD_ZERO<font color="black">(</font><font color="black">&</font>fdSet<font color="black">)</font>;
+  <font color="blue">int</font> max_fd <font color="black">=</font> m_socket;
+  FD_SET<font color="black">(</font>m_socket, <font color="black">&</font>fdSet<font color="black">)</font>;
+
+  timeout.tv_sec <font color="black">=</font> <font color="maroon">0</font>;
+  timeout.tv_usec <font color="black">=</font> <font color="maroon">1</font>;
+  
+  <font color="blue">int</font> ret <font color="black">=</font> select<font color="black">(</font>max_fd<font color="black">+</font><font color="maroon">1</font>, <font color="black">&</font>fdSet, <font color="maroon">0</font>, <font color="maroon">0</font>, <font color="black">&</font>timeout<font color="black">)</font>;
+  
+  <font color="blue">if</font> <font color="black">(</font>ret <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_failed <font color="black">=</font> <font color="blue">true</font>;
+    m_errno <font color="black">=</font> errno;
+    <font color="blue">return</font> <font color="blue">true</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>ret <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">true</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> BSocket<font color="black">:</font><font color="black">:</font>wouldWriteBlock<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">struct</font> timeval timeout;
+  fd_set fdSet;
+
+  FD_ZERO<font color="black">(</font><font color="black">&</font>fdSet<font color="black">)</font>;
+  <font color="blue">int</font> max_fd <font color="black">=</font> m_socket;
+  FD_SET<font color="black">(</font>m_socket, <font color="black">&</font>fdSet<font color="black">)</font>;
+
+  timeout.tv_sec <font color="black">=</font> <font color="maroon">0</font>;
+  timeout.tv_usec <font color="black">=</font> <font color="maroon">1</font>;
+  
+  <font color="blue">int</font> ret <font color="black">=</font> select<font color="black">(</font>max_fd<font color="black">+</font><font color="maroon">1</font>, <font color="maroon">0</font>, <font color="black">&</font>fdSet, <font color="maroon">0</font>, <font color="black">&</font>timeout<font color="black">)</font>;
+  
+  <font color="blue">if</font> <font color="black">(</font>ret <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_failed <font color="black">=</font> <font color="blue">true</font>;
+    m_errno <font color="black">=</font> errno;
+    <font color="blue">return</font> <font color="blue">true</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>ret <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">true</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+<font color="blue">int</font> BSocket<font color="black">:</font><font color="black">:</font>write<font color="black">(</font><font color="blue">char</font><font color="black">*</font> data, <font color="blue">int</font> count<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> ret <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="blue">int</font> sent <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="blue">while</font> <font color="black">(</font>ret <font color="black">!</font><font color="black">=</font> count<font color="black">)</font>
+  <font color="black">{</font>
+    sent <font color="black">=</font> <font color="black">:</font><font color="black">:</font>send<font color="black">(</font>m_socket, <font color="black">&</font><font color="black">(</font>data<font color="black">[</font>ret<font color="black">]</font><font color="black">)</font>, count<font color="black">-</font>ret, <font color="maroon">0</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>sent <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      m_failed <font color="black">=</font> <font color="blue">true</font>;
+      m_errno <font color="black">=</font> errno;
+      <font color="blue">return</font> sent;
+    <font color="black">}</font>
+    ret <font color="black">+</font><font color="black">=</font> sent;
+  <font color="black">}</font> 
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+<font color="blue">int</font> BSocket<font color="black">:</font><font color="black">:</font>read<font color="black">(</font><font color="blue">char</font><font color="black">*</font> data, <font color="blue">int</font> max<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> toRead <font color="black">=</font> max;
+  <font color="blue">int</font> read <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="blue">int</font> ret;
+  
+  UBYTE<font color="black">*</font> ptr <font color="black">=</font> <font color="black">(</font>UBYTE<font color="black">*</font><font color="black">)</font>data;
+
+  <font color="blue">int</font> fromBuffer <font color="black">=</font> min<font color="black">(</font>m_readBuffer.size<font color="black">(</font><font color="black">)</font>, max<font color="black">)</font>;
+  toRead <font color="black">=</font> fromBuffer;
+  <font color="blue">while</font> <font color="black">(</font>toRead <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="black">*</font>ptr <font color="black">=</font> m_readBuffer.front<font color="black">(</font><font color="black">)</font>;
+    m_readBuffer.pop_front<font color="black">(</font><font color="black">)</font>;
+    ptr<font color="black">+</font><font color="black">+</font>;
+    toRead<font color="black">-</font><font color="black">-</font>;
+    read<font color="black">+</font><font color="black">+</font>;
+  <font color="black">}</font>
+
+  toRead <font color="black">=</font> max <font color="black">-</font>fromBuffer;
+  assert<font color="black">(</font>toRead<font color="black">&#62;</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">(</font>toRead <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> <font color="black">!</font>wouldReadBlock<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    ret <font color="black">=</font> <font color="black">:</font><font color="black">:</font>recv<font color="black">(</font>m_socket, <font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font>ptr, toRead, <font color="maroon">0</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>ret <font color="black">&#60;</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      m_failed <font color="black">=</font> <font color="blue">true</font>;
+      m_errno <font color="black">=</font> errno;
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+      read <font color="black">+</font><font color="black">=</font> ret;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  <font color="blue">return</font> read;
+<font color="black">}</font>
+
+<font color="blue">void</font> BSocket<font color="black">:</font><font color="black">:</font>unread<font color="black">(</font><font color="blue">char</font><font color="black">*</font> data, <font color="blue">int</font> count<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font>count<font color="maroon">-1</font>; c<font color="black">&#62;</font><font color="black">=</font><font color="maroon">0</font>; c<font color="black">-</font><font color="black">-</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_readBuffer.push_front<font color="black">(</font> <font color="black">(</font><font color="black">(</font>UBYTE<font color="black">*</font><font color="black">)</font>data<font color="black">)</font><font color="black">[</font>c<font color="black">]</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+BServerSocket<font color="black">:</font><font color="black">:</font>BServerSocket<font color="black">(</font><font color="blue">int</font> port<font color="black">)</font><font color="black">:</font> m_port<font color="black">(</font>port<font color="black">)</font>, m_failed<font color="black">(</font><font color="blue">false</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">struct</font> protoent <font color="black">*</font>pe <font color="black">=</font> getprotobyname<font color="black">(</font><font color="maroon">"TCP"</font><font color="black">)</font>;
+    m_socket <font color="black">=</font> socket<font color="black">(</font>AF_INET, SOCK_STREAM, pe<font color="black">-</font><font color="black">&#62;</font>p_proto<font color="black">)</font>;
+
+    <font color="blue">int</font> val<font color="black">=</font><font color="maroon">1</font>;
+    setsockopt <font color="black">(</font>m_socket, SOL_SOCKET, SO_REUSEADDR, <font color="black">(</font><font color="blue">char</font> <font color="black">*</font><font color="black">)</font> <font color="black">&</font>val, <font color="blue">sizeof</font> <font color="black">(</font>val<font color="black">)</font><font color="black">)</font>;
+
+    <font color="blue">struct</font> sockaddr_in server;
+    server.sin_family <font color="black">=</font> AF_INET;
+    server.sin_addr.s_addr <font color="black">=</font> INADDR_ANY;
+    server.sin_port <font color="black">=</font> htons<font color="black">(</font>m_port<font color="black">)</font>;
+    
+    <font color="blue">if</font> <font color="black">(</font>bind<font color="black">(</font>m_socket, <font color="black">(</font>sockaddr <font color="black">*</font><font color="black">)</font><font color="black">&</font>server, <font color="blue">sizeof</font><font color="black">(</font>server<font color="black">)</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> 
+  <font color="black">{</font>
+    lassert<font color="black">(</font><font color="blue">false</font><font color="black">)</font>;
+    m_failed <font color="black">=</font> <font color="blue">true</font>;
+    <font color="blue">return</font>;
+    <font color="black">}</font>
+    <font color="blue">if</font> <font color="black">(</font>listen<font color="black">(</font>m_socket, <font color="maroon">5</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    lassert<font color="black">(</font><font color="blue">false</font><font color="black">)</font>;
+    m_failed <font color="black">=</font> <font color="blue">true</font>;
+  <font color="black">}</font>
+
+<font color="black">}</font>
+
+BServerSocket<font color="black">:</font><font color="black">:</font>~BServerSocket<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  close<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> BServerSocket<font color="black">:</font><font color="black">:</font>anyPendingConnections<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">struct</font> timeval timeout;
+  fd_set fdSet;
+  
+  FD_ZERO<font color="black">(</font><font color="black">&</font>fdSet<font color="black">)</font>;
+  <font color="blue">int</font> max_fd <font color="black">=</font> m_socket;
+  FD_SET<font color="black">(</font>m_socket, <font color="black">&</font>fdSet<font color="black">)</font>;
+  
+  timeout.tv_sec <font color="black">=</font> <font color="maroon">0</font>;
+  timeout.tv_usec <font color="black">=</font> <font color="maroon">1</font>;
+  
+  
+  <font color="blue">int</font> ret <font color="black">=</font> select<font color="black">(</font>max_fd<font color="black">+</font><font color="maroon">1</font>, <font color="black">&</font>fdSet, <font color="maroon">0</font>, <font color="maroon">0</font>, <font color="black">&</font>timeout<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>ret <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_failed <font color="black">=</font> <font color="blue">true</font>;
+    m_errno<font color="black">=</font>errno;
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>ret <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+BSocket<font color="black">*</font> BServerSocket<font color="black">:</font><font color="black">:</font>accept<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">struct</font> sockaddr addr;
+  <font color="blue">int</font> addrlen <font color="black">=</font> <font color="blue">sizeof</font><font color="black">(</font>addr<font color="black">)</font>;
+  <font color="blue">int</font> newSock <font color="black">=</font> <font color="black">:</font><font color="black">:</font>accept<font color="black">(</font>m_socket, <font color="black">&</font>addr, <font color="black">&</font>addrlen<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>newSock <font color="black">&#60;</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> 
+  <font color="black">{</font>
+    <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">256</font><font color="black">]</font>;
+    sprintf<font color="black">(</font>buf, <font color="maroon">"Socket failed to accept with errno %d"</font>, errno<font color="black">)</font>;
+    logError<font color="black">(</font>buf, Error<font color="black">)</font>;
+    m_failed <font color="black">=</font> <font color="blue">true</font>;
+    m_errno <font color="black">=</font> errno;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="black">(</font><font color="blue">new</font> BSocket<font color="black">(</font>newSock<font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> BServerSocket<font color="black">:</font><font color="black">:</font>close<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  closesocket<font color="black">(</font>m_socket<font color="black">)</font>;
+  m_socket <font color="black">=</font> <font color="maroon">-1</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

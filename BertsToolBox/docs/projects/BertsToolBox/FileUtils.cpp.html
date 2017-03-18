@@ -1,0 +1,331 @@
+<HTML>
+<HEAD>
+<TITLE>
+FileUtils.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/*
+
+$Log: FileUtils.cpp,v $
+Revision 1.2  2003-09-09 23:11:25-04  hey_now
+&#60;&#62;
+
+Revision 1.1  2003-09-08 11:26:43-04  hey_now
+&#60;&#62;
+
+Revision 1.0  2003-01-23 21:22:59-05  hey_now
+Initial revision
+
+   
+      Rev 1.6   31 May 2000 14:06:44   BRosell
+   added createTextFile()
+   
+      Rev 1.5   05 May 2000 14:49:56   BRosell
+   continued development
+   
+      Rev 1.4   10 Apr 2000 09:50:10   BRosell
+   fixes
+   
+      Rev 1.3   27 Mar 2000 08:44:22   BRosell
+   Added dirExists() and makeDir()
+   
+      Rev 1.2   04 Feb 2000 14:28:22   BRosell
+   Changed malloc to new and free to delete
+   
+      Rev 1.1   Nov 17 1999 14:36:54   BRosell
+   removed redundant code from fileExclusiveOpen and fileExclusiveClose
+
+*/</font>
+
+
+<font color="blue">#include</font> <font color="maroon">&#60;windows.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;stdio.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;iostream&#62;</font>
+
+<font color="green">// for exclusive file access routines</font>
+<font color="blue">#include</font> <font color="maroon">&#60;io.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;fcntl.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;sys/stat.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;math.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;direct.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;fstream&#62;</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;vector&#62;</font>
+<font color="blue">#include</font> <font color="maroon">"stdstring.h"</font>
+<font color="blue">#include</font> <font color="maroon">"stringtokenizer.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"fileutils.h"</font>
+
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">struct</font> OPENFILE
+<font color="black">{</font>
+    FILE<font color="black">*</font> fh;
+    <font color="blue">int</font> handle;
+    <font color="blue">char</font><font color="black">*</font> filename;
+<font color="black">}</font>;
+
+<font color="blue">struct</font> LOCKEDFILE
+<font color="black">{</font>
+    <font color="blue">int</font> handle;
+    <font color="blue">char</font><font color="black">*</font> filename;
+<font color="black">}</font>;
+
+
+vector<font color="black">&#60;</font>OPENFILE<font color="black">*</font><font color="black">&#62;</font> vecOpenFiles;
+vector<font color="black">&#60;</font>LOCKEDFILE<font color="black">*</font><font color="black">&#62;</font> vecLockedFiles;
+<font color="blue">int</font> nextFileHandle<font color="black">=</font><font color="maroon">0</font>;
+
+
+<font color="blue">int</font> fileExclusiveLock<font color="black">(</font><font color="blue">char</font><font color="black">*</font> filename, BOOL report<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">int</font> ret <font color="black">=</font> <font color="maroon">-1</font>;
+    <font color="blue">float</font> tries<font color="black">=</font><font color="maroon">0</font>;
+    <font color="blue">char</font> sema<font color="black">[</font>MAX_PATH<font color="black">]</font>;
+   
+    LOCKEDFILE<font color="black">*</font> pLockedFile;
+    <font color="blue">int</font> handle<font color="black">=</font>nextFileHandle<font color="black">+</font><font color="black">+</font>;    
+
+    strcpy<font color="black">(</font>sema, filename<font color="black">)</font>;
+    strcat<font color="black">(</font>sema, <font color="maroon">".$$$"</font><font color="black">)</font>;
+            
+    <font color="blue">while</font> <font color="black">(</font>ret <font color="black">=</font><font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font>
+    <font color="black">{</font>
+        ret <font color="black">=</font> _open<font color="black">(</font>sema, _O_CREAT <font color="black">|</font> _O_EXCL, _S_IWRITE<font color="black">)</font>; <font color="green">// success if file doesn't exist</font>
+        tries<font color="black">+</font><font color="black">+</font>;
+        <font color="blue">if</font> <font color="black">(</font>tries<font color="black">&#62;</font><font color="maroon">100</font><font color="black">)</font>
+            <font color="blue">return</font> <font color="maroon">-1</font>;
+
+        Sleep<font color="black">(</font><font color="maroon">30</font><font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font> <font color="black">(</font>tries<font color="black">/</font><font color="maroon">25</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> floor<font color="black">(</font>tries<font color="black">/</font><font color="maroon">25</font><font color="black">)</font> <font color="black">)</font>
+            <font color="blue">if</font> <font color="black">(</font>report<font color="black">)</font>
+                cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">" Waiting on reportfile..."</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+    <font color="black">}</font>
+
+    _close<font color="black">(</font>ret<font color="black">)</font>; <font color="green">// create and run...   </font>
+    
+    <font color="green">//pLockedFile=(LOCKEDFILE*)malloc(sizeof(LOCKEDFILE));</font>
+    pLockedFile<font color="black">=</font><font color="blue">new</font> LOCKEDFILE<font color="black">(</font><font color="black">)</font>;
+    pLockedFile<font color="black">-</font><font color="black">&#62;</font>handle<font color="black">=</font>handle;
+    <font color="green">//pLockedFile-&#62;filename=(char*)malloc(strlen(filename)+1);</font>
+    pLockedFile<font color="black">-</font><font color="black">&#62;</font>filename<font color="black">=</font><font color="blue">new</font> <font color="blue">char</font><font color="black">[</font>strlen<font color="black">(</font>filename<font color="black">)</font><font color="black">+</font><font color="maroon">1</font><font color="black">]</font>;
+    strcpy<font color="black">(</font>pLockedFile<font color="black">-</font><font color="black">&#62;</font>filename, filename<font color="black">)</font>;
+    vecLockedFiles.push_back<font color="black">(</font>pLockedFile<font color="black">)</font>;
+
+    <font color="blue">return</font> handle;
+<font color="black">}</font>
+
+<font color="blue">void</font> fileExclusiveUnlock<font color="black">(</font><font color="blue">int</font> handle<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">char</font> sema<font color="black">[</font>MAX_PATH<font color="black">]</font>;
+
+    vector<font color="black">&#60;</font>LOCKEDFILE<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+
+    <font color="blue">for</font><font color="black">(</font>i<font color="black">=</font>vecLockedFiles.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>vecLockedFiles.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font>handle <font color="black">=</font><font color="black">=</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>handle<font color="black">)</font>
+        <font color="black">{</font>
+            strcpy<font color="black">(</font>sema, <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>filename<font color="black">)</font>;
+            strcat<font color="black">(</font>sema, <font color="maroon">".$$$"</font><font color="black">)</font>;
+            DeleteFile<font color="black">(</font>sema<font color="black">)</font>;
+            <font color="green">//free( *i );</font>
+            <font color="blue">delete</font> <font color="black">[</font><font color="black">]</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>filename;
+            <font color="blue">delete</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+
+            vecLockedFiles.erase<font color="black">(</font>i<font color="black">)</font>;
+            <font color="blue">return</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+<font color="black">}</font>
+
+FILE<font color="black">*</font> fileExclusiveOpen<font color="black">(</font><font color="blue">char</font><font color="black">*</font> filename, <font color="blue">char</font><font color="black">*</font> mode, BOOL report<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">int</font> ret <font color="black">=</font> <font color="maroon">-1</font>;
+   
+    OPENFILE<font color="black">*</font> pOpenFile;
+    FILE<font color="black">*</font> lOut;
+    
+    ret<font color="black">=</font>fileExclusiveLock<font color="black">(</font>filename, report<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>ret<font color="black">=</font><font color="black">=</font><font color="maroon">-1</font><font color="black">)</font>
+        <font color="blue">return</font> NULL;
+
+            
+    lOut <font color="black">=</font> fopen<font color="black">(</font>filename, mode<font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font>lOut<font color="black">!</font><font color="black">=</font>NULL<font color="black">)</font>
+    <font color="black">{</font>
+        <font color="green">//pOpenFile=(OPENFILE*)malloc(sizeof(OPENFILE));</font>
+        pOpenFile<font color="black">=</font><font color="blue">new</font> OPENFILE<font color="black">(</font><font color="black">)</font>;
+        pOpenFile<font color="black">-</font><font color="black">&#62;</font>handle<font color="black">=</font>ret;
+        pOpenFile<font color="black">-</font><font color="black">&#62;</font>fh<font color="black">=</font>lOut;
+        <font color="green">//pOpenFile-&#62;filename=(char*)malloc(strlen(filename)+1);</font>
+        pOpenFile<font color="black">-</font><font color="black">&#62;</font>filename<font color="black">=</font><font color="blue">new</font> <font color="blue">char</font><font color="black">[</font>strlen<font color="black">(</font>filename<font color="black">)</font><font color="black">+</font><font color="maroon">1</font><font color="black">]</font>;
+        strcpy<font color="black">(</font>pOpenFile<font color="black">-</font><font color="black">&#62;</font>filename, filename<font color="black">)</font>;
+        vecOpenFiles.push_back<font color="black">(</font>pOpenFile<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+        fileExclusiveUnlock<font color="black">(</font>ret<font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> lOut;
+<font color="black">}</font>
+
+
+<font color="blue">void</font> fileExclusiveClose<font color="black">(</font>FILE<font color="black">*</font> file<font color="black">)</font>
+<font color="black">{</font>
+    vector<font color="black">&#60;</font>OPENFILE<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+
+    <font color="blue">for</font><font color="black">(</font>i<font color="black">=</font>vecOpenFiles.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>vecOpenFiles.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font>file <font color="black">=</font><font color="black">=</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>fh<font color="black">)</font>
+        <font color="black">{</font>
+            fclose<font color="black">(</font>file<font color="black">)</font>;
+            fileExclusiveUnlock<font color="black">(</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>handle <font color="black">)</font>;
+            <font color="green">//free( *i );</font>
+            <font color="blue">delete</font> <font color="black">[</font><font color="black">]</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>filename;
+            <font color="blue">delete</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+            vecOpenFiles.erase<font color="black">(</font>i<font color="black">)</font>;
+            <font color="blue">return</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+<font color="black">}</font>
+
+
+<font color="blue">bool</font> makeDirs<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> dir<font color="black">)</font>;
+
+<font color="blue">bool</font> makeDir<font color="black">(</font>CStdString dir<font color="black">)</font>
+<font color="black">{</font>
+    vector<font color="black">&#60;</font>CStdString<font color="black">&#62;</font> parts;
+    vector<font color="black">&#60;</font>CStdString<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+
+    <font color="blue">if</font> <font color="black">(</font>dirExists<font color="black">(</font>dir<font color="black">)</font> <font color="black">)</font>
+    <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">true</font>;
+    <font color="black">}</font>
+
+    StringTokenizer st<font color="black">(</font>dir, <font color="maroon">"\\/"</font><font color="black">)</font>;
+    <font color="blue">while</font> <font color="black">(</font>st.hasMoreTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+        parts.push_back<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font> <font color="black">)</font>;
+    <font color="black">}</font>
+    
+    <font color="blue">bool</font> direxists<font color="black">=</font><font color="blue">false</font>;
+    <font color="blue">int</font> numParts<font color="black">=</font><font color="maroon">0</font>;
+    CStdString d<font color="black">=</font><font color="maroon">""</font>;
+    
+    <font color="blue">int</font> size<font color="black">=</font>parts.size<font color="black">(</font><font color="black">)</font>;
+    
+    <font color="blue">for</font> <font color="black">(</font>numParts<font color="black">=</font>size; numParts <font color="black">&#62;</font> <font color="maroon">0</font> <font color="black">&</font><font color="black">&</font> <font color="black">!</font>direxists; numParts<font color="black">-</font><font color="black">-</font><font color="black">)</font>
+    <font color="black">{</font>
+        d<font color="black">=</font><font color="maroon">""</font>;
+        i<font color="black">=</font>parts.begin<font color="black">(</font><font color="black">)</font>;
+        <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> x<font color="black">=</font><font color="maroon">0</font>; x<font color="black">&#60;</font>numParts; x<font color="black">+</font><font color="black">+</font>, i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+        <font color="black">{</font>
+            d<font color="black">+</font><font color="black">=</font><font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+            d<font color="black">+</font><font color="black">=</font><font color="maroon">"\\"</font>;
+        <font color="black">}</font>
+        direxists<font color="black">=</font>dirExists<font color="black">(</font>d<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">char</font> cwd<font color="black">[</font>MAX_PATH<font color="black">]</font>;
+    GetCurrentDirectory<font color="black">(</font>MAX_PATH, cwd<font color="black">)</font>;
+        
+
+    <font color="blue">bool</font> r;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>direxists<font color="black">)</font>
+    <font color="black">{</font>
+        r<font color="black">=</font>makeDirs<font color="black">(</font>dir<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+        SetCurrentDirectory<font color="black">(</font>d<font color="black">)</font>;
+        d<font color="black">=</font><font color="maroon">".\\"</font>;
+        <font color="blue">while</font> <font color="black">(</font>i<font color="black">!</font><font color="black">=</font>parts.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+        <font color="black">{</font>
+            d<font color="black">+</font><font color="black">=</font><font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+            d<font color="black">+</font><font color="black">=</font><font color="maroon">"\\"</font>;
+            i<font color="black">+</font><font color="black">+</font>;
+        <font color="black">}</font>
+        r<font color="black">=</font>makeDirs<font color="black">(</font>d<font color="black">)</font>;
+    <font color="black">}</font>
+    SetCurrentDirectory<font color="black">(</font>cwd<font color="black">)</font>;
+    <font color="blue">return</font> r;
+    
+    
+<font color="black">}</font>
+
+<font color="blue">bool</font> dirExists<font color="black">(</font>CStdString d<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">bool</font> direxists<font color="black">=</font><font color="blue">false</font>;
+    DWORD atr<font color="black">=</font>GetFileAttributes<font color="black">(</font>d<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>atr<font color="black">!</font><font color="black">=</font><font color="maroon">0xFFFFFFFF</font><font color="black">)</font>
+    <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font>atr <font color="black">&</font> FILE_ATTRIBUTE_DIRECTORY<font color="black">)</font>
+        <font color="black">{</font>
+            direxists<font color="black">=</font><font color="blue">true</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+    <font color="blue">return</font> direxists;
+<font color="black">}</font>
+
+<font color="blue">bool</font> fileExists<font color="black">(</font>CStdString d<font color="black">)</font>
+<font color="black">{</font>
+    DWORD atr<font color="black">=</font>GetFileAttributes<font color="black">(</font>d<font color="black">)</font>;
+    <font color="blue">return</font>  <font color="black">(</font>atr<font color="black">!</font><font color="black">=</font><font color="maroon">0xFFFFFFFF</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">bool</font> makeDirs<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> dir<font color="black">)</font>
+<font color="black">{</font>
+    
+    <font color="blue">char</font> path<font color="black">[</font>MAX_PATH<font color="black">]</font><font color="black">=</font><font color="maroon">""</font>;
+    <font color="blue">char</font> tok<font color="black">[</font><font color="maroon">64</font><font color="black">]</font>;
+    <font color="blue">int</font> ret<font color="black">=</font><font color="maroon">0</font>;
+    StringTokenizer st<font color="black">(</font>dir, <font color="maroon">"\\/"</font><font color="black">)</font>;
+    <font color="blue">while</font> <font color="black">(</font>st.hasMoreTokens<font color="black">(</font><font color="black">)</font> <font color="black">)</font>
+    <font color="black">{</font>
+        strcat<font color="black">(</font>path, <font color="maroon">"/"</font><font color="black">)</font>;
+        strcat<font color="black">(</font>path, st.nextToken<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        ret<font color="black">=</font>_mkdir<font color="black">(</font><font color="black">&</font>path<font color="black">[</font><font color="maroon">1</font><font color="black">]</font><font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="green">//strcpy(dir, path);</font>
+    <font color="blue">if</font> <font color="black">(</font>ret<font color="black">=</font><font color="black">=</font> <font color="maroon">-1</font> <font color="black">&</font><font color="black">&</font> errno<font color="black">=</font><font color="black">=</font>EEXIST<font color="black">)</font>
+        ret<font color="black">=</font><font color="maroon">0</font>;
+    
+    <font color="blue">return</font> <font color="black">(</font><font color="black">!</font>ret<font color="black">)</font>;
+
+<font color="black">}</font>
+
+<font color="blue">void</font> makeTextFile<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename, <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> contents, <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> delims <font color="green">/* ="\r\n \t\v" */</font><font color="black">)</font>
+<font color="black">{</font>
+    StringTokenizer st<font color="black">(</font>contents, delims<font color="black">)</font>;
+    ofstream file<font color="black">(</font>filename<font color="black">)</font>;
+
+    <font color="blue">while</font> <font color="black">(</font>st.hasMoreTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+        file <font color="black">&#60;</font><font color="black">&#60;</font> st.nextToken<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+    <font color="black">}</font>
+    file.close<font color="black">(</font><font color="black">)</font>;
+
+<font color="black">}</font>
+
+<font color="blue">int</font> fileSize<font color="black">(</font>CStdString file<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">struct</font> _stat buf;
+  <font color="blue">int</font> result;
+
+  result <font color="black">=</font> _stat<font color="black">(</font>file, <font color="black">&</font>buf<font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>result <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> buf.st_size;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="maroon">-1</font>;
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

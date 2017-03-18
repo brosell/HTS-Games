@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>
+WorldCanvas.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _WorldCanvas_h
+<font color="blue">#define</font> _WorldCanvas_h
+
+<font color="green">// this special canvas will be tied to the world and will be the viewport.</font>
+<font color="green">// if it is completely obscured, no draw will occur</font>
+<font color="green">// if it is visable, the world will draw directly to the screen</font>
+
+<font color="green">// using the canvas allows the world to be drawn in the propper z order</font>
+<font color="green">// compared to other UI elements</font>
+
+<font color="blue">#include</font> <font color="maroon">"UI.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Game/World.h"</font>
+
+<font color="blue">class</font> WorldCanvas<font color="black">:</font> <font color="blue">public</font> UIThing
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  WorldCanvas<font color="black">(</font>World<font color="black">*</font> world<font color="black">)</font><font color="black">:</font> UIThing<font color="black">(</font><font color="black">)</font>, m_world<font color="black">(</font>world<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>;
+  virtual ~WorldCanvas<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>;
+
+  virtual <font color="blue">bool</font> acceptsFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+  virtual string getName<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="maroon">"WorldCanvas"</font>; <font color="black">}</font>
+
+  <font color="blue">void</font> setWorld<font color="black">(</font>World<font color="black">*</font> w<font color="black">)</font> <font color="black">{</font> m_world <font color="black">=</font> w; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  World<font color="black">*</font> m_world;
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

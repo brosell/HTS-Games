@@ -1,0 +1,117 @@
+<HTML>
+<HEAD>
+<TITLE>
+AutoBuffer.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"AutoBuffer.h"</font>
+
+
+
+<font color="blue">bool</font> testAutoBuffer<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  AutoBuffer<font color="black">&#60;</font><font color="blue">char</font><font color="black">&#62;</font> buf<font color="black">(</font><font color="maroon">3</font><font color="black">)</font>; <font color="green">// buffer with each block being 3 bytes big</font>
+
+  buf.push_back<font color="black">(</font><font color="maroon">'q'</font><font color="black">)</font>;
+  
+  assert<font color="black">(</font>buf.front<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">'q'</font><font color="black">)</font>;
+  assert<font color="black">(</font>buf.back<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">'q'</font><font color="black">)</font>;
+  assert<font color="black">(</font>buf.size<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">1</font><font color="black">)</font>;
+  
+  buf.push_back<font color="black">(</font><font color="maroon">'w'</font><font color="black">)</font>;
+  
+  assert<font color="black">(</font>buf.front<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">'q'</font><font color="black">)</font>;
+  assert<font color="black">(</font>buf.back<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">'w'</font><font color="black">)</font>;
+  assert<font color="black">(</font>buf.size<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">2</font><font color="black">)</font>;
+
+  <font color="blue">char</font><font color="black">*</font> x<font color="black">=</font><font color="maroon">"abcdefghijklmnop"</font>;
+
+  buf.write<font color="black">(</font>x, <font color="maroon">5</font><font color="black">)</font>;
+  assert<font color="black">(</font>buf.front<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">'q'</font><font color="black">)</font>;
+  assert<font color="black">(</font>buf.back<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">'e'</font><font color="black">)</font>;
+  assert<font color="black">(</font>buf.size<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">7</font><font color="black">)</font>;
+
+  <font color="blue">char</font> y<font color="black">[</font><font color="maroon">26</font><font color="black">]</font>;
+  memset<font color="black">(</font>y, <font color="maroon">0</font>, <font color="maroon">26</font><font color="black">)</font>;
+
+  buf.read<font color="black">(</font>y, <font color="maroon">5</font><font color="black">)</font>;
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> buf.front<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+  assert<font color="black">(</font>buf.front<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">'d'</font><font color="black">)</font>;
+  assert<font color="black">(</font>buf.back<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">'e'</font><font color="black">)</font>;
+  assert<font color="black">(</font>buf.size<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">2</font><font color="black">)</font>;
+  
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> buf.capacity<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+  assert<font color="black">(</font>buf.capacity<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">9</font><font color="black">)</font>;
+
+  buf.shrink<font color="black">(</font><font color="black">)</font>;
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> buf.capacity<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+  assert<font color="black">(</font>buf.capacity<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">6</font><font color="black">)</font>;
+
+  AutoBuffer<font color="black">&#60;</font><font color="blue">char</font><font color="black">&#62;</font> buf2<font color="black">(</font><font color="maroon">3</font>, <font color="maroon">2</font><font color="black">)</font>; <font color="green">// only two blocks will be allocated through the life of this instance. so only 6 objects can be stored</font>
+
+  <font color="blue">int</font> w <font color="black">=</font> buf2.write<font color="black">(</font>x, <font color="maroon">9</font><font color="black">)</font>;
+
+  assert <font color="black">(</font>w<font color="black">=</font><font color="black">=</font><font color="maroon">6</font><font color="black">)</font>;
+  assert <font color="black">(</font>buf2.size<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">6</font><font color="black">)</font>;
+  assert <font color="black">(</font>buf2.capacity<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">6</font><font color="black">)</font>;
+  assert <font color="black">(</font>buf2.write<font color="black">(</font>x, <font color="maroon">9</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+  
+  <font color="black">{</font>
+    AutoBuffer<font color="black">&#60;</font>string<font color="black">&#62;</font> Strings<font color="black">(</font><font color="maroon">256</font><font color="black">)</font>;
+    Strings.setShrinkTo<font color="black">(</font><font color="maroon">15</font><font color="black">)</font>;
+    
+    <font color="blue">char</font> it<font color="black">[</font><font color="maroon">10</font><font color="black">]</font>;
+    <font color="blue">while</font> <font color="black">(</font>Strings.size<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font> <font color="maroon">0xffff</font><font color="black">)</font>
+    <font color="black">{</font>
+      Strings.push_back<font color="black">(</font>string<font color="black">(</font>itoa<font color="black">(</font>Strings.size<font color="black">(</font><font color="black">)</font>, it, <font color="maroon">10</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+    cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"averageBlockCount: "</font> <font color="black">&#60;</font><font color="black">&#60;</font> Strings.getAverage<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+    
+    Strings.report<font color="black">(</font><font color="maroon">"Holy Cow"</font><font color="black">)</font>;
+    <font color="blue">while</font> <font color="black">(</font>Strings.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      Strings.pop_front<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+    cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"averageBlockCount: "</font> <font color="black">&#60;</font><font color="black">&#60;</font> Strings.getAverage<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+    Strings.report<font color="black">(</font><font color="maroon">"2"</font><font color="black">)</font>;
+    Strings.shrink<font color="black">(</font><font color="black">)</font>;
+    Strings.report<font color="black">(</font><font color="maroon">"3"</font><font color="black">)</font>;
+
+    cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"averageBlockCount: "</font> <font color="black">&#60;</font><font color="black">&#60;</font> Strings.getAverage<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+  <font color="black">}</font>
+
+  
+  <font color="black">{</font>
+    AutoBuffer<font color="black">&#60;</font>string<font color="black">&#62;</font> Strings<font color="black">(</font><font color="maroon">256</font><font color="black">)</font>;
+    <font color="green">//Strings.setShrinkTo(15);</font>
+    
+    <font color="blue">char</font> it<font color="black">[</font><font color="maroon">10</font><font color="black">]</font>;
+    <font color="blue">while</font> <font color="black">(</font>Strings.size<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font> <font color="maroon">0xffff</font><font color="black">)</font>
+    <font color="black">{</font>
+      Strings.push_back<font color="black">(</font>string<font color="black">(</font>itoa<font color="black">(</font>Strings.size<font color="black">(</font><font color="black">)</font>, it, <font color="maroon">10</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+    cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"averageBlockCount: "</font> <font color="black">&#60;</font><font color="black">&#60;</font> Strings.getAverage<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+    
+    Strings.report<font color="black">(</font><font color="maroon">"Holy Cow"</font><font color="black">)</font>;
+    <font color="blue">while</font> <font color="black">(</font>Strings.size<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      Strings.pop_front<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+    cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"averageBlockCount: "</font> <font color="black">&#60;</font><font color="black">&#60;</font> Strings.getAverage<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+    Strings.report<font color="black">(</font><font color="maroon">"2"</font><font color="black">)</font>;
+    Strings.shrink<font color="black">(</font><font color="black">)</font>;
+    Strings.report<font color="black">(</font><font color="maroon">"3"</font><font color="black">)</font>;
+    cout <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"averageBlockCount: "</font> <font color="black">&#60;</font><font color="black">&#60;</font> Strings.getAverage<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,50 @@
+03/18/17 10:47:17 - Inform: BarrelDrop! version 1.1.23
+03/18/17 10:47:17 - Inform: Built 11/29/03 10:52:17
+03/18/17 10:47:17 - Inform: Width: 640, Height: 480, Bpp: 32, Type: SDL, Flags: 0x00000000
+03/18/17 10:47:18 - Inform: HW Available: 1
+03/18/17 10:47:18 - Inform: Accelerated HW->HW Blits: 1
+03/18/17 10:47:18 - Inform: Accelerated HW->HW Colorkey Blits: 1
+03/18/17 10:47:18 - Inform: Accelerated HW->HW ALPHA Blits: 0
+03/18/17 10:47:18 - Inform: Accelerated SW->HW Blits: 1
+03/18/17 10:47:18 - Inform: Accelerated SW->HW Colorkey Blits: 1
+03/18/17 10:47:18 - Inform: Accelerated SW->HW ALPHA Blits: 0
+03/18/17 10:47:18 - Inform: Accelerated Fills :1
+03/18/17 10:47:18 - Inform: Screen is SW surface
+03/18/17 10:47:18 - Inform: Rmask 00ff0000
+03/18/17 10:47:18 - Inform: Gmask 0000ff00
+03/18/17 10:47:18 - Inform: Bmask 000000ff
+03/18/17 10:47:18 - Inform: Amask 00000000
+03/18/17 10:47:18 - Inform: SDLDisplay created.
+03/18/17 10:47:19 - *Error: tried to use old asset manager for tx_Splash
+03/18/17 10:47:19 - *Error: tried to use old asset manager for mus_Background
+03/18/17 10:48:16 - Inform: Score reset, starting on level 0
+03/18/17 10:48:16 - Inform: Preparing Game (Easy.ini)
+03/18/17 10:48:21 - Inform: Initializing Board
+03/18/17 10:49:17 - Inform: Level Up 2
+03/18/17 10:50:14 - Inform: Level Up 3
+03/18/17 10:51:33 - Inform: Level Up 4
+03/18/17 10:52:14 - Inform: Level Up 5
+03/18/17 10:52:50 - Inform: Level Up 6
+03/18/17 10:53:27 - Inform: Level Up 7
+03/18/17 10:54:00 - Inform: Level Up 8
+03/18/17 10:54:36 - Inform: Level Up 9
+03/18/17 10:55:17 - Inform: Level Up 10
+03/18/17 10:55:56 - Inform: Level Up 11
+03/18/17 10:56:26 - Inform: Level Up 12
+03/18/17 10:57:03 - Inform: Level Up 13
+03/18/17 10:57:22 - Inform: Level Up 14
+03/18/17 10:57:59 - Inform: Level Up 15
+03/18/17 10:58:54 - Inform: Level Up 16
+03/18/17 11:00:20 - Inform: Cleaning up
+03/18/17 11:00:20 - Inform: Perfroming sanity check on Display
+03/18/17 11:00:20 - Inform: Done
+03/18/17 11:00:20 - Inform: Dislpay Report
+03/18/17 11:00:20 - Inform: --------------
+03/18/17 11:00:20 - Inform: Loaded Textures: 255
+03/18/17 11:00:20 - Inform: Loaded Filenames: 255
+03/18/17 11:00:20 - Inform: Total Texture References: 259
+03/18/17 11:00:20 - Inform: Greatest Number of references: 2 for ui\buttons\btn_Start_Idle_2.png
+03/18/17 11:00:20 - Inform: ---------------
+03/18/17 11:00:20 - Inform: Tearing down SDLDisplay
+03/18/17 11:00:20 - *Error: not all textures released
+03/18/17 11:00:20 - *Error: ++++ UI\LoadingSplash.jpg

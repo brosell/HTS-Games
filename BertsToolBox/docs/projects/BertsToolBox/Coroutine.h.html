@@ -1,0 +1,117 @@
+<HTML>
+<HEAD>
+<TITLE>
+Coroutine.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> Coroutine_h
+<font color="blue">#define</font> Coroutine_h
+
+<font color="blue">#include</font> <font color="maroon">"pcl.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Timer.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;set&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">typedef</font> <font color="blue">int</font> HCoroutine;
+
+<font color="blue">class</font> CoroutineDelegate <font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">void</font> invoke<font color="black">(</font><font color="black">)</font><font color="black">=</font><font color="maroon">0</font>;
+  virtual ~CoroutineDelegate<font color="black">(</font><font color="black">)</font><font color="black">{</font><font color="black">}</font>
+<font color="blue">protected</font><font color="black">:</font>
+  CoroutineDelegate<font color="black">(</font><font color="black">)</font><font color="black">{</font><font color="black">}</font>
+<font color="black">}</font>; 
+
+<font color="blue">class</font> CoroutineEvent
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  HCoroutine id;
+<font color="black">}</font>;
+
+<font color="blue">class</font> CoroutineListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">void</font> coroutineStarted<font color="black">(</font>CoroutineEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  virtual <font color="blue">void</font> coroutineFinished<font color="black">(</font>CoroutineEvent<font color="black">*</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">class</font> Waitable
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">bool</font> isWaitOver<font color="black">(</font><font color="black">)</font> <font color="black">=</font> <font color="maroon">0</font>;
+<font color="black">}</font>;
+
+
+<font color="blue">class</font> CoroutineRep
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  coroutine_t handle;
+  <font color="blue">int</font> priority;
+  DWORD startTime;
+  DWORD nextRunTime;
+  <font color="blue">bool</font> active;
+  CoroutineDelegate<font color="black">*</font> delegate;
+  string <font color="blue">name</font>;
+  CoroutineListener<font color="black">*</font> listener;
+
+<font color="black">}</font>;
+
+<font color="blue">class</font> CompareCoroutine
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">bool</font> <font color="blue">operator</font><font color="black">(</font><font color="black">)</font> <font color="black">(</font><font color="blue">const</font> CoroutineRep<font color="black">*</font> c1, <font color="blue">const</font> CoroutineRep<font color="black">*</font> c2<font color="black">)</font> <font color="blue">const</font>;
+<font color="black">}</font>;
+
+<font color="blue">class</font> Coroutine
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">static</font> HCoroutine create<font color="black">(</font>CoroutineDelegate<font color="black">*</font> d, string <font color="blue">name</font>, CoroutineListener<font color="black">*</font> listener<font color="black">)</font>;
+  <font color="blue">static</font> <font color="blue">void</font> destroy<font color="black">(</font><font color="blue">int</font> handle<font color="black">)</font>;
+
+  <font color="blue">static</font> <font color="blue">void</font> pause<font color="black">(</font><font color="blue">int</font> millis<font color="black">)</font>;
+  <font color="blue">static</font> <font color="blue">void</font> waitUntil<font color="black">(</font><font color="blue">int</font> timeout<font color="black">)</font>;
+
+  <font color="blue">static</font> <font color="blue">void</font> waitUntilFromStart<font color="black">(</font><font color="blue">int</font> timeout<font color="black">)</font>;
+
+  <font color="blue">static</font> <font color="blue">void</font> waitFor<font color="black">(</font>Waitable<font color="black">*</font> waitable<font color="black">)</font>;
+
+  <font color="blue">static</font> <font color="blue">void</font> resume<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">static</font> <font color="blue">void</font> call<font color="black">(</font>HCoroutine handle<font color="black">)</font>;
+
+
+  <font color="blue">static</font> <font color="blue">bool</font> anyRunning<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">static</font> <font color="blue">void</font> forward<font color="black">(</font><font color="blue">void</font><font color="black">*</font> vp<font color="black">)</font>;
+  <font color="blue">static</font> <font color="blue">void</font> schedule<font color="black">(</font><font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  Coroutine<font color="black">(</font><font color="black">)</font>;
+  Coroutine<font color="black">(</font><font color="blue">const</font> Coroutine<font color="black">&</font> other<font color="black">)</font>;
+  ~Coroutine<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">static</font> set<font color="black">&#60;</font>CoroutineRep<font color="black">*</font>, CompareCoroutine<font color="black">&#62;</font> s_activeCoroutines;
+  <font color="blue">static</font> CoroutineRep<font color="black">*</font> s_current;
+<font color="black">}</font>;
+
+
+<font color="blue">inline</font>
+<font color="blue">bool</font> CompareCoroutine<font color="black">:</font><font color="black">:</font><font color="blue">operator</font><font color="black">(</font><font color="black">)</font> <font color="black">(</font><font color="blue">const</font> CoroutineRep<font color="black">*</font> c1, <font color="blue">const</font> CoroutineRep<font color="black">*</font> c2<font color="black">)</font> <font color="blue">const</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>c1<font color="black">-</font><font color="black">&#62;</font>nextRunTime <font color="black">&#60;</font> c2<font color="black">-</font><font color="black">&#62;</font>nextRunTime<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">true</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>c1<font color="black">-</font><font color="black">&#62;</font>nextRunTime <font color="black">=</font><font color="black">=</font> c2<font color="black">-</font><font color="black">&#62;</font>nextRunTime<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> c1 <font color="black">&#60;</font> c2;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

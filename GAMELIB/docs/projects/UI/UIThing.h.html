@@ -1,0 +1,303 @@
+<HTML>
+<HEAD>
+<TITLE>
+UIThing.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _UIThing_h
+<font color="blue">#define</font> _UIThing_h
+
+<font color="blue">#include</font> <font color="maroon">"UI/NewEventModel.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Graphics/Display.h"</font>
+<font color="blue">#include</font> <font color="maroon">"UI/Font.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Misc/GameMath.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;list&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;set&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;iostream&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">class</font> Container;
+
+<font color="blue">class</font> UIThing
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  UIThing<font color="black">(</font><font color="black">)</font>;
+  virtual ~UIThing<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">/**
+  override this to give your control a usefull name string
+  */</font>
+  virtual string getName<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="maroon">"UITHing"</font>; <font color="black">}</font>
+
+  <font color="green">/**
+  this sets the name dynamicly. The IniBasedDialog calls this
+  with the name of the control from the ini file
+  */</font>
+  <font color="blue">void</font> setControlName<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font> <font color="black">{</font> m_controlName <font color="black">=</font> <font color="blue">name</font>; <font color="black">}</font>
+
+  <font color="blue">void</font> setId<font color="black">(</font><font color="blue">int</font> id<font color="black">)</font> <font color="black">{</font> m_id <font color="black">=</font> id; <font color="black">}</font>
+  <font color="blue">int</font> getId<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_id; <font color="black">}</font>
+
+  virtual <font color="blue">bool</font> isContainer<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> setText<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> s<font color="black">)</font> <font color="black">{</font> m_text<font color="black">=</font>s;<font color="black">}</font>
+  virtual string getText<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="blue">return</font> m_text; <font color="black">}</font>
+  
+  Container<font color="black">*</font> getParent<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_parent; <font color="black">}</font>
+  <font color="blue">void</font> setParent<font color="black">(</font>Container<font color="black">*</font> parent<font color="black">)</font> <font color="black">{</font> m_parent <font color="black">=</font> parent; <font color="black">}</font>
+
+  <font color="blue">bool</font> isMouseOver<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> s_mouseOver <font color="black">=</font><font color="black">=</font> <font color="blue">this</font>; <font color="black">}</font>
+
+  <font color="green">/**
+    * causes the UIThing to be drawn to the screen by calling paint(surface)
+    * it will first check to see if this is obscured.
+    */</font>
+  <font color="blue">void</font> draw<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>;
+
+  <font color="blue">void</font> setBackgroundColor<font color="black">(</font><font color="blue">int</font> r, <font color="blue">int</font> g, <font color="blue">int</font> b, <font color="blue">int</font> a<font color="black">)</font>
+  <font color="black">{</font>
+    m_red <font color="black">=</font> r;
+    m_green <font color="black">=</font> g;
+    m_blue <font color="black">=</font> b;
+    m_alpha <font color="black">=</font> a;
+  <font color="black">}</font>
+
+  <font color="green">/**
+    * pure virtual function that will draw the UIThing to the screen when overridded
+    */</font>
+  virtual <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font> <font color="black">=</font> <font color="maroon">0</font>;
+
+  <font color="green">/**
+    * add this to its parent container (or the UISystem if no parent)
+    */</font>
+  virtual <font color="blue">void</font> show<font color="black">(</font><font color="black">)</font>;
+  <font color="green">/**
+    * removes from parent container (or the UISystem if no parent)
+    */</font>
+  virtual <font color="blue">void</font> hide<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">/**
+    * used to set and to determin current visiblity.
+    * UIThings that are not visible will not get drawn
+    * or receive events
+    */</font>
+  <font color="blue">bool</font> isVisible<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_visible; <font color="black">}</font>
+  <font color="blue">void</font> setVisible<font color="black">(</font><font color="blue">bool</font> v<font color="black">)</font> <font color="black">{</font> m_visible <font color="black">=</font> v; <font color="black">}</font>
+
+  <font color="green">/**
+    * determines whether the UIThing is totaly obscured
+    * by other UIThings.
+    */</font>
+  virtual <font color="blue">bool</font> isObscured<font color="black">(</font><font color="black">)</font>;
+  virtual <font color="blue">bool</font> isObscuredBy<font color="black">(</font>UIThing<font color="black">*</font> thing<font color="black">)</font>;
+  
+
+  
+  <font color="green">// FOCUS STUFF</font>
+  virtual <font color="blue">bool</font> hasFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_haveFocus; <font color="black">}</font>
+  virtual <font color="blue">void</font> takeFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> m_haveFocus <font color="black">=</font> <font color="blue">true</font>; <font color="black">}</font>
+  virtual <font color="blue">void</font> loseFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> m_haveFocus <font color="black">=</font> <font color="blue">false</font>; <font color="black">}</font>
+  virtual <font color="blue">bool</font> acceptsFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">true</font>; <font color="black">}</font>
+  <font color="green">// END FOCUS STUFF</font>
+  
+  
+  
+  <font color="green">/**
+  * the position relative to the parent container
+  */</font>
+  virtual <font color="blue">void</font> setPosition<font color="black">(</font>Rect<font color="black">&</font> pos<font color="black">)</font> <font color="black">{</font> m_position <font color="black">=</font> pos; <font color="black">}</font>
+  Rect getPosition<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_position; <font color="black">}</font>
+  
+  <font color="green">/**
+  * converts the relative position of this control
+  * to screen position
+  * 
+  * @return a Rect with the screen position
+  */</font>
+  Rect getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+  
+  
+  <font color="blue">void</font> addMouseListener<font color="black">(</font>MouseListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_mouseListeners.insert<font color="black">(</font>listener<font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">void</font> removeMouseListener<font color="black">(</font>MouseListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_mouseListeners.erase<font color="black">(</font>listener<font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">void</font> addKeyListener<font color="black">(</font>KeyListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_keyListeners.insert<font color="black">(</font>listener<font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">void</font> removeKeyListener<font color="black">(</font>KeyListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_keyListeners.erase<font color="black">(</font>listener<font color="black">)</font>; <font color="black">}</font>
+  
+  
+  <font color="green">/** 
+  * Many event handlers to be overridden.
+  */</font>
+  
+  virtual <font color="blue">void</font> onMousePress<font color="black">(</font>MousePressEvent<font color="black">*</font> event<font color="black">)</font> 
+  <font color="black">{</font>
+    event<font color="black">-</font><font color="black">&#62;</font>commandId <font color="black">=</font> getId<font color="black">(</font><font color="black">)</font>;
+    event<font color="black">-</font><font color="black">&#62;</font>thing <font color="black">=</font> <font color="blue">this</font>;
+    set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_mouseListeners<font color="black">)</font>;
+    set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>mousePressed<font color="black">(</font>event<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  virtual <font color="blue">void</font> onMouseRelease<font color="black">(</font>MouseReleaseEvent<font color="black">*</font> event<font color="black">)</font>
+  <font color="black">{</font> 
+    event<font color="black">-</font><font color="black">&#62;</font>commandId <font color="black">=</font> getId<font color="black">(</font><font color="black">)</font>;
+    event<font color="black">-</font><font color="black">&#62;</font>thing <font color="black">=</font> <font color="blue">this</font>;
+    set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_mouseListeners<font color="black">)</font>;
+    set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>mouseReleased<font color="black">(</font>event<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  
+  virtual <font color="blue">void</font> onMouseClick<font color="black">(</font>MouseClickEvent<font color="black">*</font> event<font color="black">)</font>
+  <font color="black">{</font> 
+    event<font color="black">-</font><font color="black">&#62;</font>commandId <font color="black">=</font> getId<font color="black">(</font><font color="black">)</font>;
+    event<font color="black">-</font><font color="black">&#62;</font>thing <font color="black">=</font> <font color="blue">this</font>;
+    set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_mouseListeners<font color="black">)</font>;
+    set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>mouseClicked<font color="black">(</font>event<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  
+  virtual <font color="blue">void</font> onMouseDblClick<font color="black">(</font>MouseDblClickEvent<font color="black">*</font> event<font color="black">)</font>
+  <font color="black">{</font> 
+    event<font color="black">-</font><font color="black">&#62;</font>commandId <font color="black">=</font> getId<font color="black">(</font><font color="black">)</font>;
+    event<font color="black">-</font><font color="black">&#62;</font>thing <font color="black">=</font> <font color="blue">this</font>;
+    set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_mouseListeners<font color="black">)</font>;
+    set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>mouseDblClicked<font color="black">(</font>event<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  
+  
+  virtual <font color="blue">void</font> onMouseMove<font color="black">(</font>MouseMoveEvent<font color="black">*</font> event<font color="black">)</font>
+  <font color="black">{</font> 
+    event<font color="black">-</font><font color="black">&#62;</font>commandId <font color="black">=</font> getId<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>s_mouseOver <font color="black">!</font><font color="black">=</font> <font color="blue">this</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">if</font> <font color="black">(</font>s_mouseOver <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+      <font color="black">{</font>
+        MouseExitEvent exit;
+        s_mouseOver<font color="black">-</font><font color="black">&#62;</font>onMouseExit<font color="black">(</font><font color="black">&</font>exit<font color="black">)</font>;
+      <font color="black">}</font>
+      s_mouseOver <font color="black">=</font> <font color="blue">this</font>;
+
+      MouseEnterEvent enter;
+      onMouseEnter<font color="black">(</font><font color="black">&</font>enter<font color="black">)</font>;
+    <font color="black">}</font>
+    event<font color="black">-</font><font color="black">&#62;</font>thing <font color="black">=</font> <font color="blue">this</font>;
+    set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_mouseListeners<font color="black">)</font>;
+    set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>mouseMoved<font color="black">(</font>event<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  
+  virtual <font color="blue">void</font> onMouseEnter<font color="black">(</font>MouseEnterEvent<font color="black">*</font> event<font color="black">)</font>
+  <font color="black">{</font> 
+    event<font color="black">-</font><font color="black">&#62;</font>commandId <font color="black">=</font> getId<font color="black">(</font><font color="black">)</font>;
+    event<font color="black">-</font><font color="black">&#62;</font>thing <font color="black">=</font> <font color="blue">this</font>;
+    set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_mouseListeners<font color="black">)</font>;
+    set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>mouseEntered<font color="black">(</font>event<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  
+  virtual <font color="blue">void</font> onMouseExit<font color="black">(</font>MouseExitEvent<font color="black">*</font> event<font color="black">)</font>
+  <font color="black">{</font> 
+    event<font color="black">-</font><font color="black">&#62;</font>commandId <font color="black">=</font> getId<font color="black">(</font><font color="black">)</font>;
+    event<font color="black">-</font><font color="black">&#62;</font>thing <font color="black">=</font> <font color="blue">this</font>;
+    set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_mouseListeners<font color="black">)</font>;
+    set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>mouseExited<font color="black">(</font>event<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  
+  virtual <font color="blue">void</font> onKeyPress<font color="black">(</font>KeyPressEvent<font color="black">*</font> event<font color="black">)</font>
+  <font color="black">{</font>
+    event<font color="black">-</font><font color="black">&#62;</font>commandId <font color="black">=</font> getId<font color="black">(</font><font color="black">)</font>;
+    event<font color="black">-</font><font color="black">&#62;</font>thing <font color="black">=</font> <font color="blue">this</font>;
+    set<font color="black">&#60;</font>KeyListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_keyListeners<font color="black">)</font>;
+    set<font color="black">&#60;</font>KeyListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>keyPressed<font color="black">(</font>event<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  
+  virtual <font color="blue">void</font> onKeyRelease<font color="black">(</font>KeyReleaseEvent<font color="black">*</font> event<font color="black">)</font>
+  <font color="black">{</font>
+    event<font color="black">-</font><font color="black">&#62;</font>commandId <font color="black">=</font> getId<font color="black">(</font><font color="black">)</font>;
+    event<font color="black">-</font><font color="black">&#62;</font>thing <font color="black">=</font> <font color="blue">this</font>;
+    set<font color="black">&#60;</font>KeyListener<font color="black">*</font><font color="black">&#62;</font> setCopy<font color="black">(</font>m_keyListeners<font color="black">)</font>;
+    set<font color="black">&#60;</font>KeyListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+    <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>setCopy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>setCopy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="black">(</font><font color="black">*</font>i<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>keyReleased<font color="black">(</font>event<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  
+<font color="green">//  virtual void onKeyRepeat(KeyRepeatEvent* event)</font>
+<font color="green">//  {</font>
+<font color="green">//    event-&#62;commandId = getId();</font>
+<font color="green">//    event-&#62;thing = this;</font>
+<font color="green">//    set&#60;KeyListener*&#62; setCopy(m_keyListeners);</font>
+<font color="green">//    set&#60;KeyListener*&#62;::iterator i;</font>
+<font color="green">//    for (i=setCopy.begin(); i!=setCopy.end(); i++)</font>
+<font color="green">//    {</font>
+<font color="green">//      (*i)-&#62;keyRepeated(event);</font>
+<font color="green">//    }</font>
+<font color="green">//  }</font>
+
+  <font color="blue">void</font> setFont<font color="black">(</font>Font<font color="black">*</font> font<font color="black">)</font> <font color="black">{</font> m_font <font color="black">=</font> font; <font color="black">}</font>
+  virtual Font<font color="black">*</font> getFont<font color="black">(</font><font color="black">)</font>; <font color="green">// { return m_font; }</font>
+
+  <font color="blue">static</font> <font color="blue">bool</font> s_ocheck;
+
+<font color="blue">protected</font><font color="black">:</font>
+  string m_controlName;
+  <font color="blue">bool</font> m_haveFocus;
+
+  string m_text;
+
+  Font<font color="black">*</font> m_font;
+
+  Rect m_position;
+  Container<font color="black">*</font> m_parent;
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> m_visible;
+  <font color="blue">int</font> m_id;
+
+  <font color="blue">int</font> m_red;
+  <font color="blue">int</font> m_green;
+  <font color="blue">int</font> m_blue;
+  <font color="blue">int</font> m_alpha;
+
+  set<font color="black">&#60;</font>MouseListener<font color="black">*</font><font color="black">&#62;</font> m_mouseListeners;
+  set<font color="black">&#60;</font>KeyListener<font color="black">*</font><font color="black">&#62;</font> m_keyListeners;
+
+  <font color="blue">bool</font> m_haveMouse;
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">static</font> UIThing<font color="black">*</font> s_mouseOver;
+
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

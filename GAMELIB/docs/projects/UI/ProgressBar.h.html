@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+<TITLE>
+ProgressBar.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> ProgressBar_h
+<font color="blue">#define</font> ProgressBar_h
+
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Timer.h"</font>
+
+<font color="blue">class</font> ProgressBar<font color="black">:</font> <font color="blue">public</font> Canvas, <font color="blue">public</font> TimerListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  ProgressBar<font color="black">(</font><font color="blue">bool</font> vertical, <font color="blue">int</font> r, <font color="blue">int</font> g, <font color="blue">int</font> b, <font color="blue">int</font> a<font color="black">)</font>;
+  virtual ~ProgressBar<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> setValue<font color="black">(</font><font color="blue">int</font> v<font color="black">)</font>;
+  <font color="blue">void</font> setUpperBound<font color="black">(</font><font color="blue">int</font> b<font color="black">)</font> <font color="black">{</font> m_upperBound <font color="black">=</font> b; <font color="black">}</font>
+  <font color="blue">void</font> setMargin<font color="black">(</font><font color="blue">int</font> m<font color="black">)</font> <font color="black">{</font> m_margin <font color="black">=</font> m; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>;
+
+  virtual <font color="blue">void</font> timeout<font color="black">(</font>TimerEvent<font color="black">*</font> ev<font color="black">)</font>;
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">float</font> ticksPerUnit<font color="black">(</font><font color="black">)</font> 
+  <font color="black">{</font> 
+    Rect r <font color="black">=</font> getPosition<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>m_vertical<font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="black">(</font><font color="blue">float</font><font color="black">)</font><font color="black">(</font>r.h<font color="black">-</font><font color="black">(</font><font color="maroon">2</font><font color="black">*</font>m_margin<font color="black">)</font><font color="black">)</font><font color="black">/</font><font color="black">(</font><font color="blue">float</font><font color="black">)</font>m_upperBound;
+    <font color="black">}</font>
+    <font color="blue">return</font> <font color="black">(</font><font color="blue">float</font><font color="black">)</font><font color="black">(</font>r.w<font color="black">-</font><font color="black">(</font><font color="maroon">2</font><font color="black">*</font>m_margin<font color="black">)</font><font color="black">)</font><font color="black">/</font><font color="black">(</font><font color="blue">float</font><font color="black">)</font>m_upperBound;
+  <font color="black">}</font>
+
+  <font color="blue">int</font> m_red;
+  <font color="blue">int</font> m_green;
+  <font color="blue">int</font> m_blue;
+  <font color="blue">int</font> m_alpha;
+
+  <font color="blue">int</font> m_margin;
+
+  HTimer m_timer;
+
+  <font color="blue">int</font> m_value;
+  <font color="blue">int</font> m_currentValue;
+
+  <font color="blue">int</font> m_upperBound;
+  <font color="blue">bool</font> m_vertical;
+<font color="black">}</font>;
+
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

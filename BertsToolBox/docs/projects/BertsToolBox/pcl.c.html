@@ -1,0 +1,505 @@
+<HTML>
+<HEAD>
+<TITLE>
+pcl.c
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/*
+ *  PCL by Davide Libenzi ( Portable Coroutine Library )
+ *  Copyright (C) 2003  Davide Libenzi
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *  Davide Libenzi &#60;davidel@xmailserver.org&#62;
+ *
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;stdio.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;stdlib.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">"pcl_config.h"</font>
+<font color="blue">#include</font> <font color="maroon">"pcl.h"</font>
+
+<font color="blue">#if</font> defined<font color="black">(</font>CO_USE_UCONEXT<font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">&#60;ucontext.h&#62;</font>
+
+<font color="blue">typedef</font> ucontext_t co_core_ctx_t;
+<font color="blue">#else</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;setjmp.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;SETJMPEX.H&#62;</font>
+
+<font color="blue">typedef</font> jmp_buf co_core_ctx_t;
+<font color="blue">#endif</font>
+
+<font color="blue">#if</font> defined<font color="black">(</font>CO_USE_SIGCONTEXT<font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">&#60;signal.h&#62;</font>
+<font color="blue">#endif</font>
+
+
+<font color="green">/*
+ * The following value must be power of two ( N^2 ).
+ */</font>
+<font color="blue">#define</font> CO_STK_ALIGN <font color="maroon">256</font>
+<font color="blue">#define</font> CO_STK_MIN <font color="black">(</font><font color="maroon">4</font> <font color="black">*</font> <font color="maroon">1024</font><font color="black">)</font>
+<font color="blue">#define</font> CO_MIN_SIZE <font color="black">(</font><font color="blue">sizeof</font><font color="black">(</font>coroutine<font color="black">)</font> <font color="black">+</font> CO_STK_MIN<font color="black">)</font>
+
+
+<font color="blue">typedef</font> <font color="blue">struct</font> s_co_ctx <font color="black">{</font>
+    co_core_ctx_t cc;
+<font color="black">}</font> co_ctx_t;
+
+<font color="blue">typedef</font> <font color="blue">struct</font> s_coroutine <font color="black">{</font>
+    co_ctx_t ctx;
+    <font color="blue">int</font> alloc;
+    <font color="blue">struct</font> s_coroutine <font color="black">*</font>caller;
+    <font color="blue">struct</font> s_coroutine <font color="black">*</font>restarget;
+    <font color="blue">void</font> <font color="black">(</font><font color="black">*</font>func<font color="black">)</font><font color="black">(</font><font color="blue">void</font> <font color="black">*</font><font color="black">)</font>;
+    <font color="blue">void</font> <font color="black">*</font>data;
+<font color="black">}</font> coroutine;
+
+
+<font color="blue">static</font> coroutine co_main;
+<font color="blue">static</font> coroutine <font color="black">*</font>co_curr <font color="black">=</font> <font color="black">&</font>co_main;
+<font color="blue">static</font> coroutine <font color="black">*</font>co_dhelper;
+
+<font color="blue">#if</font> defined<font color="black">(</font>CO_USE_SIGCONTEXT<font color="black">)</font>
+
+<font color="blue">static</font> <font color="blue">volatile</font> <font color="blue">int</font> ctx_called;
+<font color="blue">static</font> co_ctx_t <font color="black">*</font>ctx_creating;
+<font color="blue">static</font> <font color="blue">void</font> <font color="black">*</font>ctx_creating_func;
+<font color="blue">static</font> sigset_t ctx_creating_sigs;
+<font color="blue">static</font> co_ctx_t ctx_trampoline;
+<font color="blue">static</font> co_ctx_t ctx_caller;
+
+<font color="blue">#endif</font> <font color="green">/* #if defined(CO_USE_SIGCONTEXT) */</font>
+
+
+
+<font color="blue">static</font> <font color="blue">int</font> co_ctx_sdir<font color="black">(</font><font color="blue">unsigned</font> <font color="blue">long</font> psp<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">int</font> nav <font color="black">=</font> <font color="maroon">0</font>;
+    <font color="blue">unsigned</font> <font color="blue">long</font> csp <font color="black">=</font> <font color="black">(</font><font color="blue">unsigned</font> <font color="blue">long</font><font color="black">)</font> <font color="black">&</font>nav;
+
+    <font color="blue">return</font> psp <font color="black">&#62;</font> csp ? <font color="maroon">-1</font><font color="black">:</font> <font color="black">+</font><font color="maroon">1</font>;
+<font color="black">}</font>
+
+
+<font color="blue">static</font> <font color="blue">int</font> co_ctx_stackdir<font color="black">(</font><font color="blue">void</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">int</font> cav <font color="black">=</font> <font color="maroon">0</font>;
+
+    <font color="blue">return</font> co_ctx_sdir<font color="black">(</font><font color="black">(</font><font color="blue">unsigned</font> <font color="blue">long</font><font color="black">)</font> <font color="black">&</font>cav<font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">#if</font> defined<font color="black">(</font>CO_USE_UCONEXT<font color="black">)</font>
+
+<font color="blue">static</font> <font color="blue">int</font> co_set_context<font color="black">(</font>co_ctx_t <font color="black">*</font>ctx, <font color="blue">void</font> <font color="black">*</font>func, <font color="blue">char</font> <font color="black">*</font>stkbase, <font color="blue">long</font> stksiz<font color="black">)</font> <font color="black">{</font>
+
+    <font color="blue">if</font> <font color="black">(</font>getcontext<font color="black">(</font><font color="black">&</font>ctx<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">)</font><font color="black">)</font>
+        <font color="blue">return</font> <font color="maroon">-1</font>;
+ 
+    ctx<font color="black">-</font><font color="black">&#62;</font>cc.uc_link <font color="black">=</font> NULL;
+ 
+    ctx<font color="black">-</font><font color="black">&#62;</font>cc.uc_stack.ss_sp <font color="black">=</font> stkbase;
+    ctx<font color="black">-</font><font color="black">&#62;</font>cc.uc_stack.ss_size <font color="black">=</font> stksiz <font color="black">-</font><font color="blue">sizeof</font><font color="black">(</font><font color="blue">int</font><font color="black">)</font>;
+    ctx<font color="black">-</font><font color="black">&#62;</font>cc.uc_stack.ss_flags <font color="black">=</font> <font color="maroon">0</font>;
+ 
+    makecontext<font color="black">(</font><font color="black">&</font>ctx<font color="black">-</font><font color="black">&#62;</font>cc, func, <font color="maroon">1</font><font color="black">)</font>;
+
+    <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+
+<font color="blue">static</font> <font color="blue">void</font> co_switch_context<font color="black">(</font>co_ctx_t <font color="black">*</font>octx, co_ctx_t <font color="black">*</font>nctx<font color="black">)</font> <font color="black">{</font>
+
+    <font color="blue">if</font> <font color="black">(</font>swapcontext<font color="black">(</font><font color="black">&</font>octx<font color="black">-</font><font color="black">&#62;</font>cc, <font color="black">&</font>nctx<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">)</font> <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+        fprintf<font color="black">(</font>stderr, <font color="maroon">"[PCL] Context switch failed: curr=%p\n"</font>,
+            co_curr<font color="black">)</font>;
+        exit<font color="black">(</font><font color="maroon">1</font><font color="black">)</font>;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#else</font> <font color="green">/* #if defined(CO_USE_UCONEXT) */</font>
+
+<font color="blue">#if</font> defined<font color="black">(</font>CO_USE_SIGCONTEXT<font color="black">)</font>
+
+<font color="green">/*
+ * This code comes from the GNU Pth implementation and uses the
+ * sigstack/sigaltstack() trick.
+ *
+ * The ingenious fact is that this variant runs really on _all_ POSIX
+ * compliant systems without special platform kludges.  But be _VERY_
+ * carefully when you change something in the following code. The slightest
+ * change or reordering can lead to horribly broken code.  Really every
+ * function call in the following case is intended to be how it is, doubt
+ * me...
+ *
+ * For more details we strongly recommend you to read the companion
+ * paper ``Portable Multithreading -- The Signal Stack Trick for
+ * User-Space Thread Creation'' from Ralf S. Engelschall.
+ */</font>
+
+<font color="blue">static</font> <font color="blue">void</font> co_ctx_bootstrap<font color="black">(</font><font color="blue">void</font><font color="black">)</font> <font color="black">{</font>
+    co_ctx_t <font color="black">*</font> <font color="blue">volatile</font> ctx_starting;
+    <font color="blue">void</font> <font color="black">(</font><font color="black">*</font> <font color="blue">volatile</font> ctx_starting_func<font color="black">)</font><font color="black">(</font><font color="blue">void</font><font color="black">)</font>;
+ 
+    <font color="green">/*
+     * Switch to the final signal mask (inherited from parent)
+     */</font>
+    sigprocmask<font color="black">(</font>SIG_SETMASK, <font color="black">&</font>ctx_creating_sigs, NULL<font color="black">)</font>;
+ 
+    <font color="green">/*
+     * Move startup details from static storage to local auto
+     * variables which is necessary because it has to survive in
+     * a local context until the thread is scheduled for real.
+     */</font>
+    ctx_starting <font color="black">=</font> ctx_creating;
+    ctx_starting_func <font color="black">=</font> <font color="black">(</font><font color="blue">void</font> <font color="black">(</font><font color="black">*</font><font color="black">)</font><font color="black">(</font><font color="blue">void</font><font color="black">)</font><font color="black">)</font> ctx_creating_func;
+ 
+    <font color="green">/*
+     * Save current machine state (on new stack) and
+     * go back to caller until we're scheduled for real...
+     */</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>setjmp<font color="black">(</font>ctx_starting<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">)</font><font color="black">)</font>
+        longjmp<font color="black">(</font>ctx_caller.cc, <font color="maroon">1</font><font color="black">)</font>;
+
+    <font color="green">/*
+     * The new thread is now running: GREAT!
+     * Now we just invoke its init function....
+     */</font>
+    ctx_starting_func<font color="black">(</font><font color="black">)</font>;
+
+    fprintf<font color="black">(</font>stderr, <font color="maroon">"[PCL] Hmm, you really shouldn't reach this point: curr=%p\n"</font>,
+        co_curr<font color="black">)</font>;
+    exit<font color="black">(</font><font color="maroon">1</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">static</font> <font color="blue">void</font> co_ctx_trampoline<font color="black">(</font><font color="blue">int</font> sig<font color="black">)</font> <font color="black">{</font>
+    <font color="green">/*
+     * Save current machine state and _immediately_ go back with
+     * a standard "return" (to stop the signal handler situation)
+     * to let him remove the stack again. Notice that we really
+     * have do a normal "return" here, or the OS would consider
+     * the thread to be running on a signal stack which isn't
+     * good (for instance it wouldn't allow us to spawn a thread
+     * from within a thread, etc.)
+     */</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>setjmp<font color="black">(</font>ctx_trampoline.cc<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        ctx_called <font color="black">=</font> <font color="maroon">1</font>;
+        <font color="blue">return</font>;
+    <font color="black">}</font>
+ 
+    <font color="green">/*
+     * Ok, the caller has longjmp'ed back to us, so now prepare
+     * us for the real machine state switching. We have to jump
+     * into another function here to get a new stack context for
+     * the auto variables (which have to be auto-variables
+     * because the start of the thread happens later).
+     */</font>
+    co_ctx_bootstrap<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">static</font> <font color="blue">int</font> co_set_context<font color="black">(</font>co_ctx_t <font color="black">*</font>ctx, <font color="blue">void</font> <font color="black">*</font>func, <font color="blue">char</font> <font color="black">*</font>stkbase, <font color="blue">long</font> stksiz<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">struct</font> sigaction sa;
+    <font color="blue">struct</font> sigaction osa;
+    sigset_t osigs;
+    sigset_t sigs;
+<font color="blue">#if</font> defined<font color="black">(</font>CO_HAS_SIGSTACK<font color="black">)</font>
+    <font color="blue">struct</font> sigstack ss;
+    <font color="blue">struct</font> sigstack oss;
+<font color="blue">#elif</font> defined<font color="black">(</font>CO_HAS_SIGALTSTACK<font color="black">)</font>
+    <font color="blue">struct</font> sigaltstack ss;
+    <font color="blue">struct</font> sigaltstack oss;
+<font color="blue">#else</font>
+<font color="blue">#error</font> <font color="maroon">"PCL: Unknown context stack type"</font>
+<font color="blue">#endif</font>
+
+    <font color="green">/*
+     * Preserve the SIGUSR1 signal state, block SIGUSR1,
+     * and establish our signal handler. The signal will
+     * later transfer control onto the signal stack.
+     */</font>
+    sigemptyset<font color="black">(</font><font color="black">&</font>sigs<font color="black">)</font>;
+    sigaddset<font color="black">(</font><font color="black">&</font>sigs, SIGUSR1<font color="black">)</font>;
+    sigprocmask<font color="black">(</font>SIG_BLOCK, <font color="black">&</font>sigs, <font color="black">&</font>osigs<font color="black">)</font>;
+    sa.sa_handler <font color="black">=</font> co_ctx_trampoline;
+    sigemptyset<font color="black">(</font><font color="black">&</font>sa.sa_mask<font color="black">)</font>;
+    sa.sa_flags <font color="black">=</font> SA_ONSTACK;
+    <font color="blue">if</font> <font color="black">(</font>sigaction<font color="black">(</font>SIGUSR1, <font color="black">&</font>sa, <font color="black">&</font>osa<font color="black">)</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+        <font color="blue">return</font> <font color="maroon">-1</font>;
+
+    <font color="green">/*
+     * Set the new stack.
+     *
+     * For sigaltstack we're lucky [from sigaltstack(2) on
+     * FreeBSD 3.1]: ``Signal stacks are automatically adjusted
+     * for the direction of stack growth and alignment
+     * requirements''
+     *
+     * For sigstack we have to decide ourself [from sigstack(2)
+     * on Solaris 2.6]: ``The direction of stack growth is not
+     * indicated in the historical definition of struct sigstack.
+     * The only way to portably establish a stack pointer is for
+     * the application to determine stack growth direction.''
+     */</font>
+<font color="blue">#if</font> defined<font color="black">(</font>CO_HAS_SIGALTSTACK<font color="black">)</font>
+    ss.ss_sp <font color="black">=</font> stkbase;
+    ss.ss_size <font color="black">=</font> stksiz <font color="black">-</font><font color="blue">sizeof</font><font color="black">(</font><font color="blue">int</font><font color="black">)</font>;
+    ss.ss_flags <font color="black">=</font> <font color="maroon">0</font>;
+    <font color="blue">if</font> <font color="black">(</font>sigaltstack<font color="black">(</font><font color="black">&</font>ss, <font color="black">&</font>oss<font color="black">)</font> <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+        <font color="blue">return</font> <font color="maroon">-1</font>;
+<font color="blue">#elif</font> defined<font color="black">(</font>CO_HAS_SIGSTACK<font color="black">)</font>
+    <font color="blue">if</font> <font color="black">(</font>co_ctx_stackdir<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+        ss.ss_sp <font color="black">=</font> <font color="black">(</font>stkbase <font color="black">+</font> stksiz <font color="black">-</font><font color="blue">sizeof</font><font color="black">(</font><font color="blue">int</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">else</font>
+        ss.ss_sp <font color="black">=</font> stkbase;
+    ss.ss_onstack <font color="black">=</font> <font color="maroon">0</font>;
+    <font color="blue">if</font> <font color="black">(</font>sigstack<font color="black">(</font><font color="black">&</font>ss, <font color="black">&</font>oss<font color="black">)</font> <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+        <font color="blue">return</font> <font color="maroon">-1</font>;
+<font color="blue">#else</font>
+<font color="blue">#error</font> <font color="maroon">"PCL: Unknown context stack type"</font>
+<font color="blue">#endif</font>
+
+    <font color="green">/*
+     * Now transfer control onto the signal stack and set it up.
+     * It will return immediately via "return" after the setjmp()
+     * was performed. Be careful here with race conditions.  The
+     * signal can be delivered the first time sigsuspend() is
+     * called.
+     */</font>
+    ctx_called <font color="black">=</font> <font color="maroon">0</font>;
+    kill<font color="black">(</font>getpid<font color="black">(</font><font color="black">)</font>, SIGUSR1<font color="black">)</font>;
+    sigfillset<font color="black">(</font><font color="black">&</font>sigs<font color="black">)</font>;
+    sigdelset<font color="black">(</font><font color="black">&</font>sigs, SIGUSR1<font color="black">)</font>;
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font>ctx_called<font color="black">)</font>
+        sigsuspend<font color="black">(</font><font color="black">&</font>sigs<font color="black">)</font>;
+
+    <font color="green">/*
+     * Inform the system that we are back off the signal stack by
+     * removing the alternative signal stack. Be careful here: It
+     * first has to be disabled, before it can be removed.
+     */</font>
+<font color="blue">#if</font> defined<font color="black">(</font>CO_HAS_SIGALTSTACK<font color="black">)</font>
+    sigaltstack<font color="black">(</font>NULL, <font color="black">&</font>ss<font color="black">)</font>;
+    ss.ss_flags <font color="black">=</font> SS_DISABLE;
+    <font color="blue">if</font> <font color="black">(</font>sigaltstack<font color="black">(</font><font color="black">&</font>ss, NULL<font color="black">)</font> <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+        <font color="blue">return</font> <font color="maroon">-1</font>;
+    sigaltstack<font color="black">(</font>NULL, <font color="black">&</font>ss<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="black">(</font>ss.ss_flags <font color="black">&</font> SS_DISABLE<font color="black">)</font><font color="black">)</font>
+        <font color="blue">return</font> <font color="maroon">-1</font>;
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="black">(</font>oss.ss_flags <font color="black">&</font> SS_DISABLE<font color="black">)</font><font color="black">)</font>
+        sigaltstack<font color="black">(</font><font color="black">&</font>oss, NULL<font color="black">)</font>;
+<font color="blue">#elif</font> defined<font color="black">(</font>CO_HAS_SIGSTACK<font color="black">)</font>
+    <font color="blue">if</font> <font color="black">(</font>sigstack<font color="black">(</font><font color="black">&</font>oss, NULL<font color="black">)</font><font color="black">)</font>
+        <font color="blue">return</font> <font color="maroon">-1</font>;
+<font color="blue">#else</font>
+<font color="blue">#error</font> <font color="maroon">"PCL: Unknown context stack type"</font>
+<font color="blue">#endif</font>
+
+    <font color="green">/*
+     * Restore the old SIGUSR1 signal handler and mask
+     */</font>
+    sigaction<font color="black">(</font>SIGUSR1, <font color="black">&</font>osa, NULL<font color="black">)</font>;
+    sigprocmask<font color="black">(</font>SIG_SETMASK, <font color="black">&</font>osigs, NULL<font color="black">)</font>;
+
+    <font color="green">/*
+     * Set creation information.
+     */</font>
+    ctx_creating <font color="black">=</font> ctx;
+    ctx_creating_func <font color="black">=</font> func;
+    memcpy<font color="black">(</font><font color="black">&</font>ctx_creating_sigs, <font color="black">&</font>osigs, <font color="blue">sizeof</font><font color="black">(</font>sigset_t<font color="black">)</font><font color="black">)</font>;
+
+    <font color="green">/*
+     * Now enter the trampoline again, but this time not as a signal
+     * handler. Instead we jump into it directly.
+     */</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>setjmp<font color="black">(</font>ctx_caller.cc<font color="black">)</font><font color="black">)</font>
+        longjmp<font color="black">(</font>ctx_trampoline.cc, <font color="maroon">1</font><font color="black">)</font>;
+
+    <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+<font color="blue">#else</font> <font color="green">/* #if defined(CO_USE_SIGCONTEXT) */</font>
+
+<font color="blue">static</font> <font color="blue">int</font> co_set_context<font color="black">(</font>co_ctx_t <font color="black">*</font>ctx, <font color="blue">void</font> <font color="black">*</font>func, <font color="blue">char</font> <font color="black">*</font>stkbase, <font color="blue">long</font> stksiz<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">char</font> <font color="black">*</font>stack;
+
+    stack <font color="black">=</font> stkbase <font color="black">+</font> stksiz <font color="black">-</font><font color="blue">sizeof</font><font color="black">(</font><font color="blue">int</font><font color="black">)</font>;
+
+    setjmp<font color="black">(</font>ctx<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">)</font>;
+
+<font color="blue">#if</font> defined<font color="black">(</font>__GLIBC__<font color="black">)</font> <font color="black">&</font><font color="black">&</font> defined<font color="black">(</font>__GLIBC_MINOR__<font color="black">)</font> \
+    <font color="black">&</font><font color="black">&</font> __GLIBC__ <font color="black">&#62;</font><font color="black">=</font> <font color="maroon">2</font> <font color="black">&</font><font color="black">&</font> __GLIBC_MINOR__ <font color="black">&#62;</font><font color="black">=</font> <font color="maroon">0</font> <font color="black">&</font><font color="black">&</font> defined<font color="black">(</font>JB_PC<font color="black">)</font> <font color="black">&</font><font color="black">&</font> defined<font color="black">(</font>JB_SP<font color="black">)</font>
+    ctx<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.__jmpbuf<font color="black">[</font>JB_PC<font color="black">]</font> <font color="black">=</font> <font color="black">(</font><font color="blue">int</font><font color="black">)</font> func;
+    ctx<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.__jmpbuf<font color="black">[</font>JB_SP<font color="black">]</font> <font color="black">=</font> <font color="black">(</font><font color="blue">int</font><font color="black">)</font> stack;
+<font color="blue">#elif</font> defined<font color="black">(</font>__GLIBC__<font color="black">)</font> <font color="black">&</font><font color="black">&</font> defined<font color="black">(</font>__GLIBC_MINOR__<font color="black">)</font> \
+    <font color="black">&</font><font color="black">&</font> __GLIBC__ <font color="black">&#62;</font><font color="black">=</font> <font color="maroon">2</font> <font color="black">&</font><font color="black">&</font> __GLIBC_MINOR__ <font color="black">&#62;</font><font color="black">=</font> <font color="maroon">0</font> <font color="black">&</font><font color="black">&</font> defined<font color="black">(</font>__mc68000__<font color="black">)</font>
+    ctx<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.__jmpbuf<font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.__aregs<font color="black">[</font><font color="maroon">0</font><font color="black">]</font> <font color="black">=</font> <font color="black">(</font><font color="blue">long</font><font color="black">)</font> func;
+    ctx<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.__jmpbuf<font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.__sp <font color="black">=</font> <font color="black">(</font><font color="blue">int</font> <font color="black">*</font><font color="black">)</font> stack;
+<font color="blue">#elif</font> defined<font color="black">(</font>__GNU_LIBRARY__<font color="black">)</font> <font color="black">&</font><font color="black">&</font> defined<font color="black">(</font>__i386__<font color="black">)</font>
+    ctx<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.__jmpbuf<font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.__pc <font color="black">=</font> func;
+    ctx<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.__jmpbuf<font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.__sp <font color="black">=</font> stack;
+<font color="blue">#elif</font> defined<font color="black">(</font>_WIN32<font color="black">)</font> <font color="black">&</font><font color="black">&</font> defined<font color="black">(</font>_MSC_VER<font color="black">)</font>
+    <font color="black">(</font><font color="black">(</font>_JUMP_BUFFER <font color="black">*</font><font color="black">)</font> <font color="black">&</font>ctx<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>Eip <font color="black">=</font> <font color="black">(</font><font color="blue">long</font><font color="black">)</font> func;
+    <font color="black">(</font><font color="black">(</font>_JUMP_BUFFER <font color="black">*</font><font color="black">)</font> <font color="black">&</font>ctx<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>Esp <font color="black">=</font> <font color="black">(</font><font color="blue">long</font><font color="black">)</font> stack;
+<font color="blue">#elif</font> defined<font color="black">(</font>__GLIBC__<font color="black">)</font> <font color="black">&</font><font color="black">&</font> defined<font color="black">(</font>__GLIBC_MINOR__<font color="black">)</font> \
+    <font color="black">&</font><font color="black">&</font> __GLIBC__ <font color="black">&#62;</font><font color="black">=</font> <font color="maroon">2</font> <font color="black">&</font><font color="black">&</font> __GLIBC_MINOR__ <font color="black">&#62;</font><font color="black">=</font> <font color="maroon">0</font> <font color="black">&</font><font color="black">&</font> <font color="black">(</font>defined<font color="black">(</font>__powerpc64__<font color="black">)</font> <font color="black">|</font><font color="black">|</font> defined<font color="black">(</font>__powerpc__<font color="black">)</font><font color="black">)</font>
+    ctx<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.__jmpbuf<font color="black">[</font>JB_LR<font color="black">]</font> <font color="black">=</font> <font color="black">(</font><font color="blue">int</font><font color="black">)</font> func;
+    ctx<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.__jmpbuf<font color="black">[</font>JB_GPR1<font color="black">]</font> <font color="black">=</font> <font color="black">(</font><font color="blue">int</font><font color="black">)</font> stack;
+<font color="blue">#else</font>
+<font color="blue">#error</font> <font color="maroon">"PCL: Unsupported setjmp/longjmp platform. Please report to &#60;davidel@xmailserver.org&#62;"</font>
+<font color="blue">#endif</font>
+
+    <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">/* #if defined(CO_USE_SIGCONTEXT) */</font>
+
+
+<font color="blue">static</font> <font color="blue">void</font> co_switch_context<font color="black">(</font>co_ctx_t <font color="black">*</font>octx, co_ctx_t <font color="black">*</font>nctx<font color="black">)</font> <font color="black">{</font>
+
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>setjmp<font color="black">(</font>octx<font color="black">-</font><font color="black">&#62;</font>cc<font color="black">)</font><font color="black">)</font>
+        longjmp<font color="black">(</font>nctx<font color="black">-</font><font color="black">&#62;</font>cc, <font color="maroon">1</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">/* #if defined(CO_USE_UCONEXT) */</font>
+
+
+<font color="blue">static</font> <font color="blue">void</font> co_runner<font color="black">(</font><font color="blue">void</font><font color="black">)</font> <font color="black">{</font>
+    coroutine <font color="black">*</font>co <font color="black">=</font> co_curr;
+
+    co<font color="black">-</font><font color="black">&#62;</font>restarget <font color="black">=</font> co<font color="black">-</font><font color="black">&#62;</font>caller;
+    co<font color="black">-</font><font color="black">&#62;</font>func<font color="black">(</font>co<font color="black">-</font><font color="black">&#62;</font>data<font color="black">)</font>;
+    co_exit<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+coroutine_t co_create<font color="black">(</font><font color="blue">void</font> <font color="black">(</font><font color="black">*</font>func<font color="black">)</font><font color="black">(</font><font color="blue">void</font> <font color="black">*</font><font color="black">)</font>, <font color="blue">void</font> <font color="black">*</font>data, <font color="blue">void</font> <font color="black">*</font>stack, <font color="blue">int</font> size<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">int</font> alloc <font color="black">=</font> <font color="maroon">0</font>;
+    coroutine <font color="black">*</font>co;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="black">(</font>size <font color="black">&</font><font color="black">=</font> ~<font color="black">(</font><font color="blue">sizeof</font><font color="black">(</font><font color="blue">int</font><font color="black">)</font> <font color="maroon">-1</font><font color="black">)</font><font color="black">)</font> <font color="black">&#60;</font> CO_MIN_SIZE<font color="black">)</font>
+        <font color="blue">return</font> NULL;
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>stack<font color="black">)</font> <font color="black">{</font>
+        size <font color="black">=</font> <font color="black">(</font>size <font color="black">+</font> CO_STK_ALIGN <font color="maroon">-1</font><font color="black">)</font> <font color="black">&</font> ~<font color="black">(</font>CO_STK_ALIGN <font color="maroon">-1</font><font color="black">)</font>;
+        stack <font color="black">=</font> malloc<font color="black">(</font>size<font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>stack<font color="black">)</font>
+            <font color="blue">return</font> NULL;
+        alloc <font color="black">=</font> size;
+    <font color="black">}</font>
+    co <font color="black">=</font> stack;
+    co<font color="black">-</font><font color="black">&#62;</font>alloc <font color="black">=</font> alloc;
+    co<font color="black">-</font><font color="black">&#62;</font>func <font color="black">=</font> func;
+    co<font color="black">-</font><font color="black">&#62;</font>data <font color="black">=</font> data;
+    <font color="blue">if</font> <font color="black">(</font>co_set_context<font color="black">(</font><font color="black">&</font>co<font color="black">-</font><font color="black">&#62;</font>ctx, co_runner, stack, size<font color="black">)</font> <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font> 
+  <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font>alloc<font color="black">)</font>
+    <font color="black">{</font>
+      free<font color="black">(</font>co<font color="black">)</font>;
+    <font color="black">}</font>
+        <font color="blue">return</font> NULL;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">(</font>coroutine_t<font color="black">)</font> co;
+<font color="black">}</font>
+
+
+<font color="blue">void</font> co_delete<font color="black">(</font>coroutine_t coro<font color="black">)</font> <font color="black">{</font>
+    coroutine <font color="black">*</font>co <font color="black">=</font> <font color="black">(</font>coroutine <font color="black">*</font><font color="black">)</font> coro;
+
+    <font color="blue">if</font> <font color="black">(</font>co <font color="black">=</font><font color="black">=</font> co_curr<font color="black">)</font> <font color="black">{</font>
+        fprintf<font color="black">(</font>stderr, <font color="maroon">"[PCL] Cannot delete itself: curr=%p\n"</font>,
+            co_curr<font color="black">)</font>;
+        exit<font color="black">(</font><font color="maroon">1</font><font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">if</font> <font color="black">(</font>co<font color="black">-</font><font color="black">&#62;</font>alloc<font color="black">)</font>
+        free<font color="black">(</font>co<font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">void</font> co_call<font color="black">(</font>coroutine_t coro<font color="black">)</font> <font color="black">{</font>
+    coroutine <font color="black">*</font>co <font color="black">=</font> <font color="black">(</font>coroutine <font color="black">*</font><font color="black">)</font> coro, <font color="black">*</font>oldco <font color="black">=</font> co_curr;
+
+    co<font color="black">-</font><font color="black">&#62;</font>caller <font color="black">=</font> co_curr;
+    co_curr <font color="black">=</font> co;
+
+    co_switch_context<font color="black">(</font><font color="black">&</font>oldco<font color="black">-</font><font color="black">&#62;</font>ctx, <font color="black">&</font>co<font color="black">-</font><font color="black">&#62;</font>ctx<font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">void</font> co_resume<font color="black">(</font><font color="blue">void</font><font color="black">)</font> 
+<font color="black">{</font>
+    co_call<font color="black">(</font>co_curr<font color="black">-</font><font color="black">&#62;</font>restarget<font color="black">)</font>;
+    co_curr<font color="black">-</font><font color="black">&#62;</font>restarget <font color="black">=</font> co_curr<font color="black">-</font><font color="black">&#62;</font>caller;
+<font color="black">}</font>
+
+
+<font color="blue">static</font> <font color="blue">void</font> co_del_helper<font color="black">(</font><font color="blue">void</font> <font color="black">*</font>data<font color="black">)</font> <font color="black">{</font>
+    coroutine <font color="black">*</font>cdh;
+
+    <font color="blue">for</font> <font color="black">(</font>;;<font color="black">)</font> <font color="black">{</font>
+        cdh <font color="black">=</font> co_dhelper;
+        co_dhelper <font color="black">=</font> NULL;
+        co_delete<font color="black">(</font>co_curr<font color="black">-</font><font color="black">&#62;</font>caller<font color="black">)</font>;
+        co_call<font color="black">(</font><font color="black">(</font>coroutine_t<font color="black">)</font> cdh<font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>co_dhelper<font color="black">)</font> <font color="black">{</font>
+            fprintf<font color="black">(</font>stderr, <font color="maroon">"[PCL] Resume to delete helper coroutine: curr=%p\n"</font>,
+                co_curr<font color="black">)</font>;
+            exit<font color="black">(</font><font color="maroon">1</font><font color="black">)</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+<font color="black">}</font>
+
+
+<font color="blue">void</font> co_exit_to<font color="black">(</font>coroutine_t coro<font color="black">)</font> <font color="black">{</font>
+    coroutine <font color="black">*</font>co <font color="black">=</font> <font color="black">(</font>coroutine <font color="black">*</font><font color="black">)</font> coro;
+    <font color="blue">static</font> coroutine <font color="black">*</font>dchelper <font color="black">=</font> NULL;
+    <font color="blue">static</font> <font color="blue">char</font> stk<font color="black">[</font>CO_MIN_SIZE<font color="black">]</font>;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>dchelper <font color="black">&</font><font color="black">&</font>
+        <font color="black">!</font><font color="black">(</font>dchelper <font color="black">=</font> co_create<font color="black">(</font>co_del_helper, NULL, stk, <font color="blue">sizeof</font><font color="black">(</font>stk<font color="black">)</font><font color="black">)</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        fprintf<font color="black">(</font>stderr, <font color="maroon">"[PCL] Unable to create delete helper coroutine: curr=%p\n"</font>,
+            co_curr<font color="black">)</font>;
+        exit<font color="black">(</font><font color="maroon">1</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    co_dhelper <font color="black">=</font> co;
+ 
+    co_call<font color="black">(</font><font color="black">(</font>coroutine_t<font color="black">)</font> dchelper<font color="black">)</font>;
+
+    fprintf<font color="black">(</font>stderr, <font color="maroon">"[PCL] Stale coroutine called: curr=%p\n"</font>,
+        co_curr<font color="black">)</font>;
+    exit<font color="black">(</font><font color="maroon">1</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">void</font> co_exit<font color="black">(</font><font color="blue">void</font><font color="black">)</font> <font color="black">{</font>
+
+    co_exit_to<font color="black">(</font><font color="black">(</font>coroutine_t<font color="black">)</font> co_curr<font color="black">-</font><font color="black">&#62;</font>restarget<font color="black">)</font>;
+<font color="black">}</font>
+
+
+coroutine_t co_current<font color="black">(</font><font color="blue">void</font><font color="black">)</font> <font color="black">{</font>
+
+    <font color="blue">return</font> <font color="black">(</font>coroutine_t<font color="black">)</font> co_curr;
+<font color="black">}</font>
+
+
+</PRE>
+</BODY>
+</HTML>

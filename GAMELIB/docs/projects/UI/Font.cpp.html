@@ -1,0 +1,121 @@
+<HTML>
+<HEAD>
+<TITLE>
+Font.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable<font color="black">:</font><font color="maroon">4786</font> <font color="maroon">4530</font> <font color="maroon">4503</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"Font.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Misc/AssetManager.h"</font>
+
+map<font color="black">&#60;</font>string, Font<font color="black">*</font><font color="black">&#62;</font> Font<font color="black">:</font><font color="black">:</font>s_fonts;
+
+Font<font color="black">*</font> Font<font color="black">:</font><font color="black">:</font>getDefault<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> theGame.assetManager<font color="black">-</font><font color="black">&#62;</font>getFont<font color="black">(</font><font color="maroon">"fnt_Default"</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Font<font color="black">:</font><font color="black">:</font>Font<font color="black">(</font>string filename<font color="black">)</font><font color="black">:</font>
+m_isValid<font color="black">(</font><font color="blue">true</font><font color="black">)</font>,
+m_surface<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>
+<font color="black">{</font>
+  m_surface <font color="black">=</font> loadSDLSurface<font color="black">(</font>filename.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>m_surface<font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Error, <font color="maroon">"Unable to load SFont: %s"</font>, filename.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    m_isValid <font color="black">=</font> <font color="blue">false</font>;
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+
+  m_fontInfo.Surface <font color="black">=</font> m_surface;
+
+  InitFont2<font color="black">(</font><font color="black">&</font>m_fontInfo<font color="black">)</font>;
+  
+  <font color="green">// we don't free the SDL_Surface</font>
+<font color="black">}</font>
+
+Font<font color="black">:</font><font color="black">:</font>~Font<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  SDL_FreeSurface<font color="black">(</font>m_surface<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">int</font> Font<font color="black">:</font><font color="black">:</font>drawLine<font color="black">(</font>Display<font color="black">*</font> surface, string s, <font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_isValid<font color="black">)</font>
+  <font color="black">{</font>
+    Vector v<font color="black">=</font>theGame.screen<font color="black">-</font><font color="black">&#62;</font>getDrawOffsetAmount<font color="black">(</font><font color="black">)</font>;
+    SDL_Surface<font color="black">*</font> disp <font color="black">=</font> surface<font color="black">-</font><font color="black">&#62;</font>getSDLSurface<font color="black">(</font><font color="black">)</font>;
+    PutString2<font color="black">(</font>disp, <font color="black">&</font>m_fontInfo, x<font color="black">+</font>v.x, y<font color="black">+</font>v.y, <font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font>s.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> getTextWidth<font color="black">(</font>s<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="maroon">-1</font>;
+<font color="black">}</font>
+
+<font color="blue">int</font> Font<font color="black">:</font><font color="black">:</font>drawLine<font color="black">(</font>SDL_Surface<font color="black">*</font> surface, string s, <font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_isValid<font color="black">)</font>
+  <font color="black">{</font>
+    Vector v<font color="black">=</font>theGame.screen<font color="black">-</font><font color="black">&#62;</font>getDrawOffsetAmount<font color="black">(</font><font color="black">)</font>;
+    PutString2<font color="black">(</font>surface, <font color="black">&</font>m_fontInfo, x<font color="black">+</font>v.x, y<font color="black">+</font>v.y, <font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font>s.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> getTextWidth<font color="black">(</font>s<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="maroon">-1</font>;
+<font color="black">}</font>
+
+Font<font color="black">*</font> Font<font color="black">:</font><font color="black">:</font>load<font color="black">(</font>string filename<font color="black">)</font>
+<font color="black">{</font>
+  Font<font color="black">*</font> ret <font color="black">=</font> <font color="maroon">0</font>;
+  
+  map<font color="black">&#60;</font>string, Font<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  pair <font color="black">=</font> s_fonts.find<font color="black">(</font>filename<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>pair <font color="black">=</font><font color="black">=</font> s_fonts.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font>Inform, <font color="maroon">"Loading Font %s"</font>, filename.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    ret <font color="black">=</font> <font color="blue">new</font> Font<font color="black">(</font>filename<font color="black">)</font>;
+    s_fonts<font color="black">[</font>filename<font color="black">]</font> <font color="black">=</font> ret;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    ret <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+  <font color="black">}</font>
+  
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+<font color="blue">int</font> Font<font color="black">:</font><font color="black">:</font>getTextWidth<font color="black">(</font>string str<font color="black">)</font> 
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_isValid<font color="black">)</font>
+    <font color="blue">return</font> TextWidth2<font color="black">(</font><font color="black">&</font>m_fontInfo, <font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font>str.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>; 
+
+  <font color="blue">return</font> <font color="maroon">-1</font>;
+<font color="black">}</font>
+
+<font color="blue">int</font> Font<font color="black">:</font><font color="black">:</font>getTextWidth<font color="black">(</font>string str, <font color="blue">int</font> offset, <font color="blue">int</font> count<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">char</font><font color="black">*</font> buf <font color="black">=</font> <font color="blue">new</font> <font color="blue">char</font><font color="black">[</font>count <font color="black">+</font> <font color="maroon">1</font><font color="black">]</font>;
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>count; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    buf<font color="black">[</font>c<font color="black">]</font> <font color="black">=</font> str.at<font color="black">(</font>offset<font color="black">+</font>c<font color="black">)</font>;
+  <font color="black">}</font>
+  buf<font color="black">[</font>c<font color="black">]</font> <font color="black">=</font> <font color="maroon">'\0'</font>;
+
+  <font color="blue">int</font> ret <font color="black">=</font> getTextWidth<font color="black">(</font>buf<font color="black">)</font>;
+  <font color="blue">delete</font> <font color="black">[</font><font color="black">]</font> buf;
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+<font color="blue">int</font> Font<font color="black">:</font><font color="black">:</font>getFontHeight<font color="black">(</font><font color="black">)</font> 
+<font color="black">{</font> 
+  <font color="blue">if</font> <font color="black">(</font>m_isValid<font color="black">)</font>
+    <font color="blue">return</font> m_fontInfo.Surface<font color="black">-</font><font color="black">&#62;</font>h; 
+
+  <font color="blue">return</font> <font color="maroon">-1</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

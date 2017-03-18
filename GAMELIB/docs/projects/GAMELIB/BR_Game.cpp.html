@@ -1,0 +1,501 @@
+<HTML>
+<HEAD>
+<TITLE>
+BR_Game.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+<font color="blue">#include</font> <font color="maroon">"UI/ConsoleCommand.h"</font>
+<font color="blue">#include</font> <font color="maroon">"SDL_gfxPrimitives.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Misc/AssetManager.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Tasking/GameScheduler.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Timer.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Link.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Coroutine.h"</font>
+<font color="blue">#include</font> <font color="maroon">"StdString.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;iostream&#62;</font>
+
+UISystem theUI;
+
+BR_Game<font color="black">*</font> BR_Game<font color="black">:</font><font color="black">:</font>s_instance <font color="black">=</font> <font color="maroon">0</font>;
+
+BR_Game<font color="black">&</font> BR_Game<font color="black">:</font><font color="black">:</font>instance<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> <font color="black">*</font>s_instance;
+<font color="black">}</font>
+
+<font color="blue">bool</font> BR_Game<font color="black">:</font><font color="black">:</font>initialize<font color="black">(</font><font color="blue">int</font> w, <font color="blue">int</font> h, <font color="blue">int</font> bpp, DisplayType type, Uint32 flags<font color="black">)</font>
+<font color="black">{</font>
+  logScope<font color="black">(</font><font color="maroon">"BR_Game::initialize"</font><font color="black">)</font>;
+
+  <font color="blue">int</font> old <font color="black">=</font> MaintLog<font color="black">:</font><font color="black">:</font>get<font color="black">(</font><font color="black">)</font>.setFilter<font color="black">(</font>All<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font> <font color="black">(</font>old <font color="black">&</font> All<font color="black">)</font> <font color="black">=</font><font color="black">=</font> All<font color="black">)</font>
+  <font color="black">{</font>
+    MaintLog<font color="black">:</font><font color="black">:</font>get<font color="black">(</font><font color="black">)</font>.setFilter<font color="black">(</font>old<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">255</font><font color="black">]</font>;
+  <font color="blue">if</font> <font color="black">(</font>type <font color="black">=</font><font color="black">=</font> SDL <font color="black">|</font><font color="black">|</font> type <font color="black">=</font><font color="black">=</font> OPENGL<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>SDL_Init<font color="black">(</font>SDL_INIT_VIDEO <font color="black">|</font> SDL_INIT_TIMER <font color="black">|</font> SDL_INIT_AUDIO<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font>
+    <font color="black">{</font>
+      sprintf<font color="black">(</font>buf, <font color="maroon">"SDL not inited: SDL_GetError() returns: %d"</font>, SDL_GetError<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+      logError<font color="black">(</font>buf, Fatal<font color="black">)</font>;
+      <font color="blue">return</font> <font color="blue">false</font>;
+    <font color="black">}</font>
+    atexit<font color="black">(</font>SDL_Quit<font color="black">)</font>;
+  <font color="black">}</font>
+
+  srand<font color="black">(</font>time<font color="black">(</font><font color="maroon">0</font><font color="black">)</font><font color="black">)</font>;
+  
+  Display<font color="black">*</font> disp<font color="black">=</font><font color="maroon">0</font>;
+
+  disp <font color="black">=</font> Display<font color="black">:</font><font color="black">:</font>create<font color="black">(</font>w, h, bpp, type, flags<font color="black">)</font>;
+  
+  SDL_EnableKeyRepeat<font color="black">(</font><font color="maroon">250</font>, SDL_DEFAULT_REPEAT_INTERVAL<font color="black">)</font>;
+
+  <font color="blue">new</font> BR_Game<font color="black">(</font>disp<font color="black">)</font>;
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+BR_Game<font color="black">:</font><font color="black">:</font>BR_Game<font color="black">(</font>Display<font color="black">*</font> disp<font color="black">)</font><font color="black">:</font>
+uiSystem<font color="black">(</font>theUI<font color="black">)</font>,
+screen<font color="black">(</font>disp<font color="black">)</font>,
+m_drawListener<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_appListener<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_showFPS<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+m_mouseCursor<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_throttle<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+m_capture<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+m_frameNum<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_grabTimer<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_co_gameTick<font color="black">(</font><font color="black">*</font><font color="blue">this</font>, BR_Game<font color="black">:</font><font color="black">:</font>co_tickGameFrame, <font color="maroon">"GameTick"</font><font color="black">)</font>
+<font color="black">{</font>
+  logScope<font color="black">(</font><font color="maroon">"BR_Game::BR_Game"</font><font color="black">)</font>;
+  
+  assetManager <font color="black">=</font> <font color="maroon">0</font>;
+  m_fpsStringBuf<font color="black">[</font><font color="maroon">0</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">'\0'</font>;
+
+  s_instance <font color="black">=</font> <font color="blue">this</font>;
+  initializeInput<font color="black">(</font><font color="black">)</font>;
+  uiSystem.initialize<font color="black">(</font><font color="black">)</font>;
+
+  SDL_ShowCursor<font color="black">(</font><font color="blue">false</font><font color="black">)</font>;
+
+  m_co_gameTick.spawn<font color="black">(</font><font color="black">)</font>;
+
+<font color="green">//  m_grabTimer = Timer::create("ScreenGrabber", -1, 1000/15, this, 0, true);</font>
+<font color="black">}</font>
+
+BR_Game<font color="black">:</font><font color="black">:</font>~BR_Game<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">delete</font> screen;
+  <font color="blue">if</font> <font color="black">(</font>m_grabTimer <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    Timer<font color="black">:</font><font color="black">:</font>destroy<font color="black">(</font>m_grabTimer<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> BR_Game<font color="black">:</font><font color="black">:</font>setWindowInfo<font color="black">(</font>SDL_Surface<font color="black">*</font> icon, string text<font color="black">)</font>
+<font color="black">{</font>
+  SDL_WM_SetCaption<font color="black">(</font>text.c_str<font color="black">(</font><font color="black">)</font>, text.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  SDL_WM_SetIcon<font color="black">(</font>icon, <font color="maroon">0</font><font color="black">)</font>;
+<font color="black">}</font>
+<font color="green">////////////////////////</font>
+<font color="green">/// INPUT //////////////</font>
+<font color="green">////////////////////////</font>
+<font color="blue">void</font> BR_Game<font color="black">:</font><font color="black">:</font>initializeInput<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  m_keyboard <font color="black">=</font> SDL_GetKeyState<font color="black">(</font><font color="black">&</font>m_numKeys<font color="black">)</font>;
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> x<font color="black">=</font><font color="maroon">0</font>; x<font color="black">&#60;</font><font color="maroon">8</font>; x<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_buttonState<font color="black">[</font>x<font color="black">]</font><font color="black">=</font>FREE;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> BR_Game<font color="black">:</font><font color="black">:</font>pumpInput<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  SDL_PumpEvents<font color="black">(</font><font color="black">)</font>;
+  m_keyboard <font color="black">=</font> SDL_GetKeyState<font color="black">(</font><font color="black">&</font>m_numKeys<font color="black">)</font>;
+  <font color="blue">int</font> x, y;
+  SDL_GetMouseState<font color="black">(</font><font color="black">&</font>x, <font color="black">&</font>y<font color="black">)</font>;
+  m_mouse.x <font color="black">=</font> x;
+  m_mouse.y <font color="black">=</font> y;
+<font color="black">}</font>
+  
+<font color="blue">bool</font> BR_Game<font color="black">:</font><font color="black">:</font>isKey<font color="black">(</font><font color="blue">int</font> keySym<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> <font color="black">(</font>m_keyboard<font color="black">[</font>keySym<font color="black">]</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> BR_Game<font color="black">:</font><font color="black">:</font>grabInput<font color="black">(</font><font color="blue">bool</font> grab<font color="black">)</font>
+<font color="black">{</font>
+  SDL_GrabMode mode<font color="black">=</font><font color="black">(</font>grab?SDL_GRAB_ON<font color="black">:</font>SDL_GRAB_OFF<font color="black">)</font>;
+  <font color="blue">return</font> <font color="black">(</font>mode <font color="black">=</font><font color="black">=</font> SDL_WM_GrabInput<font color="black">(</font>mode<font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> BR_Game<font color="black">:</font><font color="black">:</font>warpMouse<font color="black">(</font>Uint16 x, Uint16 y<font color="black">)</font>
+<font color="black">{</font>
+  SDL_WarpMouse<font color="black">(</font>x, y<font color="black">)</font>;
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> BR_Game<font color="black">:</font><font color="black">:</font>showCursor<font color="black">(</font><font color="blue">bool</font> show<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">bool</font> old <font color="black">=</font> m_mouseShowing;
+  m_mouseShowing <font color="black">=</font> show;
+  <font color="blue">return</font> old;
+<font color="black">}</font>
+
+<font color="blue">void</font> BR_Game<font color="black">:</font><font color="black">:</font>setMouse<font color="black">(</font>string assetName, <font color="blue">int</font> hotX, <font color="blue">int</font> hotY<font color="black">)</font>
+<font color="black">{</font>
+  m_mouseCursor <font color="black">=</font> assetManager<font color="black">-</font><font color="black">&#62;</font>getSkin<font color="black">(</font>assetName<font color="black">)</font>;
+  m_hotX <font color="black">=</font> hotX;
+  m_hotY <font color="black">=</font> hotY;
+<font color="black">}</font>
+
+<font color="blue">void</font> BR_Game<font color="black">:</font><font color="black">:</font>drawMouse<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_mouseCursor <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> <font color="blue">return</font>;
+  <font color="blue">int</font> realX <font color="black">=</font> m_mouse.x <font color="black">-</font>m_hotX;
+  <font color="blue">int</font> realY <font color="black">=</font> m_mouse.y <font color="black">-</font>m_hotY;
+  
+  m_mouseCursor<font color="black">-</font><font color="black">&#62;</font>blit<font color="black">(</font>theGame.screen, realX, realY, <font color="blue">false</font><font color="black">)</font>;
+<font color="green">//  theGame.screen-&#62;blit(m_mouseCursor-&#62;getTexture(), realX, realY);</font>
+<font color="black">}</font>
+
+
+<font color="blue">void</font> BR_Game<font color="black">:</font><font color="black">:</font>setButtonState<font color="black">(</font><font color="blue">int</font> b, <font color="blue">int</font> s<font color="black">)</font>
+<font color="black">{</font>
+  m_buttonState<font color="black">[</font>b<font color="black">]</font> <font color="black">=</font> s;
+<font color="black">}</font>
+<font color="blue">int</font> BR_Game<font color="black">:</font><font color="black">:</font>getButtonState<font color="black">(</font><font color="blue">int</font> b<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> m_buttonState<font color="black">[</font>b<font color="black">]</font>;
+<font color="black">}</font>
+
+Point BR_Game<font color="black">:</font><font color="black">:</font>getMousePos<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> m_mouse;
+<font color="black">}</font>
+
+<font color="green">//////////////////////////</font>
+<font color="green">/// GAME //////////////////</font>
+<font color="green">///////////////////////////</font>
+
+<font color="blue">int</font> BR_Game<font color="black">:</font><font color="black">:</font>pollEvents<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="green">// possably optimize by using static maessages or message cache</font>
+  
+  SDL_Event revent;
+  SDL_Event<font color="black">*</font> event<font color="black">=</font><font color="black">&</font>revent;
+  <font color="blue">int</font> c;
+
+  <font color="blue">while</font> <font color="black">(</font><font color="black">(</font>c <font color="black">=</font> SDL_PollEvent<font color="black">(</font>event<font color="black">)</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">switch</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>type<font color="black">)</font> 
+    <font color="black">{</font>
+    <font color="blue">case</font> SDL_KEYDOWN<font color="black">:</font>
+      <font color="black">{</font>
+        m_sdlMetaKeyState <font color="black">=</font> event<font color="black">-</font><font color="black">&#62;</font>key.keysym.mod;
+        KeyPressEvent keyPress;
+        keyPress.keySym<font color="black">=</font>event<font color="black">-</font><font color="black">&#62;</font>key.keysym.sym;
+        keyPress.metaKeyState <font color="black">=</font> m_sdlMetaKeyState;
+        uiSystem.onKeyPress<font color="black">(</font><font color="black">&</font>keyPress<font color="black">)</font>;
+      <font color="black">}</font>
+      <font color="blue">break</font>;
+    <font color="blue">case</font> SDL_KEYUP<font color="black">:</font>
+      <font color="black">{</font>
+        m_sdlMetaKeyState <font color="black">=</font> event<font color="black">-</font><font color="black">&#62;</font>key.keysym.mod;
+        KeyReleaseEvent keyRelease;
+        keyRelease.keySym<font color="black">=</font>event<font color="black">-</font><font color="black">&#62;</font>key.keysym.sym;
+        keyRelease.metaKeyState <font color="black">=</font> m_sdlMetaKeyState;
+        uiSystem.onKeyRelease<font color="black">(</font><font color="black">&</font>keyRelease<font color="black">)</font>;
+      <font color="black">}</font>
+      <font color="blue">break</font>;
+    <font color="blue">case</font> SDL_MOUSEMOTION<font color="black">:</font>
+      <font color="black">{</font>
+        MouseMoveEvent mouseMove;
+        mouseMove.x <font color="black">=</font> event<font color="black">-</font><font color="black">&#62;</font>motion.x;
+        mouseMove.y <font color="black">=</font> event<font color="black">-</font><font color="black">&#62;</font>motion.y;
+        mouseMove.relx <font color="black">=</font> event<font color="black">-</font><font color="black">&#62;</font>motion.xrel;
+        mouseMove.rely <font color="black">=</font> event<font color="black">-</font><font color="black">&#62;</font>motion.yrel;
+        mouseMove.metaKeyState <font color="black">=</font> m_sdlMetaKeyState;
+        uiSystem.onMouseMove<font color="black">(</font><font color="black">&</font>mouseMove<font color="black">)</font>;
+      <font color="black">}</font>
+      <font color="blue">break</font>;
+      
+    <font color="blue">case</font> SDL_MOUSEBUTTONUP<font color="black">:</font>
+      <font color="black">{</font>
+        MouseReleaseEvent up;
+        up.x <font color="black">=</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button.x<font color="black">)</font>;
+        up.y <font color="black">=</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button.y<font color="black">)</font>;
+        up.button <font color="black">=</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button.button<font color="black">)</font>;
+        up.metaKeyState <font color="black">=</font> m_sdlMetaKeyState;
+        uiSystem.onMouseRelease<font color="black">(</font><font color="black">&</font>up<font color="black">)</font>;
+
+        <font color="blue">int</font> prevState<font color="black">=</font>getButtonState<font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button.button<font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font>prevState <font color="black">=</font><font color="black">=</font> DOWN<font color="black">)</font>
+        <font color="black">{</font>
+          MouseClickEvent click;
+          click.x <font color="black">=</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button.x<font color="black">)</font>;
+          click.y <font color="black">=</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button.y<font color="black">)</font>;
+          click.button <font color="black">=</font> event<font color="black">-</font><font color="black">&#62;</font>button.button;
+          uiSystem.onMouseClick<font color="black">(</font><font color="black">&</font>click<font color="black">)</font>;
+        <font color="black">}</font>
+        setButtonState<font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button.button, FREE<font color="black">)</font>;
+      <font color="black">}</font>
+      <font color="blue">break</font>;
+      
+    <font color="blue">case</font> SDL_MOUSEBUTTONDOWN<font color="black">:</font>
+      <font color="black">{</font>
+        MousePressEvent down;
+        down.x <font color="black">=</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button.x<font color="black">)</font>;
+        down.y <font color="black">=</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button.y<font color="black">)</font>;
+        down.button <font color="black">=</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button.button<font color="black">)</font>;
+        down.metaKeyState <font color="black">=</font> m_sdlMetaKeyState;
+        setButtonState<font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>button.button, DOWN<font color="black">)</font>;
+        uiSystem.onMousePress<font color="black">(</font><font color="black">&</font>down<font color="black">)</font>;
+      <font color="black">}</font>
+      <font color="blue">break</font>;
+    <font color="blue">case</font> SDL_ACTIVEEVENT<font color="black">:</font>
+      <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font>m_appListener <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+        <font color="black">{</font>
+          <font color="blue">if</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>active.state <font color="black">&</font> SDL_APPINPUTFOCUS<font color="black">)</font>
+          <font color="black">{</font>
+            <font color="blue">if</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>active.gain <font color="black">=</font><font color="black">=</font> <font color="maroon">1</font><font color="black">)</font>
+            <font color="black">{</font>
+              m_appListener<font color="black">-</font><font color="black">&#62;</font>appGainedFocus<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font>
+            <font color="blue">else</font>
+            <font color="black">{</font>
+              m_appListener<font color="black">-</font><font color="black">&#62;</font>appLostFocus<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font>
+          <font color="black">}</font>
+        <font color="black">}</font>
+        logError<font color="black">(</font>Inform, <font color="maroon">"App %s focus."</font>, event<font color="black">-</font><font color="black">&#62;</font>active.gain?<font color="maroon">"Gained"</font><font color="black">:</font><font color="maroon">"Lost"</font><font color="black">)</font>;
+      <font color="black">}</font>
+      <font color="blue">break</font>;
+    <font color="blue">case</font> SDL_QUIT<font color="black">:</font>
+      <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font>m_appListener <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+        <font color="black">{</font>
+          m_appListener<font color="black">-</font><font color="black">&#62;</font>appQuitRequest<font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font>
+      <font color="black">}</font>
+      <font color="blue">break</font>;
+    <font color="blue">default</font><font color="black">:</font>
+      <font color="black">{</font>
+        <font color="green">//logError(Inform, "Unknown event: event-&#62;type = %d", event-&#62;type);</font>
+      <font color="black">}</font>
+      <font color="blue">break</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">return</font> c;
+<font color="black">}</font>
+
+clock_t start <font color="black">=</font> clock<font color="black">(</font><font color="black">)</font>;
+clock_t now;
+
+<font color="blue">void</font> BR_Game<font color="black">:</font><font color="black">:</font>pump<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+<font color="blue">#ifdef</font> _DEBUG
+  StopWatch pump;
+  pump.start<font color="black">(</font><font color="black">)</font>;
+
+  StopWatch sw;
+  sw.reset<font color="black">(</font><font color="black">)</font>;
+  
+  sw.start<font color="black">(</font><font color="black">)</font>;
+  draw<font color="black">(</font><font color="black">)</font>;
+  sw.stop<font color="black">(</font><font color="black">)</font>;
+  m_sw_draw <font color="black">=</font> sw.getElapsedTime<font color="black">(</font><font color="black">)</font>;
+  sw.reset<font color="black">(</font><font color="black">)</font>;
+
+  sw.start<font color="black">(</font><font color="black">)</font>;
+  Link<font color="black">:</font><font color="black">:</font>processLinks<font color="black">(</font><font color="black">)</font>;
+  sw.stop<font color="black">(</font><font color="black">)</font>;
+  m_sw_network <font color="black">=</font> sw.getElapsedTime<font color="black">(</font><font color="black">)</font>;
+  sw.reset<font color="black">(</font><font color="black">)</font>;
+
+  sw.start<font color="black">(</font><font color="black">)</font>;
+  pumpInput<font color="black">(</font><font color="black">)</font>;
+  pollEvents<font color="black">(</font><font color="black">)</font>;
+  sw.stop<font color="black">(</font><font color="black">)</font>;
+  m_sw_input <font color="black">=</font> sw.getElapsedTime<font color="black">(</font><font color="black">)</font>;
+  sw.reset<font color="black">(</font><font color="black">)</font>;
+
+  sw.start<font color="black">(</font><font color="black">)</font>;
+  Timer<font color="black">:</font><font color="black">:</font>tick<font color="black">(</font><font color="black">)</font>;
+  sw.stop<font color="black">(</font><font color="black">)</font>;
+  m_sw_timer <font color="black">=</font> sw.getElapsedTime<font color="black">(</font><font color="black">)</font>;
+  sw.reset<font color="black">(</font><font color="black">)</font>;
+
+  sw.start<font color="black">(</font><font color="black">)</font>;
+  Coroutine<font color="black">:</font><font color="black">:</font>schedule<font color="black">(</font><font color="black">)</font>;
+  sw.stop<font color="black">(</font><font color="black">)</font>;
+  m_sw_coroutine <font color="black">=</font> sw.getElapsedTime<font color="black">(</font><font color="black">)</font>;
+
+  pump.stop<font color="black">(</font><font color="black">)</font>;
+  m_sw_pump <font color="black">=</font> pump.getElapsedTime<font color="black">(</font><font color="black">)</font>;
+<font color="blue">#else</font>
+  draw<font color="black">(</font><font color="black">)</font>;
+  Link<font color="black">:</font><font color="black">:</font>processLinks<font color="black">(</font><font color="black">)</font>;
+  pumpInput<font color="black">(</font><font color="black">)</font>;
+  pollEvents<font color="black">(</font><font color="black">)</font>;
+  Timer<font color="black">:</font><font color="black">:</font>tick<font color="black">(</font><font color="black">)</font>;
+  Coroutine<font color="black">:</font><font color="black">:</font>schedule<font color="black">(</font><font color="black">)</font>;
+<font color="blue">#endif</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> BR_Game<font color="black">:</font><font color="black">:</font>timeReport<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  logError<font color="black">(</font>Inform, <font color="maroon">""</font><font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Time Report"</font><font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"-----------------------"</font><font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"drawing    : %03d"</font>, m_sw_draw<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"network    : %03d"</font>, m_sw_network<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"input      : %03d"</font>, m_sw_input<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"timer      : %03d"</font>, m_sw_timer<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"coroutine  : %03d"</font>, m_sw_coroutine<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"-----------------------"</font><font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"TOTAL      :%04d"</font>, m_sw_pump<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> BR_Game<font color="black">:</font><font color="black">:</font>timeout<font color="black">(</font>TimerEvent<font color="black">*</font> event<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>m_capture<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+
+  CStdString fn;
+  fn.Format<font color="black">(</font><font color="maroon">"framegrab%d.bmp"</font>, m_frameNum<font color="black">)</font>;
+  logError<font color="black">(</font>Inform, <font color="maroon">"Screengrab: %d"</font>, m_frameNum<font color="black">)</font>;
+  screen<font color="black">-</font><font color="black">&#62;</font>screenshot<font color="black">(</font>fn<font color="black">)</font>;
+  m_frameNum<font color="black">+</font><font color="black">+</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> BR_Game<font color="black">:</font><font color="black">:</font>draw<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">static</font> frames <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="blue">static</font> DWORD start <font color="black">=</font> timeGetTime<font color="black">(</font><font color="black">)</font>;
+  
+
+  frames<font color="black">+</font><font color="black">+</font>;
+
+  <font color="blue">if</font> <font color="black">(</font>m_drawListener <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_drawListener<font color="black">-</font><font color="black">&#62;</font>preDraw<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  
+  uiSystem.draw<font color="black">(</font>screen<font color="black">)</font>;
+  
+  <font color="blue">if</font> <font color="black">(</font>m_drawListener <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_drawListener<font color="black">-</font><font color="black">&#62;</font>postDraw<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>m_showFPS<font color="black">)</font>
+  <font color="black">{</font>
+    DWORD elap <font color="black">=</font> timeGetTime<font color="black">(</font><font color="black">)</font> <font color="black">-</font>start;
+    <font color="blue">float</font> FPS <font color="black">=</font> <font color="black">(</font><font color="blue">float</font><font color="black">)</font>frames<font color="black">/</font><font color="black">(</font>elap<font color="black">/</font><font color="maroon">1000</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>elap <font color="black">&#62;</font> <font color="maroon">10000</font><font color="black">)</font>
+    <font color="black">{</font>
+      start <font color="black">=</font> elap;
+      frames <font color="black">=</font> <font color="maroon">0</font>;
+    <font color="black">}</font>
+
+    Font<font color="black">*</font> font<font color="black">=</font>Font<font color="black">:</font><font color="black">:</font>getDefault<font color="black">(</font><font color="black">)</font>;
+    sprintf<font color="black">(</font>m_fpsStringBuf, <font color="maroon">"FPS: %f"</font>, FPS<font color="black">)</font>;
+    font<font color="black">-</font><font color="black">&#62;</font>drawLine<font color="black">(</font>screen, m_fpsStringBuf, <font color="maroon">20</font>, <font color="maroon">20</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>m_mouseShowing<font color="black">)</font>
+  <font color="black">{</font>
+    drawMouse<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  
+  screen<font color="black">-</font><font color="black">&#62;</font>flip<font color="black">(</font><font color="black">)</font>;
+  timeout<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="green">////////////////////////</font>
+  <font color="green">// INTERACTION////////</font>
+  <font color="green">///////////////////////</font>
+  
+<font color="blue">int</font> BR_Game<font color="black">:</font><font color="black">:</font>msgBox<font color="black">(</font>string str, string title, <font color="blue">int</font> flags<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> width<font color="black">=</font>Font<font color="black">:</font><font color="black">:</font>getDefault<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>getTextWidth<font color="black">(</font>str<font color="black">)</font> <font color="black">+</font> <font color="maroon">40</font>;
+  width <font color="black">=</font> <font color="maroon">400</font>;
+  <font color="blue">int</font> x <font color="black">=</font> <font color="black">(</font><font color="maroon">640</font><font color="black">/</font><font color="maroon">2</font><font color="black">)</font> <font color="black">-</font><font color="black">(</font>width<font color="black">/</font><font color="maroon">2</font><font color="black">)</font>;
+  <font color="blue">int</font> y <font color="black">=</font> <font color="maroon">100</font>;
+  <font color="blue">int</font> h <font color="black">=</font> <font color="maroon">90</font>;
+
+  <font color="blue">bool</font> useBoth <font color="black">=</font> <font color="blue">false</font>;;
+  Button<font color="black">*</font> bOne <font color="black">=</font> <font color="maroon">0</font>;
+  Button<font color="black">*</font> bTwo <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="blue">int</font> oc<font color="black">=</font>BR_OK_CANCEL;
+
+  <font color="blue">if</font> <font color="black">(</font><font color="black">(</font>flags <font color="black">&</font> BR_OK_CANCEL<font color="black">)</font> <font color="black">=</font><font color="black">=</font> BR_OK_CANCEL<font color="black">)</font>
+  <font color="black">{</font>
+    useBoth <font color="black">=</font> <font color="blue">true</font>;
+    bOne <font color="black">=</font> m_msgBoxOk;
+    bTwo <font color="black">=</font> m_msgBoxCancel;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="black">(</font>flags <font color="black">&</font> BR_OK<font color="black">)</font> <font color="black">=</font><font color="black">=</font> BR_OK<font color="black">)</font>
+  <font color="black">{</font>
+    bOne <font color="black">=</font> m_msgBoxOk;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="black">(</font>flags <font color="black">&</font> BR_CANCEL<font color="black">)</font> <font color="black">=</font><font color="black">=</font> BR_CANCEL<font color="black">)</font>
+  <font color="black">{</font>
+    bOne <font color="black">=</font> m_msgBoxCancel;
+  <font color="black">}</font>
+
+  <font color="blue">if</font> <font color="black">(</font>width <font color="black">&#60;</font> <font color="maroon">200</font><font color="black">)</font>
+  <font color="black">{</font>
+    width <font color="black">=</font> <font color="maroon">200</font>;
+  <font color="black">}</font>
+
+  m_msgBox<font color="black">-</font><font color="black">&#62;</font>setPosition<font color="black">(</font>Rect<font color="black">(</font>x, y, width, h<font color="black">)</font><font color="black">)</font>;
+  m_msgBox<font color="black">-</font><font color="black">&#62;</font>setText<font color="black">(</font>title.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  m_msgBoxLabel<font color="black">-</font><font color="black">&#62;</font>setText<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  m_msgBoxLabel<font color="black">-</font><font color="black">&#62;</font>setPosition<font color="black">(</font>Rect<font color="black">(</font><font color="maroon">0</font>, <font color="maroon">15</font>, width, <font color="maroon">30</font><font color="black">)</font><font color="black">)</font>;
+
+  m_msgBoxOk<font color="black">-</font><font color="black">&#62;</font>hide<font color="black">(</font><font color="black">)</font>;
+  m_msgBoxCancel<font color="black">-</font><font color="black">&#62;</font>hide<font color="black">(</font><font color="black">)</font>;
+
+  
+  <font color="blue">if</font> <font color="black">(</font>useBoth<font color="black">)</font>
+  <font color="black">{</font>
+    bOne<font color="black">-</font><font color="black">&#62;</font>setPosition<font color="black">(</font>Rect<font color="black">(</font> <font color="black">(</font>width<font color="black">/</font><font color="maroon">2</font><font color="black">)</font> <font color="maroon">-90</font>, <font color="maroon">50</font>, <font color="maroon">80</font>, <font color="maroon">30</font><font color="black">)</font><font color="black">)</font>;
+    bTwo<font color="black">-</font><font color="black">&#62;</font>setPosition<font color="black">(</font>Rect<font color="black">(</font> <font color="black">(</font>width<font color="black">/</font><font color="maroon">2</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">10</font>, <font color="maroon">50</font>, <font color="maroon">80</font>, <font color="maroon">30</font><font color="black">)</font><font color="black">)</font>;
+    bOne<font color="black">-</font><font color="black">&#62;</font>show<font color="black">(</font><font color="black">)</font>;
+    bTwo<font color="black">-</font><font color="black">&#62;</font>show<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    bOne<font color="black">-</font><font color="black">&#62;</font>setPosition<font color="black">(</font>Rect<font color="black">(</font> <font color="black">(</font>width<font color="black">/</font><font color="maroon">2</font><font color="black">)</font> <font color="maroon">-40</font>, <font color="maroon">50</font>, <font color="maroon">80</font>, <font color="maroon">30</font><font color="black">)</font><font color="black">)</font>;
+    bOne<font color="black">-</font><font color="black">&#62;</font>show<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">return</font> m_msgBox<font color="black">-</font><font color="black">&#62;</font>doModal<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> BR_Game<font color="black">:</font><font color="black">:</font>co_tickGameFrame<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">while</font><font color="black">(</font><font color="blue">true</font><font color="black">)</font>
+  <font color="black">{</font>
+    GameScheduler<font color="black">:</font><font color="black">:</font>newFrame<font color="black">(</font><font color="black">)</font>;
+    Coroutine<font color="black">:</font><font color="black">:</font>waitUntilFromStart<font color="black">(</font><font color="maroon">33</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

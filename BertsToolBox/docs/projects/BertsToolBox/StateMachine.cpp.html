@@ -1,0 +1,117 @@
+<HTML>
+<HEAD>
+<TITLE>
+StateMachine.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"StateMachine.h"</font>
+
+<font color="blue">#if</font> <font color="maroon">0</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;assert.h&#62;</font>
+
+<font color="blue">class</font> MyContext
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  MyContext<font color="black">(</font><font color="black">)</font><font color="black">:</font> i1<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, i2<font color="black">(</font><font color="maroon">0</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  <font color="blue">int</font> i1;
+  <font color="blue">int</font> i2;
+<font color="black">}</font>;
+
+<font color="blue">typedef</font> State<font color="black">&#60;</font>MyContext<font color="black">*</font>, <font color="blue">int</font><font color="black">&#62;</font> StateDef;
+<font color="blue">typedef</font> StateMachine<font color="black">&#60;</font>MyContext<font color="black">*</font>, <font color="blue">int</font><font color="black">&#62;</font> StateMachineDef;
+
+
+<font color="blue">class</font> State1<font color="black">:</font> <font color="blue">public</font> StateDef
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual StateEvent processMessage<font color="black">(</font>MyContext<font color="black">*</font> smc, <font color="blue">int</font> msg<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>msg <font color="black">=</font><font color="black">=</font> <font color="maroon">1</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="maroon">1</font>;
+    <font color="black">}</font>
+    <font color="blue">if</font> <font color="black">(</font>msg <font color="black">=</font><font color="black">=</font> <font color="maroon">3</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="maroon">3</font>;
+    <font color="black">}</font>
+    smc<font color="black">-</font><font color="black">&#62;</font>i1 <font color="black">=</font> msg;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">class</font> State2<font color="black">:</font> <font color="blue">public</font> StateDef
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual StateEvent processMessage<font color="black">(</font>MyContext<font color="black">*</font> smc, <font color="blue">int</font> msg<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>msg <font color="black">=</font><font color="black">=</font> <font color="maroon">2</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="maroon">2</font>;
+    <font color="black">}</font>
+    <font color="blue">if</font> <font color="black">(</font>msg <font color="black">=</font><font color="black">=</font> <font color="maroon">3</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">return</font> <font color="maroon">3</font>;
+    <font color="black">}</font>
+    smc<font color="black">-</font><font color="black">&#62;</font>i2 <font color="black">=</font> msg;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+
+<font color="blue">int</font> main<font color="black">(</font><font color="blue">int</font> c, <font color="blue">char</font><font color="black">*</font><font color="black">*</font> v<font color="black">)</font>
+<font color="black">{</font>
+  MyContext myContext;
+  StateMachineDef sm<font color="black">(</font><font color="black">&</font>myContext<font color="black">)</font>;
+  StateDef<font color="black">*</font> s1 <font color="black">=</font> <font color="blue">new</font> State1;
+  StateDef<font color="black">*</font> s2 <font color="black">=</font> <font color="blue">new</font> State2;
+
+  sm<font color="black">[</font><font color="maroon">0</font><font color="black">]</font><font color="black">[</font><font color="maroon">0</font><font color="black">]</font> <font color="black">=</font> s1;
+  sm<font color="black">[</font>s1<font color="black">]</font><font color="black">[</font><font color="maroon">1</font><font color="black">]</font> <font color="black">=</font> s2;
+  sm<font color="black">[</font>s1<font color="black">]</font><font color="black">[</font><font color="maroon">3</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">0</font>; <font color="green">// end it</font>
+  sm<font color="black">[</font>s2<font color="black">]</font><font color="black">[</font><font color="maroon">2</font><font color="black">]</font> <font color="black">=</font> s1;
+  sm<font color="black">[</font>s2<font color="black">]</font><font color="black">[</font><font color="maroon">3</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">0</font>; <font color="green">// end it</font>
+
+  sm.start<font color="black">(</font><font color="black">)</font>;
+
+  assert<font color="black">(</font>sm.getCurrentState<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> s1<font color="black">)</font>;
+
+  sm.processMessage<font color="black">(</font><font color="maroon">4</font><font color="black">)</font>;
+  assert<font color="black">(</font>sm.getCurrentState<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> s1<font color="black">)</font>;
+  assert<font color="black">(</font>myContext.i1 <font color="black">=</font><font color="black">=</font> <font color="maroon">4</font><font color="black">)</font>;
+
+  sm.processMessage<font color="black">(</font><font color="maroon">1</font><font color="black">)</font>;
+  assert<font color="black">(</font>sm.getCurrentState<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> s2<font color="black">)</font>;
+  assert<font color="black">(</font>myContext.i1 <font color="black">=</font><font color="black">=</font> <font color="maroon">4</font><font color="black">)</font>;
+
+  sm.processMessage<font color="black">(</font><font color="maroon">7</font><font color="black">)</font>;
+  assert<font color="black">(</font>sm.getCurrentState<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> s2<font color="black">)</font>;
+  assert<font color="black">(</font>myContext.i1 <font color="black">=</font><font color="black">=</font> <font color="maroon">4</font><font color="black">)</font>;
+  assert<font color="black">(</font>myContext.i2 <font color="black">=</font><font color="black">=</font> <font color="maroon">7</font><font color="black">)</font>;
+
+  sm.processMessage<font color="black">(</font><font color="maroon">2</font><font color="black">)</font>;
+  assert<font color="black">(</font>sm.getCurrentState<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> s1<font color="black">)</font>;
+  assert<font color="black">(</font>myContext.i1 <font color="black">=</font><font color="black">=</font> <font color="maroon">4</font><font color="black">)</font>;
+  assert<font color="black">(</font>myContext.i2 <font color="black">=</font><font color="black">=</font> <font color="maroon">7</font><font color="black">)</font>;
+
+  sm.processMessage<font color="black">(</font><font color="maroon">16</font><font color="black">)</font>;
+  assert<font color="black">(</font>sm.getCurrentState<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> s1<font color="black">)</font>;
+  assert<font color="black">(</font>myContext.i1 <font color="black">=</font><font color="black">=</font> <font color="maroon">16</font><font color="black">)</font>;
+  assert<font color="black">(</font>myContext.i2 <font color="black">=</font><font color="black">=</font> <font color="maroon">7</font><font color="black">)</font>;
+
+  sm.processMessage<font color="black">(</font><font color="maroon">3</font><font color="black">)</font>;
+  assert<font color="black">(</font>sm.getCurrentState<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+  assert<font color="black">(</font>myContext.i1 <font color="black">=</font><font color="black">=</font> <font color="maroon">16</font><font color="black">)</font>;
+  assert<font color="black">(</font>myContext.i2 <font color="black">=</font><font color="black">=</font> <font color="maroon">7</font><font color="black">)</font>;
+
+
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

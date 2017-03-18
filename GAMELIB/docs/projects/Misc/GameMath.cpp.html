@@ -1,0 +1,460 @@
+<HTML>
+<HEAD>
+<TITLE>
+GameMath.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4503</font> <font color="maroon">4530</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"GameMath.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+<font color="blue">#include</font> <font color="maroon">"StringTokenizer.h"</font>
+
+<font color="blue">float</font> sintable<font color="black">[</font><font color="maroon">360</font><font color="black">]</font>;
+<font color="blue">float</font> costable<font color="black">[</font><font color="maroon">360</font><font color="black">]</font>;
+
+
+<font color="blue">static</font> <font color="blue">class</font> SINTABLEINITER
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  SINTABLEINITER<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">float</font> temp;
+    <font color="blue">for</font><font color="black">(</font> <font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i<font color="black">&#60;</font><font color="maroon">360</font>; i<font color="black">+</font><font color="black">+</font> <font color="black">)</font>
+    <font color="black">{</font>
+      temp <font color="black">=</font> <font color="black">(</font><font color="black">(</font><font color="blue">float</font><font color="black">)</font><font color="black">(</font>i<font color="black">)</font><font color="black">/</font><font color="maroon">180</font><font color="black">)</font>;
+      
+      temp <font color="black">*</font><font color="black">=</font> BR_PI;
+      
+      costable<font color="black">[</font>i<font color="black">]</font> <font color="black">=</font> <font color="black">(</font><font color="blue">float</font><font color="black">)</font>cos<font color="black">(</font> temp <font color="black">)</font>;
+      sintable<font color="black">[</font>i<font color="black">]</font> <font color="black">=</font> <font color="black">(</font><font color="blue">float</font><font color="black">)</font>sin<font color="black">(</font> temp <font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+<font color="black">}</font> sinTableIniter;
+
+
+<font color="blue">float</font> Point<font color="black">:</font><font color="black">:</font>distanceTo<font color="black">(</font>Point<font color="black">&</font> p<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">long</font> aSquared<font color="black">=</font><font color="black">(</font>p.x<font color="black">-</font>x<font color="black">)</font><font color="black">*</font><font color="black">(</font>p.x<font color="black">-</font>x<font color="black">)</font>;
+  <font color="blue">long</font> bSquared<font color="black">=</font><font color="black">(</font>p.y<font color="black">-</font>y<font color="black">)</font><font color="black">*</font><font color="black">(</font>p.y<font color="black">-</font>y<font color="black">)</font>;
+  
+  <font color="blue">return</font> <font color="black">(</font><font color="blue">float</font><font color="black">)</font>sqrt<font color="black">(</font>aSquared<font color="black">+</font>bSquared<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">int</font> Point<font color="black">:</font><font color="black">:</font>distanceToSquared<font color="black">(</font>Point<font color="black">&</font> p<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> aSquared<font color="black">=</font><font color="black">(</font>p.x<font color="black">-</font>x<font color="black">)</font><font color="black">*</font><font color="black">(</font>p.x<font color="black">-</font>x<font color="black">)</font>;
+  <font color="blue">int</font> bSquared<font color="black">=</font><font color="black">(</font>p.y<font color="black">-</font>y<font color="black">)</font><font color="black">*</font><font color="black">(</font>p.y<font color="black">-</font>y<font color="black">)</font>;
+
+  <font color="blue">return</font> aSquared <font color="black">+</font> bSquared;
+<font color="black">}</font>
+
+Point<font color="black">:</font><font color="black">:</font>Point<font color="black">(</font><font color="blue">const</font> FPoint<font color="black">&</font> other<font color="black">)</font>
+<font color="black">{</font>
+  x <font color="black">=</font> other.x;
+  y <font color="black">=</font> other.y;
+<font color="black">}</font>
+
+
+<font color="blue">float</font> FPoint<font color="black">:</font><font color="black">:</font>distanceTo<font color="black">(</font>FPoint<font color="black">&</font> p<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">float</font> aSquared<font color="black">=</font><font color="black">(</font>p.x<font color="black">-</font>x<font color="black">)</font><font color="black">*</font><font color="black">(</font>p.x<font color="black">-</font>x<font color="black">)</font>;
+  <font color="blue">float</font> bSquared<font color="black">=</font><font color="black">(</font>p.y<font color="black">-</font>y<font color="black">)</font><font color="black">*</font><font color="black">(</font>p.y<font color="black">-</font>y<font color="black">)</font>;
+  
+  <font color="blue">return</font> <font color="black">(</font><font color="blue">float</font><font color="black">)</font>sqrt<font color="black">(</font>aSquared<font color="black">+</font>bSquared<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">float</font> FPoint<font color="black">:</font><font color="black">:</font>distanceToSquared<font color="black">(</font>FPoint<font color="black">&</font> p<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">float</font> aSquared<font color="black">=</font><font color="black">(</font>p.x<font color="black">-</font>x<font color="black">)</font><font color="black">*</font><font color="black">(</font>p.x<font color="black">-</font>x<font color="black">)</font>;
+  <font color="blue">float</font> bSquared<font color="black">=</font><font color="black">(</font>p.y<font color="black">-</font>y<font color="black">)</font><font color="black">*</font><font color="black">(</font>p.y<font color="black">-</font>y<font color="black">)</font>;
+
+  <font color="blue">return</font> aSquared <font color="black">+</font> bSquared;
+<font color="black">}</font>
+
+
+<font color="blue">bool</font> Point<font color="black">:</font><font color="black">:</font>isShortestDistance<font color="black">(</font>Point<font color="black">&</font> p<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">float</font> aSquared<font color="black">=</font><font color="black">(</font>p.x<font color="black">-</font>x<font color="black">)</font><font color="black">*</font><font color="black">(</font>p.x<font color="black">-</font>x<font color="black">)</font>;
+  <font color="blue">float</font> bSquared<font color="black">=</font><font color="black">(</font>p.y<font color="black">-</font>y<font color="black">)</font><font color="black">*</font><font color="black">(</font>p.y<font color="black">-</font>y<font color="black">)</font>;
+  
+  <font color="blue">float</font> dist<font color="black">=</font>aSquared<font color="black">+</font>bSquared;
+
+  <font color="blue">if</font> <font color="black">(</font>dist <font color="black">&#60;</font> shortest<font color="black">)</font>
+  <font color="black">{</font>
+    shortest <font color="black">=</font> dist;
+    <font color="blue">return</font> <font color="blue">true</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> FPoint<font color="black">:</font><font color="black">:</font>isShortestDistance<font color="black">(</font>FPoint<font color="black">&</font> p<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">float</font> aSquared<font color="black">=</font><font color="black">(</font>p.x<font color="black">-</font>x<font color="black">)</font><font color="black">*</font><font color="black">(</font>p.x<font color="black">-</font>x<font color="black">)</font>;
+  <font color="blue">float</font> bSquared<font color="black">=</font><font color="black">(</font>p.y<font color="black">-</font>y<font color="black">)</font><font color="black">*</font><font color="black">(</font>p.y<font color="black">-</font>y<font color="black">)</font>;
+  
+  <font color="blue">float</font> dist<font color="black">=</font>aSquared<font color="black">+</font>bSquared;
+  <font color="blue">if</font> <font color="black">(</font>dist <font color="black">&#60;</font> shortest<font color="black">)</font>
+  <font color="black">{</font>
+    shortest <font color="black">=</font> dist;
+    <font color="blue">return</font> <font color="blue">true</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+<font color="green">/*static*/</font> <font color="blue">bool</font> Rect<font color="black">:</font><font color="black">:</font>checkOverlap<font color="black">(</font>Rect<font color="black">*</font> r1, Rect<font color="black">*</font> r2<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> x<font color="black">=</font>r1<font color="black">-</font><font color="black">&#62;</font>x;
+  <font color="blue">int</font> y<font color="black">=</font>r1<font color="black">-</font><font color="black">&#62;</font>y;
+  <font color="blue">int</font> bx<font color="black">=</font><font color="black">(</font>r1<font color="black">-</font><font color="black">&#62;</font>x<font color="black">+</font>r1<font color="black">-</font><font color="black">&#62;</font>w<font color="black">)</font>;
+  <font color="blue">int</font> by<font color="black">=</font><font color="black">(</font>r1<font color="black">-</font><font color="black">&#62;</font>y<font color="black">+</font>r1<font color="black">-</font><font color="black">&#62;</font>h<font color="black">)</font>;
+
+  <font color="blue">int</font> ox<font color="black">=</font>r2<font color="black">-</font><font color="black">&#62;</font>x;
+  <font color="blue">int</font> oy<font color="black">=</font>r2<font color="black">-</font><font color="black">&#62;</font>y;
+  <font color="blue">int</font> obx<font color="black">=</font><font color="black">(</font>r2<font color="black">-</font><font color="black">&#62;</font>x<font color="black">+</font>r2<font color="black">-</font><font color="black">&#62;</font>w<font color="black">)</font>;
+  <font color="blue">int</font> oby<font color="black">=</font><font color="black">(</font>r2<font color="black">-</font><font color="black">&#62;</font>y<font color="black">+</font>r2<font color="black">-</font><font color="black">&#62;</font>h<font color="black">)</font>;
+
+  <font color="blue">bool</font> xOverlaps<font color="black">=</font><font color="black">(</font><font color="black">(</font>x <font color="black">&#60;</font><font color="black">=</font> ox <font color="black">&</font><font color="black">&</font> ox <font color="black">&#60;</font><font color="black">=</font> bx<font color="black">)</font> <font color="black">|</font><font color="black">|</font> 
+                  <font color="black">(</font>x <font color="black">&#60;</font><font color="black">=</font> obx <font color="black">&</font><font color="black">&</font> obx <font color="black">&#60;</font><font color="black">=</font> bx<font color="black">)</font> <font color="black">|</font><font color="black">|</font> 
+                  <font color="black">(</font>ox <font color="black">&#60;</font><font color="black">=</font> x <font color="black">&</font><font color="black">&</font> x <font color="black">&#60;</font><font color="black">=</font> obx<font color="black">)</font> <font color="black">|</font><font color="black">|</font>
+                  <font color="black">(</font>ox <font color="black">&#60;</font> bx <font color="black">&</font><font color="black">&</font> bx <font color="black">&#60;</font><font color="black">=</font> obx<font color="black">)</font><font color="black">)</font>;
+
+  
+  <font color="blue">bool</font> yOverlaps<font color="black">=</font><font color="black">(</font><font color="black">(</font>y <font color="black">&#60;</font><font color="black">=</font> oy <font color="black">&</font><font color="black">&</font> oy <font color="black">&#60;</font><font color="black">=</font> by<font color="black">)</font> <font color="black">|</font><font color="black">|</font> 
+                  <font color="black">(</font>y <font color="black">&#60;</font><font color="black">=</font> oby <font color="black">&</font><font color="black">&</font> oby <font color="black">&#60;</font><font color="black">=</font> by<font color="black">)</font> <font color="black">|</font><font color="black">|</font> 
+                  <font color="black">(</font>oy <font color="black">&#60;</font><font color="black">=</font> y <font color="black">&</font><font color="black">&</font> y <font color="black">&#60;</font><font color="black">=</font> oby<font color="black">)</font> <font color="black">|</font><font color="black">|</font>
+                  <font color="black">(</font>oy <font color="black">&#60;</font> by <font color="black">&</font><font color="black">&</font> by <font color="black">&#60;</font><font color="black">=</font> oby<font color="black">)</font><font color="black">)</font>;
+
+  <font color="blue">return</font> <font color="black">(</font>xOverlaps <font color="black">&</font><font color="black">&</font> yOverlaps<font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="green">/*static*/</font> Rect Rect<font color="black">:</font><font color="black">:</font>findOverlap<font color="black">(</font>Rect<font color="black">*</font> overlapper, Rect<font color="black">*</font> overlappee<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> overlapperX<font color="black">=</font>overlapper<font color="black">-</font><font color="black">&#62;</font>x;
+  <font color="blue">int</font> overlapperY<font color="black">=</font>overlapper<font color="black">-</font><font color="black">&#62;</font>y;
+  <font color="blue">int</font> overlapperBX<font color="black">=</font>overlapper<font color="black">-</font><font color="black">&#62;</font>x <font color="black">+</font> overlapper<font color="black">-</font><font color="black">&#62;</font>w;
+  <font color="blue">int</font> overlapperBY<font color="black">=</font>overlapper<font color="black">-</font><font color="black">&#62;</font>y <font color="black">+</font> overlapper<font color="black">-</font><font color="black">&#62;</font>h;
+
+  <font color="blue">int</font> overlappeeX<font color="black">=</font>overlappee<font color="black">-</font><font color="black">&#62;</font>x;
+  <font color="blue">int</font> overlappeeY<font color="black">=</font>overlappee<font color="black">-</font><font color="black">&#62;</font>y;
+  <font color="blue">int</font> overlappeeBX<font color="black">=</font>overlappee<font color="black">-</font><font color="black">&#62;</font>x <font color="black">+</font> overlappee<font color="black">-</font><font color="black">&#62;</font>w;
+  <font color="blue">int</font> overlappeeBY<font color="black">=</font>overlappee<font color="black">-</font><font color="black">&#62;</font>y <font color="black">+</font> overlappee<font color="black">-</font><font color="black">&#62;</font>h;
+
+  Rect ret<font color="black">(</font><font color="maroon">-1</font>, <font color="maroon">-1</font>, <font color="maroon">-1</font>, <font color="maroon">-1</font><font color="black">)</font>;
+
+  <font color="green">//3</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#62;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#60;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#60;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#60;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font><font color="maroon">0</font>;
+    ret.y<font color="black">=</font>overlappeeY <font color="black">-</font>overlapperY;
+    ret.w<font color="black">=</font>overlapper<font color="black">-</font><font color="black">&#62;</font>w;
+    ret.h<font color="black">=</font>overlapperBY <font color="black">-</font>overlappeeY;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  <font color="green">//4</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#62;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#62;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#62;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#60;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font><font color="maroon">0</font>;
+    ret.y<font color="black">=</font><font color="maroon">0</font>;
+    ret.w<font color="black">=</font>overlappeeBX <font color="black">-</font>overlapperX;
+    ret.h<font color="black">=</font>overlapper<font color="black">-</font><font color="black">&#62;</font>h;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  <font color="green">//5</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#62;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#62;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#60;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#62;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font><font color="maroon">0</font>;
+    ret.y<font color="black">=</font><font color="maroon">0</font>;
+    ret.w<font color="black">=</font>overlapper<font color="black">-</font><font color="black">&#62;</font>w;
+    ret.h<font color="black">=</font>overlapperBY<font color="black">-</font>overlappeeBY;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  <font color="green">//6</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#60;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#62;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#60;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#60;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font>overlappeeX <font color="black">-</font>overlapperX;
+    ret.y<font color="black">=</font><font color="maroon">0</font>;
+    ret.w<font color="black">=</font>overlapperBX <font color="black">-</font>overlappeeX;
+    ret.h<font color="black">=</font>overlapper<font color="black">-</font><font color="black">&#62;</font>h;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  <font color="green">//7</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#60;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#60;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#60;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#60;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font>overlappeeX <font color="black">-</font>overlapperX;
+    ret.y<font color="black">=</font>overlappeeY <font color="black">-</font>overlapperY;
+    ret.w<font color="black">=</font>overlapperBX <font color="black">-</font>overlappeeX;
+    ret.h<font color="black">=</font>overlapperBY <font color="black">-</font>overlappeeY;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  <font color="green">//8</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#62;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#60;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#62;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#60;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font><font color="maroon">0</font>;
+    ret.y<font color="black">=</font>overlappeeY <font color="black">-</font>overlapperY;
+    ret.w<font color="black">=</font>overlappeeBX <font color="black">-</font>overlapperX;
+    ret.h<font color="black">=</font>overlapperBY <font color="black">-</font>overlappeeY;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  <font color="green">//9</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#62;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#62;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#62;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#62;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font><font color="maroon">0</font>;
+    ret.y<font color="black">=</font><font color="maroon">0</font>;
+    ret.w<font color="black">=</font>overlappeeBX <font color="black">-</font>overlapperX;
+    ret.h<font color="black">=</font>overlappeeBY <font color="black">-</font>overlapperY;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+  <font color="green">//10</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#60;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#62;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#60;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#62;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font>overlappeeX <font color="black">-</font>overlapperX;
+    ret.y<font color="black">=</font><font color="maroon">0</font>;
+    ret.w<font color="black">=</font>overlapperBX <font color="black">-</font>overlappeeX;
+    ret.h<font color="black">=</font>overlappeeBY <font color="black">-</font>overlapperY;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+  <font color="green">/////////////////////////////////////</font>
+
+  <font color="green">//11</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#62;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#60;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#60;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#62;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font><font color="maroon">0</font>;
+    ret.y<font color="black">=</font>overlappeeY <font color="black">-</font>overlapperY;
+    ret.w<font color="black">=</font>overlapper<font color="black">-</font><font color="black">&#62;</font>w;
+    ret.h<font color="black">=</font>overlappee<font color="black">-</font><font color="black">&#62;</font>h;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  <font color="green">//12</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#60;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#62;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#62;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#60;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font>overlappeeX <font color="black">-</font>overlapperX;
+    ret.y<font color="black">=</font><font color="maroon">0</font>;
+    ret.w<font color="black">=</font>overlappee<font color="black">-</font><font color="black">&#62;</font>w;
+    ret.h<font color="black">=</font>overlapper<font color="black">-</font><font color="black">&#62;</font>h;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  <font color="green">//13 ok</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#60;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#60;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#62;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#60;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font>overlappeeX <font color="black">-</font>overlapperX;
+    ret.y<font color="black">=</font>overlappeeY <font color="black">-</font>overlapperY;
+    ret.w<font color="black">=</font>overlappee<font color="black">-</font><font color="black">&#62;</font>w;
+    ret.h<font color="black">=</font>overlapperBY <font color="black">-</font>overlappeeY;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+  <font color="green">//14</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#60;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#62;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#62;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#62;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font>overlappeeX <font color="black">-</font>overlapperX;
+    ret.y<font color="black">=</font><font color="maroon">0</font>;
+    ret.w<font color="black">=</font>overlappee<font color="black">-</font><font color="black">&#62;</font>w;
+    ret.h<font color="black">=</font>overlappeeBY <font color="black">-</font>overlapperY;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+  <font color="green">//15</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#60;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#60;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#60;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#62;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font>overlappeeX <font color="black">-</font>overlapperX;
+    ret.y<font color="black">=</font>overlappeeY <font color="black">-</font>overlapperY;
+    ret.w<font color="black">=</font>overlapperBX <font color="black">-</font>overlappeeX;
+    ret.h<font color="black">=</font>overlappee<font color="black">-</font><font color="black">&#62;</font>h;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+  <font color="green">//16 ok</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#62;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#60;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#62;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#62;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font><font color="maroon">0</font>;
+    ret.y<font color="black">=</font>overlappeeY <font color="black">-</font>overlapperY;
+    ret.w<font color="black">=</font>overlappeeBX <font color="black">-</font>overlapperX;
+    ret.h<font color="black">=</font>overlappee<font color="black">-</font><font color="black">&#62;</font>h;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+    <font color="green">//1</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#60;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font> 
+      overlapperY  <font color="black">&#60;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#62;</font><font color="black">=</font> overlappeeBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#62;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font><font color="maroon">0</font>;
+    ret.y<font color="black">=</font><font color="maroon">0</font>;
+    ret.w<font color="black">=</font>overlappee<font color="black">-</font><font color="black">&#62;</font>w;
+    ret.h<font color="black">=</font>overlappee<font color="black">-</font><font color="black">&#62;</font>h;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+  <font color="green">//2</font>
+  <font color="blue">if</font> <font color="black">(</font>overlapperX  <font color="black">&#62;</font><font color="black">=</font> overlappeeX <font color="black">&</font><font color="black">&</font>
+      overlapperY  <font color="black">&#62;</font><font color="black">=</font> overlappeeY <font color="black">&</font><font color="black">&</font>
+      overlapperBX <font color="black">&#60;</font><font color="black">=</font> overlapperBX <font color="black">&</font><font color="black">&</font>
+      overlapperBY <font color="black">&#60;</font><font color="black">=</font> overlappeeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret.x<font color="black">=</font><font color="maroon">0</font>;
+    ret.y<font color="black">=</font><font color="maroon">0</font>;
+    ret.w<font color="black">=</font>overlapper<font color="black">-</font><font color="black">&#62;</font>w;
+    ret.h<font color="black">=</font>overlapper<font color="black">-</font><font color="black">&#62;</font>h;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+
+  
+  lassert<font color="black">(</font><font color="blue">false</font><font color="black">)</font>;
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+<font color="blue">int</font> Rect<font color="black">:</font><font color="black">:</font>impactSide<font color="black">(</font>Rect<font color="black">*</font> hitter, Rect<font color="black">*</font> hittee<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> ret<font color="black">=</font><font color="maroon">0</font>;
+  <font color="blue">int</font> hitterX <font color="black">=</font> hitter<font color="black">-</font><font color="black">&#62;</font>x;
+  <font color="blue">int</font> hitterBX <font color="black">=</font> hitter<font color="black">-</font><font color="black">&#62;</font>x <font color="black">+</font> hitter<font color="black">-</font><font color="black">&#62;</font>w;
+  <font color="blue">int</font> hitterY <font color="black">=</font> hitter<font color="black">-</font><font color="black">&#62;</font>y;
+  <font color="blue">int</font> hitterBY <font color="black">=</font> hitter<font color="black">-</font><font color="black">&#62;</font>y <font color="black">+</font> hitter<font color="black">-</font><font color="black">&#62;</font>h;
+
+  <font color="blue">int</font> hitteeX <font color="black">=</font> hittee<font color="black">-</font><font color="black">&#62;</font>x;
+  <font color="blue">int</font> hitteeBX <font color="black">=</font> hittee<font color="black">-</font><font color="black">&#62;</font>x <font color="black">+</font> hittee<font color="black">-</font><font color="black">&#62;</font>w;
+  <font color="blue">int</font> hitteeY <font color="black">=</font> hittee<font color="black">-</font><font color="black">&#62;</font>y;
+  <font color="blue">int</font> hitteeBY <font color="black">=</font> hittee<font color="black">-</font><font color="black">&#62;</font>y <font color="black">+</font> hittee<font color="black">-</font><font color="black">&#62;</font>h;
+
+
+  <font color="blue">if</font> <font color="black">(</font>hitterX <font color="black">&#60;</font><font color="black">=</font> hitteeX <font color="black">&</font><font color="black">&</font>
+      hitterBX <font color="black">&#62;</font><font color="black">=</font> hitteeX<font color="black">)</font>
+  <font color="black">{</font>
+    ret <font color="black">|</font><font color="black">=</font> bLEFT;
+  <font color="black">}</font>
+
+  <font color="blue">if</font> <font color="black">(</font>hitterX <font color="black">&#60;</font><font color="black">=</font> hitteeBX <font color="black">&</font><font color="black">&</font>
+      hitterBX <font color="black">&#62;</font><font color="black">=</font> hitteeBX<font color="black">)</font>
+  <font color="black">{</font>
+    ret <font color="black">|</font><font color="black">=</font> bRIGHT;
+  <font color="black">}</font>
+
+  <font color="blue">if</font> <font color="black">(</font>hitterY <font color="black">&#60;</font><font color="black">=</font> hitteeY <font color="black">&</font><font color="black">&</font>
+      hitterBY <font color="black">&#62;</font><font color="black">=</font> hitteeY<font color="black">)</font>
+  <font color="black">{</font>
+    ret <font color="black">|</font><font color="black">=</font> bTOP;
+  <font color="black">}</font>
+  
+  <font color="blue">if</font> <font color="black">(</font>hitterY <font color="black">&#60;</font><font color="black">=</font> hitteeBY <font color="black">&</font><font color="black">&</font>
+      hitterBY <font color="black">&#62;</font><font color="black">=</font> hitteeBY<font color="black">)</font>
+  <font color="black">{</font>
+    ret <font color="black">|</font><font color="black">=</font> bBOTTOM;
+  <font color="black">}</font>
+
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+Rect Rect<font color="black">:</font><font color="black">:</font>parseRect<font color="black">(</font>std<font color="black">:</font><font color="black">:</font>string strRect<font color="black">)</font>
+<font color="black">{</font>
+  Rect ret<font color="black">(</font><font color="maroon">-1</font>, <font color="maroon">-1</font>, <font color="maroon">-1</font>, <font color="maroon">-1</font><font color="black">)</font>;
+  StringTokenizer st<font color="black">(</font>strRect.c_str<font color="black">(</font><font color="black">)</font>, <font color="maroon">", \t\r\n"</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>st.countTokens<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">4</font><font color="black">)</font>
+  <font color="black">{</font>
+    ret.x <font color="black">=</font> atoi<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    ret.y <font color="black">=</font> atoi<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    ret.w <font color="black">=</font> atoi<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    ret.h <font color="black">=</font> atoi<font color="black">(</font>st.nextToken<font color="black">(</font><font color="black">)</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> ret;
+<font color="black">}</font>
+
+<font color="blue">float</font> distToSegment<font color="black">(</font><font color="blue">float</font> px, <font color="blue">float</font> py, <font color="blue">float</font> X1, <font color="blue">float</font> Y1, <font color="blue">float</font> X2, <font color="blue">float</font> Y2<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">return</font> sqrt<font color="black">(</font>distToSegment<font color="black">(</font>px, py, X1, Y1, X2, Y2<font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="green">// Calculate the distance between the point and the segment.</font>
+<font color="blue">float</font> distToSegmentSquared<font color="black">(</font><font color="blue">float</font> px, <font color="blue">float</font> py, <font color="blue">float</font> X1, <font color="blue">float</font> Y1, <font color="blue">float</font> X2, <font color="blue">float</font> Y2<font color="black">)</font>
+<font color="black">{</font>
+<font color="blue">float</font> dx <font color="black">=</font> <font color="maroon">0</font>;
+<font color="blue">float</font> dy <font color="black">=</font> <font color="maroon">0</font>;
+<font color="blue">float</font> t <font color="black">=</font> <font color="maroon">0</font>;
+
+    dx <font color="black">=</font> X2 <font color="black">-</font>X1;
+    dy <font color="black">=</font> Y2 <font color="black">-</font>Y1;
+    <font color="blue">if</font> <font color="black">(</font>dx <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font> <font color="black">&</font><font color="black">&</font> dy <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+        <font color="green">// It's a point not a line segment.</font>
+        dx <font color="black">=</font> px <font color="black">-</font>X1;
+        dy <font color="black">=</font> py <font color="black">-</font>Y1;
+        <font color="blue">return</font> <font color="black">(</font>dx <font color="black">*</font> dx <font color="black">+</font> dy <font color="black">*</font> dy<font color="black">)</font>;
+    <font color="black">}</font>
+    
+
+    t <font color="black">=</font> <font color="black">(</font>px <font color="black">+</font> py <font color="black">-</font>X1 <font color="black">-</font>Y1<font color="black">)</font> <font color="black">/</font> <font color="black">(</font>dx <font color="black">+</font> dy<font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font>t <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+        dx <font color="black">=</font> px <font color="black">-</font>X1;
+        dy <font color="black">=</font> py <font color="black">-</font>Y1;
+    <font color="black">}</font>
+    <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>t <font color="black">&#62;</font> <font color="maroon">1</font><font color="black">)</font>
+    <font color="black">{</font>
+        dx <font color="black">=</font> px <font color="black">-</font>X2;
+        dy <font color="black">=</font> py <font color="black">-</font>Y2;
+    <font color="black">}</font>
+    <font color="blue">else</font>
+    <font color="black">{</font>
+        X2 <font color="black">=</font> X1 <font color="black">+</font> t <font color="black">*</font> dx;
+        Y2 <font color="black">=</font> Y1 <font color="black">+</font> t <font color="black">*</font> dy;
+        dx <font color="black">=</font> px <font color="black">-</font>X2;
+        dy <font color="black">=</font> py <font color="black">-</font>Y2;
+    <font color="black">}</font>
+    <font color="blue">return</font> <font color="black">(</font>dx <font color="black">*</font> dx <font color="black">+</font> dy <font color="black">*</font> dy<font color="black">)</font>;
+<font color="black">}</font>
+
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>
+MouseMotion.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _MouseMotion_h
+<font color="blue">#define</font> _MouseMotion_h
+
+<font color="blue">#include</font> <font color="maroon">"Motion.h"</font>
+<font color="blue">#include</font> <font color="maroon">"SDL.h"</font>
+
+<font color="blue">class</font> MouseMotion<font color="black">:</font> <font color="blue">public</font> Motion
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  MouseMotion<font color="black">(</font><font color="blue">float</font> x, <font color="blue">float</font> y, <font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font> <font color="black">:</font> Motion<font color="black">(</font>x, y, w, h<font color="black">)</font>
+  <font color="black">{</font>
+    
+  <font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">void</font> mouseMoved<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font>
+  <font color="black">{</font>
+    s_x<font color="black">=</font>x;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> tickAndMove<font color="black">(</font><font color="blue">int</font><font color="black">&</font> retX, <font color="blue">int</font><font color="black">&</font> retY<font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">static</font> <font color="blue">int</font> s_x;
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

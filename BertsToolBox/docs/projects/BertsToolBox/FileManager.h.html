@@ -1,0 +1,25 @@
+<HTML>
+<HEAD>
+<TITLE>
+FileManager.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> FileManager_h
+<font color="blue">#define</font> FileManager_h
+
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+<font color="green">/**
+First look for actual file. if not exist, look in 
+pak files in decending order (pak9 -&#62; pak1)
+*/</font>
+<font color="blue">int</font> loadFileToMemory<font color="black">(</font>string filename, <font color="blue">void</font><font color="black">*</font><font color="black">*</font> pto<font color="black">)</font>;
+
+<font color="blue">bool</font> fm_fileExists<font color="black">(</font>string filename<font color="black">)</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

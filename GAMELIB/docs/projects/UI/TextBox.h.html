@@ -1,0 +1,80 @@
+<HTML>
+<HEAD>
+<TITLE>
+TextBox.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _TextBox_h
+<font color="blue">#define</font> _TextBox_h
+
+<font color="blue">#include</font> <font color="maroon">"UIThing.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;vector&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;sstream&#62;</font>
+
+<font color="blue">class</font> TextBox<font color="black">:</font> <font color="blue">public</font> UIThing
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  TextBox<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>;
+
+  virtual <font color="blue">void</font> onKeyPress<font color="black">(</font>KeyPressEvent<font color="black">*</font> event<font color="black">)</font>;
+
+  <font color="blue">void</font> addTextListener<font color="black">(</font>TextListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_textListeners.insert<font color="black">(</font>listener<font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">void</font> removeTextListener<font color="black">(</font>TextListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_textListeners.erase<font color="black">(</font>listener<font color="black">)</font>; <font color="black">}</font>
+
+  virtual string getText<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    stringstream ss;
+    string ret;
+    copy<font color="black">(</font>m_currentLine.begin<font color="black">(</font><font color="black">)</font>, m_currentLine.end<font color="black">(</font><font color="black">)</font>, ostream_iterator<font color="black">&#60;</font><font color="blue">char</font><font color="black">&#62;</font><font color="black">(</font>ss<font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> ss.str<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  virtual string getName<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="maroon">"TextBox"</font>; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> setText<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> s<font color="black">)</font>
+  <font color="black">{</font>
+    m_currentLine.clear<font color="black">(</font><font color="black">)</font>;
+    m_cursorPosition<font color="black">=</font>strlen<font color="black">(</font>s<font color="black">)</font>;
+    <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> p <font color="black">=</font> s;
+    <font color="blue">while</font> <font color="black">(</font><font color="black">*</font>p <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      m_currentLine.push_back<font color="black">(</font><font color="black">*</font>p<font color="black">)</font>;
+      p<font color="black">+</font><font color="black">+</font>;
+    <font color="black">}</font>
+    updateTextListeners<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> drawLine<font color="black">(</font>Surface<font color="black">*</font> surface, string s, <font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font>;
+  <font color="blue">void</font> updateTextListeners<font color="black">(</font><font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  set<font color="black">&#60;</font>TextListener<font color="black">*</font><font color="black">&#62;</font> m_textListeners;
+  TextChangeEvent m_textEvent;
+
+  <font color="blue">bool</font> m_multiLine;
+  <font color="blue">int</font> m_maxChars;
+  
+  <font color="blue">int</font> m_topMargin;
+  <font color="blue">int</font> m_bottomMargin;
+  <font color="blue">int</font> m_leftMargin;
+  <font color="blue">int</font> m_rightMargin;
+  <font color="blue">int</font> m_lineSpacing;
+
+  vector<font color="black">&#60;</font><font color="blue">char</font><font color="black">&#62;</font> m_currentLine; <font color="green">// the chars that make up the line being typed</font>
+  vector<font color="black">&#60;</font><font color="blue">char</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator m_iterAtCursor;
+  vector<font color="black">&#60;</font><font color="blue">char</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator m_iterBeforeCursor;
+  <font color="blue">int</font> m_cursorPosition;
+  <font color="blue">int</font> m_physCursorPosition;
+  
+  <font color="blue">void</font> setIterAtCursor<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

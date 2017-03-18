@@ -1,0 +1,203 @@
+11/29/03 10:52:38 - Inform: assetfilename : Assets.ini
+11/29/03 10:52:38 - Inform: destination   : c:\colorcubes_debug_demo
+11/29/03 10:52:38 - Inform: testOnly      : False
+11/29/03 10:52:38 - Inform: asset (doc_Ani) filename (docs\animation.gif) - seems to be valid
+11/29/03 10:52:38 - Inform: docs\animation.gif -> c:\colorcubes_debug_demo\docs\animation.gif
+11/29/03 10:52:38 - Inform: asset (doc_BD_Logo) filename (docs\logo_BarrelDrop.gif) - seems to be valid
+11/29/03 10:52:38 - Inform: docs\logo_BarrelDrop.gif -> c:\colorcubes_debug_demo\docs\logo_BarrelDrop.gif
+11/29/03 10:52:38 - Inform: asset (doc_BlueBarrel) filename (docs\barrel_blue_idle.gif) - seems to be valid
+11/29/03 10:52:38 - Inform: docs\barrel_blue_idle.gif -> c:\colorcubes_debug_demo\docs\barrel_blue_idle.gif
+11/29/03 10:52:38 - Inform: asset (doc_HTS_Logo) filename (docs\logo_HTS.gif) - seems to be valid
+11/29/03 10:52:38 - Inform: docs\logo_HTS.gif -> c:\colorcubes_debug_demo\docs\logo_HTS.gif
+11/29/03 10:52:38 - Inform: asset (doc_HWild) filename (docs\barrel_wild_horizontal.gif) - seems to be valid
+11/29/03 10:52:38 - Inform: docs\barrel_wild_horizontal.gif -> c:\colorcubes_debug_demo\docs\barrel_wild_horizontal.gif
+11/29/03 10:52:38 - Inform: asset (doc_page) filename (docs\BarrelDrop.htm) - seems to be valid
+11/29/03 10:52:38 - Inform: docs\BarrelDrop.htm -> c:\colorcubes_debug_demo\docs\BarrelDrop.htm
+11/29/03 10:52:38 - Inform: asset (doc_RedBarrel) filename (docs\barrel_red_idle.gif) - seems to be valid
+11/29/03 10:52:38 - Inform: docs\barrel_red_idle.gif -> c:\colorcubes_debug_demo\docs\barrel_red_idle.gif
+11/29/03 10:52:38 - Inform: asset (doc_RustyBarrel) filename (docs\barrel_rusty_idle.gif) - seems to be valid
+11/29/03 10:52:38 - Inform: docs\barrel_rusty_idle.gif -> c:\colorcubes_debug_demo\docs\barrel_rusty_idle.gif
+11/29/03 10:52:38 - Inform: asset (doc_VWild) filename (docs\barrel_wild_down.gif) - seems to be valid
+11/29/03 10:52:38 - Inform: docs\barrel_wild_down.gif -> c:\colorcubes_debug_demo\docs\barrel_wild_down.gif
+11/29/03 10:52:38 - Inform: asset (doc_YellowBarrel) filename (docs\barrel_yellow_idle.gif) - seems to be valid
+11/29/03 10:52:38 - Inform: docs\barrel_yellow_idle.gif -> c:\colorcubes_debug_demo\docs\barrel_yellow_idle.gif
+11/29/03 10:52:38 - Inform: to PakFile: ui\fonts\sfont_comic_red.png
+11/29/03 10:52:38 - Inform: to PakFile: ui\fonts\fnt_ExpoGreen_24.png
+11/29/03 10:52:38 - Inform: to PakFile: ui\fonts\fnt_Expo_Black_18_25.png
+11/29/03 10:52:38 - Inform: to PakFile: ui\fonts\fnt_Expo_GreenOnBlack_16.png
+11/29/03 10:52:38 - Inform: to PakFile: ui\fonts\fnt_GreenTerminal_24.png
+11/29/03 10:52:38 - Inform: to PakFile: ui\fonts\fnt_GreenTerminal_12.png
+11/29/03 10:52:38 - Inform: to PakFile: ui\fonts\fnt_GroovyBlue_30.png
+11/29/03 10:52:38 - Inform: to PakFile: ui\fonts\fnt_GroovyBlue_80.png
+11/29/03 10:52:38 - Inform: to PakFile: images\barrels\barrel_rusty_idle.png
+11/29/03 10:52:38 - Inform: to PakFile: images\barrels\barrel_blue_idle.png
+11/29/03 10:52:38 - Inform: to PakFile: images\barrels\barrel_yellow_idle.png
+11/29/03 10:52:38 - Inform: to PakFile: images\barrels\barrel_red_idle.png
+11/29/03 10:52:38 - Inform: to PakFile: images\barrels\barrel_wild_horizontal_1.png
+11/29/03 10:52:38 - Inform: to PakFile: images\barrels\barrel_wild_horizontal_2.png
+11/29/03 10:52:38 - Inform: to PakFile: images\barrels\barrel_wild_horizontal_3.png
+11/29/03 10:52:38 - Inform: to PakFile: images\barrels\barrel_wild_down_1.png
+11/29/03 10:52:38 - Inform: to PakFile: images\barrels\barrel_wild_down_2.png
+11/29/03 10:52:38 - Inform: to PakFile: images\barrels\barrel_wild_down_3.png
+11/29/03 10:52:38 - Inform: to PakFile: images\barrels\barrel_wild_down_4.png
+11/29/03 10:52:38 - Inform: to PakFile: images\specialeffects\HorizontalWildEffect_1.png
+11/29/03 10:52:38 - Inform: to PakFile: images\specialeffects\HorizontalWildEffect_2.png
+11/29/03 10:52:38 - Inform: to PakFile: images\specialeffects\HorizontalWildEffect_3.png
+11/29/03 10:52:38 - Inform: to PakFile: images\specialeffects\HorizontalWildEffect_4.png
+11/29/03 10:52:38 - Inform: to PakFile: images\specialeffects\level_bonus_barrel.png
+11/29/03 10:52:38 - Inform: to PakFile: images\specialeffects\VerticalWildEffect_1.png
+11/29/03 10:52:38 - Inform: to PakFile: images\specialeffects\VerticalWildEffect_2.png
+11/29/03 10:52:38 - Inform: to PakFile: images\specialeffects\VerticalWildEffect_3.png
+11/29/03 10:52:38 - Inform: to PakFile: images\specialeffects\VerticalWildEffect_4.png
+11/29/03 10:52:38 - Inform: to PakFile: images\BullsEye.png
+11/29/03 10:52:38 - Inform: to PakFile: images\hand.png
+11/29/03 10:52:38 - Inform: to PakFile: audio\music\test\SweetDreams.wav
+11/29/03 10:52:38 - Inform: to PakFile: Assets.ini
+11/29/03 10:52:38 - Inform: to PakFile: UI\Buttons.ini
+11/29/03 10:52:38 - Inform: to PakFile: UI\ChooseGameMode.ini
+11/29/03 10:52:38 - Inform: to PakFile: UI\Credits.ini
+11/29/03 10:52:38 - Inform: to PakFile: demoControl.ini
+11/29/03 10:52:38 - Inform: to PakFile: UI\Dialogs.ini
+11/29/03 10:52:38 - Inform: to PakFile: docAssets.ini
+11/29/03 10:52:38 - Inform: to PakFile: Easy.ini
+11/29/03 10:52:38 - Inform: to PakFile: UI\Fonts.ini
+11/29/03 10:52:38 - Inform: to PakFile: UI\Game.ini
+11/29/03 10:52:38 - Inform: to PakFile: UI\GameOver.ini
+11/29/03 10:52:38 - Inform: to PakFile: Hard.ini
+11/29/03 10:52:38 - Inform: to PakFile: UI\HighScoresScreen.ini
+11/29/03 10:52:38 - Inform: asset (rq_Lib_JPG) filename (jpeg.dll) - seems to be valid
+11/29/03 10:52:38 - Inform: jpeg.dll -> c:\colorcubes_debug_demo\jpeg.dll
+11/29/03 10:52:38 - Inform: asset (rq_Lib_PNG) filename (libpng1.dll) - seems to be valid
+11/29/03 10:52:38 - Inform: libpng1.dll -> c:\colorcubes_debug_demo\libpng1.dll
+11/29/03 10:52:38 - Inform: asset (rq_Lib_ZLib) filename (zlib.dll) - seems to be valid
+11/29/03 10:52:38 - Inform: zlib.dll -> c:\colorcubes_debug_demo\zlib.dll
+11/29/03 10:52:38 - Inform: to PakFile: UI\MainMenu.ini
+11/29/03 10:52:38 - Inform: to PakFile: Medium.ini
+11/29/03 10:52:38 - Inform: to PakFile: images\480x480.png
+11/29/03 10:52:38 - Inform: to PakFile: Misc.ini
+11/29/03 10:52:38 - Inform: to PakFile: UI\Mouse.ini
+11/29/03 10:52:38 - Inform: asset (rq_Options.ini) filename (Options.ini) - seems to be valid
+11/29/03 10:52:38 - Inform: Options.ini -> c:\colorcubes_debug_demo\Options.ini
+11/29/03 10:52:38 - Inform: to PakFile: QuickStart.ini
+11/29/03 10:52:38 - Inform: to PakFile: Scoring.ini
+11/29/03 10:52:38 - Inform: asset (rq_SDL) filename (SDL.dll) - seems to be valid
+11/29/03 10:52:38 - Inform: SDL.dll -> c:\colorcubes_debug_demo\SDL.dll
+11/29/03 10:52:38 - Inform: asset (rq_SDL_Image) filename (SDL_Image.dll) - seems to be valid
+11/29/03 10:52:38 - Inform: SDL_Image.dll -> c:\colorcubes_debug_demo\SDL_Image.dll
+11/29/03 10:52:38 - Inform: asset (rq_SDL_Mixer) filename (SDL_Mixer.dll) - seems to be valid
+11/29/03 10:52:38 - Inform: SDL_Mixer.dll -> c:\colorcubes_debug_demo\SDL_Mixer.dll
+11/29/03 10:52:38 - Inform: to PakFile: Sounds.ini
+11/29/03 10:52:38 - Inform: to PakFile: Survivor.ini
+11/29/03 10:52:38 - Inform: to PakFile: Text.ini
+11/29/03 10:52:38 - Inform: asset (rq_TheExecutable) filename (BarrelDrop.exe) - seems to be valid
+11/29/03 10:52:38 - Inform: BarrelDrop.exe -> c:\colorcubes_debug_demo\BarrelDrop.exe
+11/29/03 10:52:39 - Inform: asset (rq_TheIcon) filename (BarrelDrop.ico) - seems to be valid
+11/29/03 10:52:39 - Inform: BarrelDrop.ico -> c:\colorcubes_debug_demo\BarrelDrop.ico
+11/29/03 10:52:39 - Inform: to PakFile: images\icon.png
+11/29/03 10:52:39 - Inform: to PakFile: UIAssets.ini
+11/29/03 10:52:39 - Inform: to PakFile: UI\Options.ini
+11/29/03 10:52:39 - Inform: to PakFile: Version.ini
+11/29/03 10:52:39 - Inform: to PakFile: UI\dialogs\quit_confimation.png
+11/29/03 10:52:39 - Inform: to PakFile: images\specialeffects\bigbarrel.png
+11/29/03 10:52:39 - Inform: to PakFile: UI\50percent.png
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_Cancel_Click.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_Cancel_Idle.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_Cancel_Mouseover.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_ChooseLevel_Easy_Idle.png
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_ChooseLevel_Hard_Idle.png
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_ChooseLevel_Medium_Idle.png
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_Credits_Idle.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_Credits_Mouseover1.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_Credits_Mouseover2.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_Credits_Mouseover3.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_Credits_Mouseover5.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_EnterHighScores_OK_Click.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_EnterHighScores_OK_Idle.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_EnterHighScores_OK_Mouseover.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_Exit_Click.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_Exit_Idle.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_Exit_Mouseover.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_Fullscreen_mode.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_GameOptions_Idle.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_GameOptions_Mouseover1.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_GameOptions_Mouseover2.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_GameOptions_Mouseover3.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_GameOptions_Mouseover5.jpg
+11/29/03 10:52:39 - Inform: to PakFile: ui\buttons\btn_GamePause_Click.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_GamePause_Idle.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_GamePause_Mouseover.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_GameQuit_Click.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_GameQuit_Idle.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_GameQuit_Mouseover.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_HighScores_Idle.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_HighScores_Mouseover1.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_HighScores_Mouseover2.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_HighScores_Mouseover3.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_HighScores_Mouseover5.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_HowToPlay_Idle.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_HowToPlay_Mouseover1.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_HowToPlay_Mouseover2.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_HowToPlay_Mouseover3.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_HowToPlay_Mouseover5.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_MainMenu_Click.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_MainMenu_Idle.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_MainMenu_Mouseover.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Next_Click.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Next_Idle.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Next_Mouseover.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\temp\btn_no_small.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_NormalGame_ch.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_NormalGame_un.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\temp\btn_no_big.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Quit_Click.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Quit_Idle.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Quit_Mouseover.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Slider_Down.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Slider_Up.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Start_Click.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Start_Idle_1.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Start_Idle_2.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Start_Idle_3.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Start_Idle_4.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Start_Idle_5.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Start_Idle_6.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Start_Mouseover.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_SurvivorGame_ch.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_SurvivorGame_un.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_Windowed_mode.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\temp\btn_yes_small.png
+11/29/03 10:52:40 - Inform: to PakFile: ui\temp\btn_yes_big.png
+11/29/03 10:52:40 - Inform: to PakFile: images\specialeffects\calc_level_bonus.png
+11/29/03 10:52:40 - Inform: to PakFile: UI\scn_ChooseLevel.jpg
+11/29/03 10:52:40 - Inform: to PakFile: UI\scn_Credits.jpg
+11/29/03 10:52:40 - Inform: to PakFile: UI\scn_demo_up.jpg
+11/29/03 10:52:40 - Inform: to PakFile: UI\scn_EnterHighScore.jpg
+11/29/03 10:52:40 - Inform: to PakFile: images\barrels\exploding\black1.png
+11/29/03 10:52:40 - Inform: to PakFile: images\barrels\exploding\blue1.png
+11/29/03 10:52:40 - Inform: to PakFile: images\barrels\exploding\yellow1.png
+11/29/03 10:52:40 - Inform: to PakFile: images\barrels\exploding\red1.png
+11/29/03 10:52:40 - Inform: to PakFile: UI\scn_GameScreen.jpg
+11/29/03 10:52:40 - Inform: to PakFile: UI\scn_HighScores.jpg
+11/29/03 10:52:40 - Inform: to PakFile: UI\scn_MainMenu.jpg
+11/29/03 10:52:40 - Inform: to PakFile: UI\scn_NoHighScore.jpg
+11/29/03 10:52:40 - Inform: to PakFile: UI\scn_options.jpg
+11/29/03 10:52:40 - Inform: to PakFile: UI\scn_QuickStart.jpg
+11/29/03 10:52:40 - Inform: to PakFile: ui\buttons\btn_slider.jpg
+11/29/03 10:52:40 - Inform: to PakFile: UI\scn_ThanksForPlaying.jpg
+11/29/03 10:52:40 - Inform: to PakFile: audio\effect\block_disappearing.wav
+11/29/03 10:52:40 - Inform: to PakFile: audio\effect\bonus_multi_1.wav
+11/29/03 10:52:40 - Inform: to PakFile: audio\effect\clear_board.wav
+11/29/03 10:52:40 - Inform: to PakFile: audio\effect\fireworks_explode.wav
+11/29/03 10:52:40 - Inform: to PakFile: audio\effect\fireworks_launch.wav
+11/29/03 10:52:40 - Inform: to PakFile: audio\effect\foghorn2.wav
+11/29/03 10:52:40 - Inform: to PakFile: audio\effect\crowdcheer.wav
+11/29/03 10:52:40 - Inform: to PakFile: audio\effect\new_level.wav
+11/29/03 10:52:40 - Inform: to PakFile: audio\effect\quit_game.wav
+11/29/03 10:52:40 - Inform: to PakFile: audio\effect\electricalcurrent.wav
+11/29/03 10:52:40 - Inform: to PakFile: audio\effect\shape_appear.wav
+11/29/03 10:52:40 - Inform: to PakFile: audio\effect\shape_move.wav
+11/29/03 10:52:40 - Inform: to PakFile: audio\effect\start_game.wav
+11/29/03 10:52:40 - Inform: to PakFile: audio\effect\wild_effect.wav
+11/29/03 10:52:40 - *Error: Blank Filename!!
+11/29/03 10:52:40 - Inform: to PakFile: UI\LoadingSplash.jpg
+11/29/03 10:52:41 - Inform: 179 file(s) successfully processed

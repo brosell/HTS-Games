@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>
+Keyboard.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _Keyboard_h
+<font color="blue">#define</font> _Keyboard_h
+
+<font color="blue">struct</font> KeyMapEntry
+<font color="black">{</font>
+  <font color="blue">int</font> makeScancode;
+  <font color="blue">int</font> breakScancode; <font color="green">// makeScancode + 0x80</font>
+  <font color="blue">int</font> defaultAscii;
+  <font color="blue">int</font> shiftedAscii;
+  <font color="blue">int</font> ctrlAscii; <font color="green">// ?</font>
+  <font color="blue">int</font> altAscii; <font color="green">// ?</font>
+  <font color="blue">bool</font> isDown;
+<font color="black">}</font>;
+
+<font color="green">/* index's:
+      is not escaped add nothing (tab 0x0f)
+      if escaped with 0xe0 (ie RCTRL = 0xe0 0x1d) add 0x100 to LSB (ie 0x11d)
+      if escaped with 0xe1 add 0x200 to LSB
+  */</font>
+
+<font color="blue">inline</font> <font color="blue">int</font> convertScancode<font color="black">(</font><font color="blue">int</font> scancode<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font> <font color="black">(</font>scancode <font color="black">&</font> <font color="maroon">0xe000</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0xe000</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font>scancode <font color="black">&</font> <font color="maroon">0xff</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">0x100</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font> <font color="black">(</font>scancode <font color="black">&</font> <font color="maroon">0xe100</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0xe100</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font>scancode <font color="black">&</font> <font color="maroon">0xff</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">0x200</font>;
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="black">(</font>scancode <font color="black">&</font> <font color="maroon">0xff</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">int</font> getAsciiFromKey<font color="black">(</font><font color="blue">int</font> scancode, <font color="blue">bool</font> isShifted<font color="black">)</font>;
+<font color="blue">int</font> isKeyDown<font color="black">(</font><font color="blue">int</font> scancode<font color="black">)</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

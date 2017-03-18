@@ -1,0 +1,128 @@
+<HTML>
+<HEAD>
+<TITLE>
+TCPLink.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"TCPLink.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+
+TCPLink<font color="black">:</font><font color="black">:</font>TCPLink<font color="black">(</font>BSocket<font color="black">*</font> socket<font color="black">)</font><font color="black">:</font> Link<font color="black">(</font><font color="maroon">"TCPLink (Server)"</font><font color="black">)</font>, m_socket<font color="black">(</font>socket<font color="black">)</font>, m_address<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>, m_port<font color="black">(</font><font color="maroon">-1</font><font color="black">)</font>
+<font color="black">{</font>
+
+<font color="black">}</font>
+
+TCPLink<font color="black">:</font><font color="black">:</font>TCPLink<font color="black">(</font>string address, <font color="blue">int</font> port<font color="black">)</font><font color="black">:</font> Link<font color="black">(</font><font color="maroon">"TCPLink (Client)"</font><font color="black">)</font>, m_socket<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, m_address<font color="black">(</font>address<font color="black">)</font>, m_port<font color="black">(</font>port<font color="black">)</font>
+<font color="black">{</font>
+  m_socket<font color="black">=</font><font color="blue">new</font> BSocket<font color="black">(</font>address, port<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> TCPLink<font color="black">:</font><font color="black">:</font>doSend<font color="black">(</font>Message<font color="black">*</font> msg<font color="black">)</font>
+<font color="black">{</font>
+  <font color="green">// relies on Message::operator UBYTE*...</font>
+  lassert<font color="black">(</font>msg <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+  lassert<font color="black">(</font>m_socket<font color="black">-</font><font color="black">&#62;</font>isWriteReady<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  UBYTE<font color="black">*</font> bytes <font color="black">=</font> <font color="black">*</font>msg;
+  m_socket<font color="black">-</font><font color="black">&#62;</font>write<font color="black">(</font><font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font>bytes, getSize<font color="black">(</font>bytes<font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Message<font color="black">*</font> TCPLink<font color="black">:</font><font color="black">:</font>doReceive<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  lassert<font color="black">(</font>m_socket<font color="black">-</font><font color="black">&#62;</font>isReadReady<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  
+  UBYTE buffer<font color="black">[</font><font color="maroon">2</font><font color="black">]</font>; <font color="green">// only want the size for now;</font>
+  
+  <font color="blue">int</font> got <font color="black">=</font> m_socket<font color="black">-</font><font color="black">&#62;</font>read<font color="black">(</font><font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font>buffer, <font color="maroon">2</font><font color="black">)</font>;
+  
+  <font color="blue">if</font> <font color="black">(</font>got <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>got <font color="black">=</font><font color="black">=</font> <font color="maroon">1</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_socket<font color="black">-</font><font color="black">&#62;</font>unread<font color="black">(</font><font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font>buffer, <font color="maroon">1</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+  <font color="blue">if</font> <font color="black">(</font>got <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    logError<font color="black">(</font><font color="maroon">"unexpected socket error"</font>, Error<font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  <font color="blue">int</font> msgSize <font color="black">=</font> unpackDblByte<font color="black">(</font><font color="black">&</font><font color="black">(</font>buffer<font color="black">[</font><font color="maroon">0</font><font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+  UBYTE<font color="black">*</font> bytes <font color="black">=</font> <font color="blue">new</font> UBYTE<font color="black">[</font>msgSize<font color="black">]</font>;
+  bytes<font color="black">[</font><font color="maroon">0</font><font color="black">]</font> <font color="black">=</font> buffer<font color="black">[</font><font color="maroon">0</font><font color="black">]</font>;
+  bytes<font color="black">[</font><font color="maroon">1</font><font color="black">]</font> <font color="black">=</font> buffer<font color="black">[</font><font color="maroon">1</font><font color="black">]</font>;
+
+  got <font color="black">=</font> m_socket<font color="black">-</font><font color="black">&#62;</font>read<font color="black">(</font><font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font><font color="black">&</font><font color="black">(</font>bytes<font color="black">[</font><font color="maroon">2</font><font color="black">]</font><font color="black">)</font>, msgSize<font color="maroon">-2</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>got <font color="black">&#60;</font> msgSize<font color="maroon">-2</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">// put it back and try later</font>
+    m_socket<font color="black">-</font><font color="black">&#62;</font>unread<font color="black">(</font><font color="black">(</font><font color="blue">char</font><font color="black">*</font><font color="black">)</font>bytes, got<font color="black">)</font>;
+    <font color="blue">return</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+
+  lassert<font color="black">(</font>got <font color="black">=</font><font color="black">=</font> msgSize<font color="maroon">-2</font><font color="black">)</font>;
+
+  Message<font color="black">*</font> msg <font color="black">=</font> Message<font color="black">:</font><font color="black">:</font>unpack<font color="black">(</font>bytes<font color="black">)</font>;
+
+  <font color="blue">return</font> msg;
+<font color="black">}</font>
+  
+
+<font color="green">//void TCPLink::receiveMessages()</font>
+<font color="green">//{</font>
+<font color="green">//  UBYTE buffer[256];</font>
+<font color="green">//  while (m_socket-&#62;isReadReady())</font>
+<font color="green">//  {</font>
+<font color="green">//    int got = m_socket-&#62;read(buffer, 256);</font>
+<font color="green">//    //assert(got &#62; 0);</font>
+<font color="green">//    if (got == 0)</font>
+<font color="green">//    {</font>
+<font color="green">//      //m_socket-&#62;isReadReady();</font>
+<font color="green">//      return;</font>
+<font color="green">//    }</font>
+<font color="green">//    int msgSize = unpackDblByte(&(buffer[0]));</font>
+<font color="green">//    if (got &#60; msgSize)</font>
+<font color="green">//    {</font>
+<font color="green">//      // put it back, we'll try again later</font>
+<font color="green">//      m_socket-&#62;unread(buffer, got);</font>
+<font color="green">//      return;</font>
+<font color="green">//    }</font>
+<font color="green">//</font>
+<font color="green">//    // put back the "overrun"</font>
+<font color="green">//    if (got &#62; msgSize)</font>
+<font color="green">//    {</font>
+<font color="green">//      m_socket-&#62;unread(&(buffer[msgSize]), got - msgSize);</font>
+<font color="green">//    }</font>
+<font color="green">//    </font>
+<font color="green">//    Message* msg = Message::unpack(buffer);</font>
+<font color="green">//    newIncoming(msg);</font>
+<font color="green">//  }</font>
+<font color="green">//  return;</font>
+<font color="green">//}</font>
+
+<font color="green">//void TCPLink::deliverMessages()</font>
+<font color="green">//{</font>
+<font color="green">//  // relies on operator UBYTE*...</font>
+<font color="green">//  while (m_outgoingQueue.size() &#62; 0 && m_socket-&#62;isWriteReady())</font>
+<font color="green">//  {</font>
+<font color="green">//    UBYTE* msg = *(m_outgoingQueue.front());</font>
+<font color="green">//    m_outgoingQueue.pop_front();</font>
+<font color="green">//</font>
+<font color="green">//    int size = getSize(msg);</font>
+<font color="green">//    assert(size &#62; 0);</font>
+<font color="green">//</font>
+<font color="green">//    m_socket-&#62;write(msg, size);</font>
+<font color="green">////    delete [] msg;</font>
+<font color="green">//  }</font>
+<font color="green">//</font>
+<font color="green">//  return;</font>
+<font color="green">//}</font>
+
+</PRE>
+</BODY>
+</HTML>

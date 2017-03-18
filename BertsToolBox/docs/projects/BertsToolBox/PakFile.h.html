@@ -1,0 +1,172 @@
+<HTML>
+<HEAD>
+<TITLE>
+PakFile.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _PakFile_h_
+<font color="blue">#define</font> _PakFile_h_
+
+<font color="blue">#ifdef</font> _WIN32
+<font color="blue">#include</font> <font color="maroon">&#60;winsock.h&#62;</font>
+<font color="blue">#else</font>
+<font color="blue">#include</font> <font color="maroon">&#60;sys/types.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;netinet/in.h&#62;</font>
+<font color="blue">#endif</font>
+<font color="blue">#include</font> <font color="maroon">&#60;stdio.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;stdlib.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;string.h&#62;</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;map&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">class</font> NBULong
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">static</font> NBULong fromNetwork<font color="black">(</font><font color="blue">unsigned</font> <font color="blue">long</font> val<font color="black">)</font>
+  <font color="black">{</font>
+    NBULong l;
+    l.setFromNetwork<font color="black">(</font>val<font color="black">)</font>;
+    <font color="blue">return</font> l;
+  <font color="black">}</font>;
+  <font color="blue">static</font> NBULong fromHost<font color="black">(</font><font color="blue">unsigned</font> <font color="blue">long</font> val<font color="black">)</font>
+  <font color="black">{</font>
+    NBULong l;
+    l.setFromHost<font color="black">(</font>val<font color="black">)</font>;
+    <font color="blue">return</font> l;
+  <font color="black">}</font>;
+
+  <font color="blue">unsigned</font> <font color="blue">long</font> getNetworkVal<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> htonl<font color="black">(</font>hostOrder<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">unsigned</font> <font color="blue">long</font> getHostVal<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> hostOrder;
+  <font color="black">}</font>
+
+  <font color="blue">operator</font> <font color="blue">unsigned</font> <font color="blue">long</font> <font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> hostOrder; <font color="black">}</font>
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">void</font> setFromNetwork<font color="black">(</font><font color="blue">unsigned</font> <font color="blue">long</font> val<font color="black">)</font>
+  <font color="black">{</font>
+    hostOrder<font color="black">=</font>ntohl<font color="black">(</font>val<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> setFromHost<font color="black">(</font><font color="blue">unsigned</font> <font color="blue">long</font> val<font color="black">)</font>
+  <font color="black">{</font>
+    hostOrder<font color="black">=</font>val;
+  <font color="black">}</font>
+
+  <font color="blue">unsigned</font> <font color="blue">long</font> hostOrder;
+  
+<font color="black">}</font>;
+
+
+<font color="blue">class</font> PakFileElement
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="green">//PakFileElement(const char*dirEntry, unsigned long offset, unsigned long length, const char* location);</font>
+  PakFileElement<font color="black">(</font><font color="black">)</font><font color="black">:</font> location<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>, dirEntryName<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>
+  <font color="black">{</font>
+  <font color="black">}</font>
+
+  PakFileElement<font color="black">(</font>string fn<font color="black">)</font><font color="black">:</font> location<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>, dirEntryName<font color="black">(</font>fn<font color="black">)</font>
+  <font color="black">{</font>
+  <font color="black">}</font>
+  
+  <font color="blue">bool</font> isOnDisk<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font>location.c_str<font color="black">(</font><font color="black">)</font><font color="black">[</font><font color="maroon">0</font><font color="black">]</font><font color="black">!</font><font color="black">=</font><font color="maroon">0</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  string getLocation<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> location;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> setLocation<font color="black">(</font>string loc<font color="black">)</font>
+  <font color="black">{</font>
+    location <font color="black">=</font> loc;
+  <font color="black">}</font>
+
+
+  <font color="blue">void</font> setOffset<font color="black">(</font><font color="blue">unsigned</font> <font color="blue">long</font> off<font color="black">)</font>
+  <font color="black">{</font>
+    offset<font color="black">=</font>NBULong<font color="black">:</font><font color="black">:</font>fromHost<font color="black">(</font>off<font color="black">)</font>;
+  <font color="black">}</font>
+  NBULong getOffset<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> offset;
+  <font color="black">}</font>
+  
+  <font color="blue">void</font> setSize<font color="black">(</font><font color="blue">unsigned</font> <font color="blue">long</font> s<font color="black">)</font>
+  <font color="black">{</font>
+    length<font color="black">=</font>NBULong<font color="black">:</font><font color="black">:</font>fromHost<font color="black">(</font>s<font color="black">)</font>;
+  <font color="black">}</font>
+  NBULong getSize<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> length;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> setName<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> <font color="blue">name</font><font color="black">)</font>
+  <font color="black">{</font>
+    dirEntryName <font color="black">=</font> <font color="blue">name</font>;
+  <font color="black">}</font>
+
+  string getName<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> dirEntryName;
+  <font color="black">}</font>
+
+<font color="blue">private</font><font color="black">:</font>
+  string dirEntryName;
+  NBULong offset;
+  NBULong length;
+  string location;
+<font color="black">}</font>;
+
+
+<font color="blue">class</font> PakFile<font color="black">:</font> <font color="blue">public</font> map<font color="black">&#60;</font>string, PakFileElement<font color="black">&#62;</font>
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  PakFile<font color="black">(</font>string pn, <font color="blue">bool</font> l<font color="black">)</font>;
+  ~PakFile<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+  <font color="black">}</font>
+
+  <font color="blue">bool</font> exists<font color="black">(</font><font color="black">)</font>;
+
+<font color="green">//  bool add(const char* filename, const char* dirName, bool replaceOk);</font>
+<font color="green">//  bool remove(const char* dirName);</font>
+
+  <font color="blue">bool</font> commit<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">bool</font> extract<font color="black">(</font>PakFileElement elem<font color="black">)</font>; <font color="green">//, const char* whereTo);</font>
+  <font color="blue">bool</font> extract<font color="black">(</font>PakFileElement elem, <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> to<font color="black">)</font>; <font color="green">//, const char* whereTo);</font>
+
+  <font color="blue">bool</font> toMemory<font color="black">(</font>string <font color="blue">name</font>, <font color="blue">void</font><font color="black">*</font> destination<font color="black">)</font>;
+
+  <font color="blue">bool</font> contains<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>;
+
+  <font color="blue">void</font> dump<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> extractAll<font color="black">(</font><font color="black">)</font>;
+
+  
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">void</font> load<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">unsigned</font> <font color="blue">long</font> copy<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename, FILE<font color="black">*</font> fd<font color="black">)</font>;
+
+  string packName;
+  NBULong dirLoc;
+  NBULong dirSize;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

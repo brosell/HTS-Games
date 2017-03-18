@@ -1,0 +1,158 @@
+<HTML>
+<HEAD>
+<TITLE>
+2dVector.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> Vector_h
+<font color="blue">#define</font> Vector_h
+
+<font color="blue">#include</font> <font color="maroon">"GameMath.h"</font>
+
+<font color="green">/////////////////////</font>
+<font color="green">//  Vector</font>
+<font color="green">/////////////////////</font>
+<font color="blue">class</font> Vector
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Vector<font color="black">(</font><font color="blue">float</font> x<font color="black">=</font><font color="maroon">0</font>.<font color="maroon">0</font>, <font color="blue">float</font> y<font color="black">=</font><font color="maroon">0</font>.<font color="maroon">0</font>, <font color="blue">float</font> z<font color="black">=</font><font color="maroon">0</font>.<font color="maroon">0</font><font color="black">)</font><font color="black">:</font>x<font color="black">(</font>x<font color="black">)</font>, y<font color="black">(</font>y<font color="black">)</font>, z<font color="black">(</font>z<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+
+  <font color="blue">static</font> Vector createFromAngle<font color="black">(</font><font color="blue">int</font> angle, <font color="blue">float</font> length<font color="black">)</font>
+  <font color="black">{</font>
+    Vector v;
+    angle<font color="black">-</font><font color="black">=</font><font color="maroon">90</font>;
+    <font color="blue">if</font> <font color="black">(</font>angle <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      angle <font color="black">=</font> <font color="maroon">360</font> <font color="black">+</font> angle;
+    <font color="black">}</font>
+
+    v.x <font color="black">=</font> costable<font color="black">[</font>angle<font color="black">]</font><font color="black">*</font>length;
+    v.y <font color="black">=</font> sintable<font color="black">[</font>angle<font color="black">]</font><font color="black">*</font>length;
+    v.z <font color="black">=</font> <font color="maroon">0</font>;
+    <font color="blue">return</font> v;
+  <font color="black">}</font>
+
+  <font color="blue">float</font> x;
+  <font color="blue">float</font> y;
+  <font color="blue">float</font> z;
+
+  Vector add<font color="black">(</font>Vector<font color="black">&</font> other<font color="black">)</font>
+  <font color="black">{</font>
+    Vector ret;
+    ret.x <font color="black">=</font> x<font color="black">+</font>other.x;
+    ret.y <font color="black">=</font> y<font color="black">+</font>other.y;
+    ret.z <font color="black">=</font> z<font color="black">+</font>other.z;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  Vector subtract<font color="black">(</font>Vector<font color="black">&</font> other<font color="black">)</font>
+  <font color="black">{</font>
+    Vector ret;
+    ret.x <font color="black">=</font> x<font color="black">-</font>other.x;
+    ret.y <font color="black">=</font> y<font color="black">-</font>other.y;
+    ret.z <font color="black">=</font> z<font color="black">-</font>other.z;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  Vector divide<font color="black">(</font><font color="blue">float</font> div<font color="black">)</font>
+  <font color="black">{</font>
+    Vector ret;
+    ret.x <font color="black">=</font> x<font color="black">/</font>div;
+    ret.y <font color="black">=</font> y<font color="black">/</font>div;
+    ret.z <font color="black">=</font> z<font color="black">/</font>div;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  Vector multiply<font color="black">(</font><font color="blue">float</font> mult<font color="black">)</font>
+  <font color="black">{</font>
+    Vector ret;
+    ret.x <font color="black">=</font> x<font color="black">*</font>mult;
+    ret.y <font color="black">=</font> y<font color="black">*</font>mult;
+    ret.z <font color="black">=</font> z<font color="black">*</font>mult;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  Vector normalize<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    Vector ret;
+    <font color="blue">float</font> t <font color="black">=</font> <font color="maroon">1</font><font color="black">/</font>length<font color="black">(</font><font color="black">)</font>;
+    ret.x <font color="black">=</font> x<font color="black">*</font>t;
+    ret.y <font color="black">=</font> y<font color="black">*</font>t;
+    ret.z <font color="black">=</font> z<font color="black">*</font>t;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  Vector parallel<font color="black">(</font><font color="blue">float</font> dist<font color="black">)</font>;
+  
+  Vector normal<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    Vector N;
+    N.x <font color="black">=</font> <font color="black">-</font><font color="black">(</font>y<font color="black">)</font>;
+    N.y <font color="black">=</font> <font color="black">(</font>x<font color="black">)</font>;
+    N <font color="black">=</font> N.normalize<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> N;
+  <font color="black">}</font>
+
+
+  <font color="blue">float</font> anglef<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">float</font> h <font color="black">=</font> sqrtf<font color="black">(</font> <font color="black">(</font>x<font color="black">*</font>x<font color="black">)</font> <font color="black">+</font> <font color="black">(</font>y<font color="black">*</font>y<font color="black">)</font> <font color="black">)</font>;
+    <font color="blue">float</font> s <font color="black">=</font> <font color="black">(</font>y <font color="black">/</font> h<font color="black">)</font>;
+    <font color="blue">float</font> as <font color="black">=</font> asin<font color="black">(</font>s<font color="black">)</font>; <font color="green">// radians</font>
+    <font color="blue">float</font> angle <font color="black">=</font> <font color="black">(</font><font color="maroon">180</font><font color="black">/</font>BR_PI <font color="black">*</font> as<font color="black">)</font> <font color="black">+</font> <font color="maroon">90</font>;
+    
+    <font color="blue">if</font> <font color="black">(</font>x <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>
+    <font color="black">{</font>
+      angle <font color="black">=</font> <font color="maroon">180</font> <font color="black">+</font> <font color="black">(</font><font color="maroon">180</font> <font color="black">-</font>angle<font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">return</font> angle;
+  <font color="black">}</font>
+
+  <font color="blue">int</font> anglei<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font><font color="blue">int</font><font color="black">)</font>anglef<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">float</font> dotProduct<font color="black">(</font>Vector<font color="black">&</font> other<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font>x<font color="black">*</font>other.x<font color="black">)</font> <font color="black">+</font> <font color="black">(</font>y<font color="black">*</font>other.y<font color="black">)</font> <font color="black">+</font> <font color="black">(</font>z<font color="black">*</font>other.z<font color="black">)</font>;
+  <font color="black">}</font>
+  
+  Vector crossProduct<font color="black">(</font>Vector <font color="black">&</font>other<font color="black">)</font>
+  <font color="black">{</font>
+    Vector ret;
+    ret.x <font color="black">=</font> <font color="black">(</font> y <font color="black">*</font> other.z <font color="black">)</font> <font color="black">-</font><font color="black">(</font> z <font color="black">*</font> other.y <font color="black">)</font>;
+    ret.y <font color="black">=</font> <font color="black">(</font> z <font color="black">*</font> other.x <font color="black">)</font> <font color="black">-</font><font color="black">(</font> x <font color="black">*</font> other.z <font color="black">)</font>;
+    ret.z <font color="black">=</font> <font color="black">(</font> x <font color="black">*</font> other.y <font color="black">)</font> <font color="black">-</font><font color="black">(</font> y <font color="black">*</font> other.x <font color="black">)</font>;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  Vector negate<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    Vector ret;
+    ret.x <font color="black">=</font> <font color="black">-</font>x;
+    ret.y <font color="black">=</font> <font color="black">-</font>y;
+    ret.z <font color="black">=</font> <font color="black">-</font>z;
+    <font color="blue">return</font> ret;
+  <font color="black">}</font>
+
+  <font color="blue">float</font> length<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> sqrtf<font color="black">(</font><font color="black">(</font>x<font color="black">*</font>x<font color="black">)</font> <font color="black">+</font> <font color="black">(</font>y<font color="black">*</font>y<font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">float</font> lengthSquared<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font>x<font color="black">*</font>x<font color="black">)</font> <font color="black">+</font> <font color="black">(</font>y<font color="black">*</font>y<font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="black">}</font>;
+
+Vector reflection<font color="black">(</font>Vector A, Vector P<font color="black">)</font>;
+Vector reflection<font color="black">(</font>Vector A, Line l<font color="black">)</font>;
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

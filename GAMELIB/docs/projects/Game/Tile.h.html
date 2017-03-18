@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>
+Tile.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _Tile_h
+<font color="blue">#define</font> _Tile_h
+
+<font color="blue">#include</font> <font color="maroon">"Thing.h"</font>
+
+<font color="blue">class</font> Tile<font color="black">:</font> <font color="blue">public</font> Thing
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Tile<font color="black">(</font>RotateSkin<font color="black">*</font> texture, <font color="blue">int</font> x, <font color="blue">int</font> y<font color="black">)</font><font color="black">:</font>Thing<font color="black">(</font><font color="maroon">1</font>, <font color="maroon">-1</font>, <font color="blue">false</font>, <font color="blue">true</font>, <font color="maroon">1</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">//Rect r(x, y, w, h);</font>
+    setPosition<font color="black">(</font>FPoint<font color="black">(</font>x, y<font color="black">)</font><font color="black">)</font>;
+    setSkin<font color="black">(</font><font color="maroon">"Tile"</font>, texture<font color="black">)</font>;
+    showSkin<font color="black">(</font><font color="maroon">"Tile"</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  virtual ~Tile<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+<font color="blue">protected</font><font color="black">:</font>
+  virtual <font color="blue">void</font> hit<font color="black">(</font>Thing<font color="black">&</font> other<font color="black">)</font> <font color="black">{</font><font color="black">}</font>;
+
+<font color="black">}</font>;
+
+    
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,61 @@
+.TH fcc 1
+.SH NAME
+fcc -- Fast Class Creator for generating C++ code
+.SH SYNOPSIS
+
+Usage: fcc -class <list_of_class_names>
+           -author <authors_name>
+.TP 8
+[-namespace <namespace_name> | -ns <namespace_name>]
+.TP 8
+[-overwrite | ow]
+.TP 8
+[-verbose | v]
+.TP 8
+[-no_unit_test]
+.TP 8
+[-no_makefile]
+.TP 8
+[-project <project_name>]
+.TP 8
+[-sccs_keywords | -sccs]
+.TP 8
+[-continuus_keywords | -ct]
+.TP 8
+[-open_source_notice | -os]
+.TP 8
+[-copyright <copyright> | -c <copyright>]
+.TP 8
+[-base_filename <base_filename> | -file <base_filename>]
+.TP 8
+[-no_copy_ctor]
+.TP 8
+[-no_assignment_operator | -no_op=]
+.TP 8
+[-no_dtor]
+.TP 8
+[-public_copy_ctor]
+.TP 8
+[-public_assignment_operator | -pub_op=]
+.TP 8
+[-settings_file <filename>]
+.SH ABBREVIATIONS
+Abbreviations: ctor = constructor, dtor = destructor
+.SH EXAMPLES
+.PP
+A simple example:
+.PP
+    fcc -verbose -class Airplane -namespace airport -author "John F. Hubbard"
+.PP
+This next example uses Continuus keywords and an open source notice:
+.PP
+    fcc -v -continuus_keywords -os -class Car -namespace garage -author "John F. Hubbard"
+.PP
+This example generates several classes in the same set of Apple.xxx files:
+.PP
+    fcc -v -ct -class "Apple Orange Pear" -namespace fruits -author "John F. Hubbard"
+.PP
+This example generates several classes in the same set of FruitFiles.xxx files:
+.PP
+    fcc -file FruitFiles -class "Apple Orange Pear" -ns fruits -author "John F. Hubbard"
+

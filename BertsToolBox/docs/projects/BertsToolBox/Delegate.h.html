@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+<TITLE>
+Delegate.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _Delegate_h
+<font color="blue">#define</font> _Delegate_h
+<font color="blue">#include</font> <font color="maroon">"Message.h"</font>
+
+<font color="green">//////////////////////////////////</font>
+<font color="green">// Message DELEGATE</font>
+<font color="green">///////////////////////////////////</font>
+
+<font color="blue">class</font> Delegate <font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  virtual <font color="blue">bool</font> invoke<font color="black">(</font>Message<font color="black">*</font><font color="black">)</font><font color="black">=</font><font color="maroon">0</font>;
+  virtual ~Delegate<font color="black">(</font><font color="black">)</font><font color="black">{</font><font color="black">}</font>
+<font color="blue">protected</font><font color="black">:</font>
+  Delegate<font color="black">(</font><font color="black">)</font><font color="black">{</font><font color="black">}</font>
+  
+<font color="black">}</font>; 
+
+<font color="blue">class</font> NonTypeDelegate <font color="black">:</font> <font color="blue">public</font> Delegate  
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  NonTypeDelegate<font color="black">(</font><font color="blue">bool</font> <font color="black">(</font><font color="black">*</font>pfn<font color="black">)</font><font color="black">(</font>Message<font color="black">*</font><font color="black">)</font><font color="black">)</font><font color="black">:</font>
+  m_pfn<font color="black">(</font>pfn<font color="black">)</font>
+  <font color="black">{</font>
+  <font color="black">}</font>
+  
+  <font color="blue">bool</font> invoke<font color="black">(</font>Message<font color="black">*</font> evt<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> m_pfn<font color="black">(</font>evt<font color="black">)</font>;
+  <font color="black">}</font>
+  
+  virtual ~NonTypeDelegate<font color="black">(</font><font color="black">)</font><font color="black">{</font><font color="black">}</font>
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> <font color="black">(</font><font color="black">*</font>m_pfn<font color="black">)</font><font color="black">(</font>Message<font color="black">*</font><font color="black">)</font>;
+<font color="black">}</font>;
+
+
+<font color="blue">template</font> <font color="black">&#60;</font>typename T<font color="black">&#62;</font>
+<font color="blue">class</font> TypeDelegate <font color="black">:</font> <font color="blue">public</font> Delegate  
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  TypeDelegate<font color="black">(</font>T <font color="black">&</font>t, <font color="blue">bool</font> <font color="black">(</font>T<font color="black">:</font><font color="black">:</font><font color="black">*</font>pfn<font color="black">)</font><font color="black">(</font>Message<font color="black">*</font><font color="black">)</font><font color="black">)</font><font color="black">:</font>
+  m_t<font color="black">(</font>t<font color="black">)</font>,
+  m_pfn<font color="black">(</font>pfn<font color="black">)</font>
+  <font color="black">{</font>
+    
+  <font color="black">}</font>
+
+  <font color="blue">bool</font> invoke<font color="black">(</font>Message<font color="black">*</font> evt<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font>m_t.<font color="black">*</font>m_pfn<font color="black">)</font><font color="black">(</font>evt<font color="black">)</font>;
+  <font color="black">}</font>
+
+  ~TypeDelegate<font color="black">(</font><font color="black">)</font><font color="black">{</font><font color="black">}</font>
+  
+<font color="blue">private</font><font color="black">:</font>
+  T<font color="black">&</font> m_t;
+  <font color="blue">bool</font> <font color="black">(</font>T<font color="black">:</font><font color="black">:</font><font color="black">*</font>m_pfn<font color="black">)</font><font color="black">(</font>Message<font color="black">*</font><font color="black">)</font>;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

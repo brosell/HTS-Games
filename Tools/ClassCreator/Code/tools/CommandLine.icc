@@ -1,0 +1,63 @@
+/* ****************************************************************************
+ *
+ *  CommandLine.icc
+ *  Created by John F. Hubbard, on Sat Jul 29 2000, 19:01:05 PST
+ *
+ *  Copyright (c) 2000, ATD Azad Technology Development Corporation
+ *
+ *            The Reliable Software Outsource Resource
+ *        You hire us, we do it for you, and we do it right.
+ *
+ *                       www.azadtech.com
+ *
+ *  Permission is granted to use this code without restriction,
+ *  as long as this copyright notice appears in all source files.
+ *
+ *  File Contents: Inline definitions for the CommandLine class.
+ *  Please see CommandLine.h for documentation of this class.
+ *
+ * %version: 2.30 %
+ * %date_modified: Thu Nov 02 16:10:32 2000 %
+ * %created_by: jhubbard %
+ *
+ *************************************************************************** */
+
+namespace tools
+{
+
+inline int
+CommandLine::Count() const
+{
+	return mnParameterCount;
+}
+
+inline bool
+CommandLine::IsParamName(const std::string& strWord) const
+{
+   return ( (strWord.length()) > 1 && ( strWord[0] == '-' ) );
+}
+
+inline std::string
+CommandLine::GetParamName(const std::string& strWord) const
+{
+	if (IsParamName(strWord) )
+	{
+		return strWord.substr(1, strWord.length() - 1);
+	}
+	return strWord;
+}
+
+inline bool
+CommandLine::Exists( const std::string& strArgName ) const
+{
+    return( mArgMap.find(strArgName) != mArgMap.end() );
+}
+
+inline std::string
+CommandLine::GetProgramName() const
+{
+	return mstrProgramName;
+}
+
+} //end of tools namespace
+

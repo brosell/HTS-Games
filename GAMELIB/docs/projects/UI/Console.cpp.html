@@ -1,0 +1,174 @@
+<HTML>
+<HEAD>
+<TITLE>
+Console.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Console.h"</font>
+<font color="blue">#include</font> <font color="maroon">"StringTokenizer.h"</font>
+
+Console<font color="black">:</font><font color="black">:</font>Console<font color="black">(</font><font color="black">)</font><font color="black">:</font> 
+DialogBox<font color="black">(</font><font color="maroon">"skn_ConsoleBackground"</font><font color="black">)</font>, 
+m_lineTime<font color="black">(</font><font color="maroon">3</font><font color="black">)</font>,
+m_numVisibleLines<font color="black">(</font><font color="maroon">3</font><font color="black">)</font>,
+m_changed<font color="black">(</font><font color="blue">true</font><font color="black">)</font>,
+m_showing<font color="black">(</font><font color="blue">false</font><font color="black">)</font>
+<font color="black">{</font> 
+  setPosition<font color="black">(</font>Rect<font color="black">(</font><font color="maroon">0</font>, <font color="maroon">0</font>, <font color="maroon">640</font>, <font color="maroon">480</font><font color="black">)</font><font color="black">)</font>;
+  addCallback<font color="black">(</font><font color="maroon">"help"</font>, <font color="blue">this</font><font color="black">)</font>;
+<font color="green">//  addCallback("hide", this);</font>
+
+  m_output.setPosition<font color="black">(</font>Rect<font color="black">(</font><font color="maroon">0</font>, <font color="maroon">0</font>, <font color="maroon">640</font>, <font color="maroon">450</font><font color="black">)</font><font color="black">)</font>;
+  m_input.setPosition<font color="black">(</font>Rect<font color="black">(</font><font color="maroon">0</font>, <font color="maroon">451</font>, <font color="maroon">639</font>, <font color="maroon">29</font><font color="black">)</font><font color="black">)</font>;
+
+  m_input.addKeyListener<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+  
+  addUIThing<font color="black">(</font><font color="black">&</font>m_output<font color="black">)</font>;
+  addUIThing<font color="black">(</font><font color="black">&</font>m_input<font color="black">)</font>;
+  setFocus<font color="black">(</font><font color="black">&</font>m_input<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> Console<font color="black">:</font><font color="black">:</font>onKeyPress<font color="black">(</font>KeyPressEvent<font color="black">*</font> event<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font><font color="green">/*event-&#62;thing == &m_input &&*/</font> event<font color="black">-</font><font color="black">&#62;</font>keySym <font color="black">=</font><font color="black">=</font> <font color="maroon">13</font><font color="black">)</font>
+  <font color="black">{</font>
+    doCommand<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>event<font color="black">-</font><font color="black">&#62;</font>keySym <font color="black">!</font><font color="black">=</font> SDLK_BACKQUOTE<font color="black">)</font>
+  <font color="black">{</font>
+    DialogBox<font color="black">:</font><font color="black">:</font>onKeyPress<font color="black">(</font>event<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> Console<font color="black">:</font><font color="black">:</font>execute<font color="black">(</font>string s, ...<font color="black">)</font>
+<font color="black">{</font>
+  va_list vl;
+  va_start<font color="black">(</font> vl, s <font color="black">)</font>;
+  <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">1024</font><font color="black">]</font>;
+
+  vsprintf<font color="black">(</font>buf, s.c_str<font color="black">(</font><font color="black">)</font>, vl<font color="black">)</font>;
+  va_end<font color="black">(</font> vl <font color="black">)</font>;
+
+  m_input.setText<font color="black">(</font>buf<font color="black">)</font>;
+  doCommand<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> Console<font color="black">:</font><font color="black">:</font>doCommand<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  ConsoleEvent cc;
+  cc.thing <font color="black">=</font> <font color="blue">this</font>;
+  cc.commandId <font color="black">=</font> getId<font color="black">(</font><font color="black">)</font>;
+
+  ConsoleListener<font color="black">*</font> listener <font color="black">=</font> <font color="maroon">0</font>;
+      
+  string s<font color="black">=</font>m_input.getText<font color="black">(</font><font color="black">)</font>;
+  m_input.setText<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>;
+
+  StringTokenizer st<font color="black">(</font>s.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>st.countTokens<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font><font color="maroon">0</font> <font color="black">)</font>
+  <font color="black">{</font>
+    cc.command <font color="black">=</font> st.nextToken<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    <font color="green">// blank line?</font>
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+
+  map<font color="black">&#60;</font>string, ConsoleListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair <font color="black">=</font> m_listeners.find<font color="black">(</font>cc.command<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>pair <font color="black">!</font><font color="black">=</font> m_listeners.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    listener <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    string errMsg<font color="black">=</font><font color="maroon">"no command delegate for "</font>;
+    errMsg<font color="black">+</font><font color="black">=</font>cc.command;
+    println<font color="black">(</font>errMsg<font color="black">)</font>;
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+  
+  <font color="blue">while</font> <font color="black">(</font>st.hasMoreTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    string arg <font color="black">=</font> st.nextToken<font color="black">(</font><font color="black">)</font>;
+    cc.args.push_back<font color="black">(</font>arg<font color="black">)</font>;
+  <font color="black">}</font>
+
+  listener<font color="black">-</font><font color="black">&#62;</font>consoleCommand<font color="black">(</font><font color="black">&</font>cc<font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">void</font> Console<font color="black">:</font><font color="black">:</font>drawWhileHidden<font color="black">(</font>Surface<font color="black">*</font> surface<font color="black">)</font>
+<font color="black">{</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> Console<font color="black">:</font><font color="black">:</font>println<font color="black">(</font>string s, ...<font color="black">)</font>
+<font color="black">{</font>
+  va_list vl;
+  va_start<font color="black">(</font> vl, s <font color="black">)</font>;
+  <font color="blue">char</font> buf<font color="black">[</font><font color="maroon">1024</font><font color="black">]</font>;
+
+  vsprintf<font color="black">(</font>buf, s.c_str<font color="black">(</font><font color="black">)</font>, vl<font color="black">)</font>;
+  va_end<font color="black">(</font> vl <font color="black">)</font>;
+
+  m_changed<font color="black">=</font><font color="blue">true</font>;
+  m_lines.push_front<font color="black">(</font>ConsoleLine<font color="black">(</font>buf<font color="black">)</font><font color="black">)</font>;
+  <font color="blue">int</font> lines<font color="black">=</font>m_output.getVisibleLines<font color="black">(</font><font color="black">)</font>;
+  string str<font color="black">=</font><font color="maroon">""</font>;
+  deque<font color="black">&#60;</font>ConsoleLine<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i<font color="black">=</font>m_lines.begin<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>lines <font color="black">&</font><font color="black">&</font> i<font color="black">!</font><font color="black">=</font>m_lines.end<font color="black">(</font><font color="black">)</font>; c<font color="black">+</font><font color="black">+</font>, i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    string g<font color="black">=</font>str;
+    str<font color="black">=</font><font color="black">(</font><font color="black">*</font>i<font color="black">)</font>.<font color="blue">line</font>;
+    str<font color="black">+</font><font color="black">=</font><font color="maroon">"\r\n"</font>;
+    str<font color="black">+</font><font color="black">=</font>g;
+  <font color="black">}</font>
+
+
+  m_output.setText<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+<font color="black">}</font>
+
+<font color="blue">void</font> Console<font color="black">:</font><font color="black">:</font>addCallback<font color="black">(</font>string cmd, ConsoleListener<font color="black">*</font> listener<font color="black">)</font>
+<font color="black">{</font>
+  m_listeners<font color="black">[</font>cmd<font color="black">]</font><font color="black">=</font>listener;
+<font color="black">}</font>
+
+<font color="blue">void</font> Console<font color="black">:</font><font color="black">:</font>consoleCommand<font color="black">(</font>ConsoleEvent<font color="black">*</font> cc<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>cc<font color="black">-</font><font color="black">&#62;</font>command <font color="black">=</font><font color="black">=</font> <font color="maroon">"hide"</font><font color="black">)</font>
+  <font color="black">{</font>
+    hide<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>cc<font color="black">-</font><font color="black">&#62;</font>command <font color="black">=</font><font color="black">=</font> <font color="maroon">"help"</font><font color="black">)</font>
+  <font color="black">{</font>
+    println<font color="black">(</font><font color="maroon">"Available commands:"</font><font color="black">)</font>;
+    map<font color="black">&#60;</font>string, ConsoleListener<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+    <font color="blue">for</font> <font color="black">(</font>pair<font color="black">=</font>m_listeners.begin<font color="black">(</font><font color="black">)</font>; pair<font color="black">!</font><font color="black">=</font>m_listeners.end<font color="black">(</font><font color="black">)</font>; pair<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      println<font color="black">(</font>pair<font color="black">-</font><font color="black">&#62;</font>first<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> Console<font color="black">:</font><font color="black">:</font>show<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  DialogBox<font color="black">:</font><font color="black">:</font>show<font color="black">(</font><font color="black">)</font>;
+  m_previousMouseState <font color="black">=</font> theGame.showCursor<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+  setFocus<font color="black">(</font><font color="black">&</font>m_input<font color="black">)</font>;
+  m_showing <font color="black">=</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> Console<font color="black">:</font><font color="black">:</font>hide<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  theGame.showCursor<font color="black">(</font>m_previousMouseState<font color="black">)</font>;
+  DialogBox<font color="black">:</font><font color="black">:</font>hide<font color="black">(</font><font color="black">)</font>;
+  m_showing <font color="black">=</font> <font color="blue">false</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

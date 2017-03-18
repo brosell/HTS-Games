@@ -1,0 +1,66 @@
+<HTML>
+<HEAD>
+<TITLE>
+IniFile.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> IniFile_h
+<font color="blue">#define</font> IniFile_h
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable<font color="black">:</font> <font color="maroon">4786</font><font color="black">)</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;map&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;iostream&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;list&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">class</font> IniFile<font color="black">:</font> <font color="blue">public</font> map<font color="black">&#60;</font>string, map<font color="black">&#60;</font>string, string<font color="black">&#62;</font> <font color="black">&#62;</font>
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  <font color="blue">static</font> IniFile<font color="black">&</font> get<font color="black">(</font>string filename<font color="black">)</font>;
+  IniFile<font color="black">(</font>string filename<font color="black">)</font>;
+  IniFile<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> addIniFile<font color="black">(</font>string filename<font color="black">)</font>;
+
+  <font color="blue">bool</font> read<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">bool</font> readObsolite<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">bool</font> write<font color="black">(</font>string filename<font color="black">)</font>;
+  <font color="blue">bool</font> write<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> write<font color="black">(</font>m_filenames.front<font color="black">(</font><font color="black">)</font><font color="black">)</font>; <font color="black">}</font>
+
+  <font color="blue">int</font> getInt<font color="black">(</font>string section, string field<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> atoi<font color="black">(</font> <font color="black">(</font><font color="black">*</font><font color="blue">this</font><font color="black">)</font><font color="black">[</font>section<font color="black">]</font><font color="black">[</font>field<font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">float</font> getFloat<font color="black">(</font>string section, string field<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> atof<font color="black">(</font> <font color="black">(</font><font color="black">*</font><font color="blue">this</font><font color="black">)</font><font color="black">[</font>section<font color="black">]</font><font color="black">[</font>field<font color="black">]</font>.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">bool</font> hasSection<font color="black">(</font>string section<font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> find<font color="black">(</font>section<font color="black">)</font><font color="black">!</font><font color="black">=</font>end<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+
+  <font color="blue">bool</font> isRead<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> m_read; <font color="black">}</font>
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">bool</font> read<font color="black">(</font>string filename<font color="black">)</font>;
+  IniFile<font color="black">(</font><font color="blue">const</font> IniFile<font color="black">&</font> other<font color="black">)</font>; <font color="green">// prevent copying</font>
+  
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font> m_filenames;
+
+  <font color="blue">char</font> m_errBuf<font color="black">[</font><font color="maroon">1024</font><font color="black">]</font>;
+
+  <font color="blue">bool</font> m_dirty;
+  <font color="blue">bool</font> m_read;
+
+  <font color="blue">static</font> map<font color="black">&#60;</font>string, IniFile<font color="black">*</font><font color="black">&#62;</font> s_map;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

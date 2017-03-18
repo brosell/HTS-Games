@@ -1,0 +1,118 @@
+<HTML>
+<HEAD>
+<TITLE>
+ParticleSystem.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4503</font> <font color="maroon">4530</font><font color="black">)</font>
+
+<font color="blue">#include</font> <font color="maroon">"ParticleSystem.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Misc/AssetManager.h"</font>
+
+Particle<font color="black">:</font><font color="black">:</font>Particle<font color="black">(</font>Point origin, ParticleTraits<font color="black">*</font> traits, ParticleGroup<font color="black">*</font> group<font color="black">)</font><font color="black">:</font>
+m_age<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_location<font color="black">(</font>origin<font color="black">)</font>,
+m_velocity<font color="black">(</font><font color="maroon">0</font>, <font color="maroon">0</font><font color="black">)</font>,
+m_traits<font color="black">(</font>traits<font color="black">)</font>,
+m_group<font color="black">(</font>group<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_traits <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_traits<font color="black">-</font><font color="black">&#62;</font>init<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    m_velocity.x <font color="black">=</font> <font color="black">(</font>rand<font color="black">(</font><font color="black">)</font>%<font color="maroon">60</font><font color="black">)</font> <font color="maroon">-30</font>;
+    m_velocity.y <font color="black">=</font> <font color="black">(</font>rand<font color="black">(</font><font color="black">)</font>%<font color="maroon">60</font><font color="black">)</font> <font color="maroon">-30</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+Particle<font color="black">:</font><font color="black">:</font>~Particle<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> Particle<font color="black">:</font><font color="black">:</font>decay<font color="black">(</font><font color="black">)</font> 
+<font color="black">{</font> 
+  m_location.x <font color="black">+</font><font color="black">=</font> m_velocity.x;
+  m_location.y <font color="black">+</font><font color="black">=</font> m_velocity.y;
+  m_age<font color="black">+</font><font color="black">+</font>;
+  <font color="blue">if</font> <font color="black">(</font>m_age <font color="black">&#62;</font> m_traits<font color="black">-</font><font color="black">&#62;</font>getLifespan<font color="black">(</font><font color="blue">this</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_traits<font color="black">-</font><font color="black">&#62;</font>deinit<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+    m_group<font color="black">-</font><font color="black">&#62;</font>remove<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+    
+    <font color="blue">return</font>;
+  <font color="black">}</font>
+  m_traits<font color="black">-</font><font color="black">&#62;</font>decay<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> ParticleSystem<font color="black">:</font><font color="black">:</font>draw<font color="black">(</font>Display<font color="black">*</font> display<font color="black">)</font>
+<font color="black">{</font>
+  set<font color="black">&#60;</font>Particle<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  set<font color="black">&#60;</font>Particle<font color="black">*</font><font color="black">&#62;</font> copy<font color="black">(</font>m_particles<font color="black">)</font>;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>copy.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>copy.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    Particle<font color="black">*</font> particle <font color="black">=</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>particle<font color="black">-</font><font color="black">&#62;</font>isDecayed<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      particle<font color="black">-</font><font color="black">&#62;</font>draw<font color="black">(</font>display<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> ParticleSystem<font color="black">:</font><font color="black">:</font>remove<font color="black">(</font>Particle<font color="black">*</font> p<font color="black">)</font>
+<font color="black">{</font>
+  m_particles.erase<font color="black">(</font>p<font color="black">)</font>;
+  <font color="blue">delete</font> p;
+<font color="black">}</font>
+
+<font color="blue">void</font> ParticleSystem<font color="black">:</font><font color="black">:</font>tick<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  list<font color="black">&#60;</font>Particle<font color="black">*</font><font color="black">&#62;</font> toBeWacked;
+  set<font color="black">&#60;</font>Particle<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>m_particles.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font>m_particles.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    Particle<font color="black">*</font> particle <font color="black">=</font> <font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+    particle<font color="black">-</font><font color="black">&#62;</font>decay<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>particle<font color="black">-</font><font color="black">&#62;</font>isDecayed<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      toBeWacked.push_back<font color="black">(</font>particle<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  list<font color="black">&#60;</font>Particle<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator ii;
+  <font color="blue">for</font> <font color="black">(</font>ii<font color="black">=</font>toBeWacked.begin<font color="black">(</font><font color="black">)</font>; ii<font color="black">!</font><font color="black">=</font>toBeWacked.end<font color="black">(</font><font color="black">)</font>; ii<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    m_particles.erase<font color="black">(</font><font color="black">*</font>ii<font color="black">)</font>;
+    <font color="blue">delete</font> <font color="black">(</font><font color="black">*</font>ii<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> ParticleSystem<font color="black">:</font><font color="black">:</font>co_runner<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">while</font><font color="black">(</font><font color="blue">true</font><font color="black">)</font>
+  <font color="black">{</font>
+    tick<font color="black">(</font><font color="black">)</font>;
+    GameScheduler<font color="black">:</font><font color="black">:</font>resumeAt<font color="black">(</font>NEXT_FRAME<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> ParticleGroup<font color="black">:</font><font color="black">:</font>remove<font color="black">(</font>Particle<font color="black">*</font> p<font color="black">)</font>
+<font color="black">{</font>
+  m_particles.erase<font color="black">(</font>p<font color="black">)</font>;
+  m_finalLocations.push_back<font color="black">(</font>Point<font color="black">(</font>p<font color="black">-</font><font color="black">&#62;</font>getLocation<font color="black">(</font><font color="black">)</font>.x, p<font color="black">-</font><font color="black">&#62;</font>getLocation<font color="black">(</font><font color="black">)</font>.y<font color="black">)</font><font color="black">)</font>;
+  <font color="green">//m_system-&#62;remove(p);</font>
+  <font color="blue">if</font> <font color="black">(</font>m_particles.size<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="green">//must have been the last one</font>
+    m_system<font color="black">-</font><font color="black">&#62;</font>groupDone<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

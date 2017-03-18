@@ -1,0 +1,140 @@
+<HTML>
+<HEAD>
+<TITLE>
+IniBasedDialog.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> IniBasedDialog_h
+<font color="blue">#define</font> IniBasedDialog_h
+
+<font color="blue">#include</font> <font color="maroon">"UI.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"IniFile.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;map&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="green">/**
+A DialogBox that uses an inifile for defination
+
+&#60;pre&#62;
+[DialogName]
+Background = the image to use as a background
+Title = the title of the dialog. Shows at the top.
+Position = x, y, w, h. the position of the dialog
+Font = font asset name. If ommitted, the defualt font is used.
+Controls = comma delimited list of controls
+
+[ControlName]
+The following are common to all controls
+Type = [Button | DefaultButton | CancelButton | HighlightButton | ToggleButton | TextBox | TextArea | List | DropDownList | HSlider | Label | WorldCanvas | VscrollBar]
+Position = x, y, w, h
+Font = asset name of font. If ommited, the the font of the dialog is used.
+Id = int id of the control
+Text = text sent to setText of control
+
+ProgressBar
+Color = r, g, b
+HighBound
+
+VScrollBar, HSlider
+LowBound = the lowerbound of the scroll values
+HighBound = the upper bound
+
+Button, DefaultButton, CancelButton
+DownTexture
+UpTexture
+FocusTexture
+OverTexture
+
+HighlightButton
+Highlight = image to use as a highlight
+Default = [0 | 1]
+Cancel = [0 | 1]
+
+Label
+HJust = the horizontal justification [Right | Center | Left]
+VJust = the vertical justification [Top | Middle | Bottom]
+&#60;/pre&#62;
+&#60;em&#62;Example&#60;/em&#62;
+&#60;pre&#62;
+[Game]
+Position = 0, 0, 640, 480
+Background = UI\GameBackground8x10x45.bmp
+Font = UI\font_arial_14_green.bmp
+Controls = PlayField ScoreDisplay, LevelDisplay, CurrentPtsDisplay
+
+[PlayField]
+Id = 100
+Type = WorldCanvas
+Position = 65, 15, 360, 450
+
+
+[ScoreDisplay]
+Id = 101
+Type = Label
+Font = fnt_ScoreBoard
+HJust = Center
+Position = 490, 100, 140, 30
+
+[LevelDisplay]
+Id = 102
+Type = Label
+Font = fnt_ScoreBoard
+HJust = Center
+Position = 490, 250, 140, 30
+
+[CurrentPtsDisplay]
+Id = 102
+Type = Label
+Font = fnt_ScoreBoard
+HJust = Center
+Position = 490, 175, 140, 30
+&#60;/pre&#62;
+*/</font>
+<font color="blue">class</font> IniBasedDialog<font color="black">:</font> <font color="blue">public</font> DialogBox
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  IniBasedDialog<font color="black">(</font>IniFile<font color="black">&</font> ini, string dialogName<font color="black">)</font>;
+
+  ~IniBasedDialog<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">/** 
+  @param name the name form the ini file
+  */</font>
+  UIThing<font color="black">*</font> getControlByName<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>;
+
+  <font color="green">/** returns the id of the button that was pressed */</font>
+  <font color="blue">int</font> getPressedId<font color="black">(</font><font color="black">)</font>; 
+
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">void</font> createControl<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>;
+  UIThing<font color="black">*</font> addButton<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>;
+  UIThing<font color="black">*</font> addVScrollBar<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>;
+  UIThing<font color="black">*</font> addTextBox<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>;
+  UIThing<font color="black">*</font> addTextField<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>;
+  UIThing<font color="black">*</font> addWorldCanvas<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>;
+  UIThing<font color="black">*</font> addLabel<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>;
+  UIThing<font color="black">*</font> addHSlider<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>;
+  UIThing<font color="black">*</font> addProgressBar<font color="black">(</font>string <font color="blue">name</font><font color="black">)</font>;
+
+  <font color="blue">void</font> parseColor<font color="black">(</font>string color, <font color="blue">int</font><font color="black">&</font> red, <font color="blue">int</font><font color="black">&</font> green, <font color="blue">int</font><font color="black">&</font> blue, <font color="blue">int</font><font color="black">&</font> alpha<font color="black">)</font>;
+
+  string m_defaultFontName;
+
+  map<font color="black">&#60;</font>string, UIThing<font color="black">*</font><font color="black">&#62;</font> m_stringControl;
+
+  list<font color="black">&#60;</font>UIThing<font color="black">*</font><font color="black">&#62;</font> m_createdUIThings;
+
+  IniFile<font color="black">&</font> m_ini;
+  string m_dialogName;
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

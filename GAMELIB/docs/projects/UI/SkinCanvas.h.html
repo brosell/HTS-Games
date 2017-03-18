@@ -1,0 +1,30 @@
+<HTML>
+<HEAD>
+<TITLE>
+SkinCanvas.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> SkinCanvas_h
+<font color="blue">#define</font> SkinCanvas_h
+
+<font color="blue">#include</font> <font color="maroon">"UI/Canvas.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Graphics/Skin.h"</font>
+
+<font color="blue">class</font> SkinCanvas<font color="black">:</font> <font color="blue">public</font> Canvas
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  SkinCanvas<font color="black">(</font><font color="black">)</font><font color="black">:</font> Canvas<font color="black">(</font><font color="black">)</font>, m_skin<font color="black">(</font><font color="maroon">0</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  ~SkinCanvas<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> setSkin<font color="black">(</font>string assetName<font color="black">)</font>;
+  virtual <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> display<font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+  Skin<font color="black">*</font> m_skin;
+<font color="black">}</font>;
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

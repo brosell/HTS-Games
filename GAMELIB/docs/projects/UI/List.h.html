@@ -1,0 +1,93 @@
+<HTML>
+<HEAD>
+<TITLE>
+List.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _List_h
+<font color="blue">#define</font> _List_h
+
+<font color="blue">#include</font> <font color="maroon">"UIThing.h"</font>
+<font color="blue">#include</font> <font color="maroon">"Font.h"</font>
+<font color="blue">#include</font> <font color="maroon">"VScrollBar.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;list&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;vector&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">class</font> Surface;
+
+<font color="blue">class</font> ListItem
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  ListItem<font color="black">(</font><font color="blue">int</font> id, string str<font color="black">)</font><font color="black">:</font> id<font color="black">(</font>id<font color="black">)</font>, str<font color="black">(</font>str<font color="black">)</font> <font color="black">{</font> <font color="black">}</font>
+  <font color="blue">int</font> id;
+  string str;
+<font color="black">}</font>;
+
+<font color="blue">class</font> List<font color="black">:</font> <font color="blue">public</font> Container, <font color="blue">public</font> AdjustmentListener
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  List<font color="black">(</font><font color="black">)</font>;
+  ~List<font color="black">(</font><font color="black">)</font>;
+  virtual string getName<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="maroon">"List"</font>; <font color="black">}</font>
+  virtual <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>;
+  virtual <font color="blue">bool</font> acceptsFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">true</font>; <font color="black">}</font>
+
+  <font color="blue">void</font> addItemListener<font color="black">(</font>ItemListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_itemListeners.insert<font color="black">(</font>listener<font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">void</font> removeItemListener<font color="black">(</font>ItemListener<font color="black">*</font> listener<font color="black">)</font> <font color="black">{</font> m_itemListeners.erase<font color="black">(</font>listener<font color="black">)</font>; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> setPosition<font color="black">(</font>Rect<font color="black">&</font> pos<font color="black">)</font>
+  <font color="black">{</font>
+    Container<font color="black">:</font><font color="black">:</font>setPosition<font color="black">(</font>pos<font color="black">)</font>;
+    Rect r<font color="black">(</font>pos.w <font color="maroon">-10</font>, <font color="maroon">0</font>, <font color="maroon">10</font>, pos.h<font color="black">)</font>;
+    m_scroll.setPosition<font color="black">(</font>r<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> addItem<font color="black">(</font><font color="blue">int</font> id, string item<font color="black">)</font>;
+  <font color="blue">void</font> removeItem<font color="black">(</font><font color="blue">int</font> id<font color="black">)</font>;
+  <font color="blue">void</font> clear<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">void</font> setSelected<font color="black">(</font><font color="blue">int</font> pos<font color="black">)</font>;
+
+  <font color="blue">int</font> getSelectedId<font color="black">(</font><font color="black">)</font>;
+  string getSelectedString<font color="black">(</font><font color="black">)</font>;
+
+  <font color="blue">bool</font> hasSelection<font color="black">(</font><font color="black">)</font>;
+  
+  <font color="blue">int</font> getVisibleLines<font color="black">(</font><font color="black">)</font>
+  <font color="black">{</font>
+    Font<font color="black">*</font> font<font color="black">=</font>Font<font color="black">:</font><font color="black">:</font>getDefault<font color="black">(</font><font color="black">)</font>;
+    Rect r<font color="black">=</font>getPosition<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">(</font><font color="black">(</font>r.h <font color="black">-</font><font color="black">(</font>m_margin <font color="black">+</font> m_margin<font color="black">)</font><font color="black">)</font><font color="black">/</font>font<font color="black">-</font><font color="black">&#62;</font>getFontHeight<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  virtual <font color="blue">void</font> adjustmentValueChanged<font color="black">(</font>AdjustmentEvent<font color="black">*</font> event<font color="black">)</font>;
+
+  virtual <font color="blue">void</font> onKeyPress<font color="black">(</font>KeyPressEvent<font color="black">*</font> event<font color="black">)</font>;
+  virtual <font color="blue">void</font> onMouseClick<font color="black">(</font>MouseClickEvent<font color="black">*</font> event<font color="black">)</font>;
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> updateItemListeners<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> createHighlight<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">void</font> drawLines<font color="black">(</font>Display<font color="black">*</font> surface, list<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">&</font> lines<font color="black">)</font>;
+  <font color="blue">int</font> m_selectedItem;
+  <font color="blue">int</font> m_topIndex;
+
+
+  vector<font color="black">&#60;</font>ListItem<font color="black">&#62;</font> m_items;
+<font color="blue">private</font><font color="black">:</font>
+  <font color="blue">int</font> m_margin;
+
+  set<font color="black">&#60;</font>ItemListener<font color="black">*</font><font color="black">&#62;</font> m_itemListeners;
+
+  VScrollBar m_scroll;
+
+  ItemStateChangeEvent isce;
+<font color="black">}</font>;
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

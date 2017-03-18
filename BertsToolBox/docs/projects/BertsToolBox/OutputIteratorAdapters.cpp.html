@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>
+OutputIteratorAdapters.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"OutputIteratorAdapters.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;vector&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;iostream&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;iterator&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">int</font> testOutputIterators<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">int</font> a<font color="black">[</font><font color="black">]</font><font color="black">=</font><font color="black">{</font> <font color="maroon">1</font>, <font color="maroon">2</font>, <font color="maroon">3</font>, <font color="maroon">4</font>, <font color="maroon">5</font>, <font color="maroon">6</font>, <font color="maroon">7</font>, <font color="maroon">8</font>, <font color="maroon">9</font>, <font color="maroon">0</font> <font color="black">}</font>;
+
+  vector<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font> vec;
+  vector<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font> vec2;
+
+  copy<font color="black">(</font>a, a<font color="black">+</font><font color="maroon">10</font>, back_inserter<font color="black">(</font>vec<font color="black">)</font><font color="black">)</font>;
+  copy<font color="black">(</font>vec.begin<font color="black">(</font><font color="black">)</font>, vec.end<font color="black">(</font><font color="black">)</font>, ostream_iterator<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>cout, <font color="maroon">" "</font><font color="black">)</font><font color="black">)</font>;
+
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+  
+  copy<font color="black">(</font>a, a<font color="black">+</font><font color="maroon">10</font>, multiOut<font color="black">(</font>ostream_iterator<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>cout, <font color="maroon">" "</font><font color="black">)</font>, back_inserter<font color="black">(</font>vec2<font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+
+  cout <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+  copy<font color="black">(</font>vec2.begin<font color="black">(</font><font color="black">)</font>, vec2.end<font color="black">(</font><font color="black">)</font>, ostream_iterator<font color="black">&#60;</font><font color="blue">int</font><font color="black">&#62;</font><font color="black">(</font>cout, <font color="maroon">" "</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">return</font> <font color="maroon">0</font>;
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,6 @@
+If any two faces share a point and a normalized vector, they may be combined.
+Otherwise, leave them be.
+
+To combine:
+example Face(p1, p2) and Face(p2, p3) (p2 is the common point)
+The combined face is (p1, p3)

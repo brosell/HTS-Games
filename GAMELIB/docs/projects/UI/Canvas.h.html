@@ -1,0 +1,32 @@
+<HTML>
+<HEAD>
+<TITLE>
+Canvas.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> Canvas_h
+<font color="blue">#define</font> Canvas_h
+
+<font color="blue">#include</font> <font color="maroon">"UIThing.h"</font>
+
+<font color="green">// this is fairly useless.</font>
+<font color="green">// the WorldCanvas subclasses it, but thats all...</font>
+
+<font color="blue">class</font> Canvas<font color="black">:</font> <font color="blue">public</font> UIThing
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Canvas<font color="black">(</font><font color="black">)</font><font color="black">:</font> UIThing<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>;
+  virtual ~Canvas<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="black">}</font>;
+
+  virtual <font color="blue">bool</font> acceptsFocus<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+  virtual string getName<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="maroon">"Canvas"</font>; <font color="black">}</font>
+
+  virtual <font color="blue">void</font> paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+</PRE>
+</BODY>
+</HTML>

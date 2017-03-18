@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<TITLE>
+RotateSkin.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#include</font> <font color="maroon">"RotateSkin.h"</font>
+<font color="blue">#include</font> <font color="maroon">"SDL_rotozoom.h"</font>
+
+RotateSkin<font color="black">:</font><font color="black">:</font>RotateSkin<font color="black">(</font><font color="blue">int</font> numOfRotations<font color="black">)</font><font color="black">:</font> 
+m_numberRotations<font color="black">(</font>numOfRotations<font color="black">)</font>,
+m_currentRotation<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_currentFrame<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_numFrames<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>,
+m_fps<font color="black">(</font><font color="maroon">15</font><font color="black">)</font>
+<font color="black">{</font>
+  m_frameTimer <font color="black">=</font> Timer<font color="black">:</font><font color="black">:</font>create<font color="black">(</font><font color="maroon">"RotateSkin"</font>, <font color="maroon">0</font>, <font color="maroon">1000</font><font color="black">/</font>m_fps, <font color="blue">this</font>, <font color="maroon">0</font>, <font color="blue">true</font><font color="black">)</font>;
+<font color="black">}</font>
+
+RotateSkin<font color="black">:</font><font color="black">:</font>~RotateSkin<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  Display<font color="black">*</font> display <font color="black">=</font> Display<font color="black">:</font><font color="black">:</font>getInstance<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>m_numFrames; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> r<font color="black">=</font><font color="maroon">0</font>; r<font color="black">&#60;</font>m_numberRotations; r<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      display<font color="black">-</font><font color="black">&#62;</font>release<font color="black">(</font>m_skins<font color="black">[</font>c<font color="black">]</font><font color="black">[</font>r<font color="black">]</font><font color="black">)</font>;
+      <font color="blue">delete</font> m_bitMasks<font color="black">[</font>c<font color="black">]</font><font color="black">[</font>r<font color="black">]</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  Timer<font color="black">:</font><font color="black">:</font>destroy<font color="black">(</font>m_frameTimer<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> RotateSkin<font color="black">:</font><font color="black">:</font>addImage<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> filename, <font color="blue">int</font> count<font color="black">)</font>
+<font color="black">{</font>
+  SDL_Surface<font color="black">*</font> orig <font color="black">=</font> loadSDLSurface<font color="black">(</font>filename<font color="black">)</font>;
+  addImage<font color="black">(</font>orig, count<font color="black">)</font>;
+  SDL_FreeSurface<font color="black">(</font>orig<font color="black">)</font>;
+  m_numFrames<font color="black">+</font><font color="black">=</font>count;
+<font color="black">}</font>
+
+<font color="blue">void</font> RotateSkin<font color="black">:</font><font color="black">:</font>addImage<font color="black">(</font>SDL_Surface<font color="black">*</font> orig, <font color="blue">int</font> count<font color="black">)</font>
+<font color="black">{</font>
+  Display<font color="black">*</font> display <font color="black">=</font> Display<font color="black">:</font><font color="black">:</font>getInstance<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> r<font color="black">=</font><font color="maroon">0</font>; r<font color="black">&#60;</font>m_numberRotations; r<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">double</font> angle <font color="black">=</font> r <font color="black">*</font> <font color="black">(</font><font color="black">(</font><font color="maroon">360</font><font color="black">/</font>m_numberRotations<font color="black">)</font><font color="black">)</font>;
+    SDL_Surface<font color="black">*</font> rotated <font color="black">=</font> rotozoomSurface<font color="black">(</font>orig, <font color="black">-</font>angle, <font color="maroon">1</font>, <font color="maroon">0</font><font color="black">)</font>;
+    m_manipulated.insert<font color="black">(</font>rotated<font color="black">)</font>;
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> c<font color="black">=</font><font color="maroon">0</font>; c<font color="black">&#60;</font>count; c<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font>
+      m_skins<font color="black">[</font>m_numFrames<font color="black">+</font>c<font color="black">]</font><font color="black">[</font>r<font color="black">]</font> <font color="black">=</font> display<font color="black">-</font><font color="black">&#62;</font>prepare<font color="black">(</font>rotated<font color="black">)</font>; <font color="green">//-&#62;pixels, rotated-&#62;w, rotated-&#62;h);</font>
+      m_bitMasks<font color="black">[</font>m_numFrames<font color="black">+</font>c<font color="black">]</font><font color="black">[</font>r<font color="black">]</font> <font color="black">=</font> <font color="blue">new</font> CollisionBitMask<font color="black">(</font>rotated<font color="black">-</font><font color="black">&#62;</font>pixels, rotated<font color="black">-</font><font color="black">&#62;</font>w, rotated<font color="black">-</font><font color="black">&#62;</font>h<font color="black">)</font>;
+    <font color="black">}</font>
+    SDL_FreeSurface<font color="black">(</font>rotated<font color="black">)</font>;
+  <font color="black">}</font>
+  
+<font color="black">}</font>
+
+<font color="blue">void</font> RotateSkin<font color="black">:</font><font color="black">:</font>timeout<font color="black">(</font>TimerEvent<font color="black">*</font> event<font color="black">)</font>
+<font color="black">{</font>
+  m_currentFrame<font color="black">+</font><font color="black">+</font>;
+  <font color="blue">if</font> <font color="black">(</font>m_currentFrame <font color="black">&#62;</font><font color="black">=</font> m_numFrames<font color="black">)</font>
+  <font color="black">{</font>
+    m_currentFrame <font color="black">=</font> <font color="maroon">0</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

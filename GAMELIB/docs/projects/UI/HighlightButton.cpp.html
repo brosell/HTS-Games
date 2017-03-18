@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<TITLE>
+HighlightButton.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4786</font> <font color="maroon">4503</font> <font color="maroon">4530</font><font color="black">)</font>
+
+<font color="blue">#include</font> <font color="maroon">"HighlightButton.h"</font>
+<font color="blue">#include</font> <font color="maroon">"BR_Game.h"</font>
+<font color="blue">#include</font> <font color="maroon">"SDL_rotozoom.h"</font>
+
+HighlightButton<font color="black">:</font><font color="black">:</font>HighlightButton<font color="black">(</font><font color="black">)</font><font color="black">:</font> m_glass<font color="black">(</font><font color="maroon">-1</font><font color="black">)</font>
+<font color="black">{</font>
+<font color="black">}</font>
+
+HighlightButton<font color="black">:</font><font color="black">:</font>~HighlightButton<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_glass <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    theGame.screen<font color="black">-</font><font color="black">&#62;</font>release<font color="black">(</font>m_glass<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> HighlightButton<font color="black">:</font><font color="black">:</font>createHighlight<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  SDL_Surface<font color="black">*</font> glass <font color="black">=</font> loadSDLSurface<font color="black">(</font>m_highlight.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="blue">double</font> zoomX <font color="black">=</font> <font color="black">(</font><font color="blue">double</font><font color="black">)</font><font color="black">(</font>getPosition<font color="black">(</font><font color="black">)</font>.w<font color="black">)</font> <font color="black">/</font> <font color="black">(</font><font color="blue">double</font><font color="black">)</font>glass<font color="black">-</font><font color="black">&#62;</font>w;
+  <font color="blue">double</font> zoomY <font color="black">=</font> <font color="black">(</font><font color="blue">double</font><font color="black">)</font><font color="black">(</font>getPosition<font color="black">(</font><font color="black">)</font>.h<font color="black">)</font> <font color="black">/</font> <font color="black">(</font><font color="blue">double</font><font color="black">)</font>glass<font color="black">-</font><font color="black">&#62;</font>h;
+
+  SDL_Surface<font color="black">*</font> zoomed <font color="black">=</font> zoomSurface<font color="black">(</font>glass, zoomX, zoomY, <font color="maroon">1</font><font color="black">)</font>;
+
+  m_glass <font color="black">=</font> theGame.screen<font color="black">-</font><font color="black">&#62;</font>prepare<font color="black">(</font>zoomed<font color="black">)</font>; <font color="green">//-&#62;pixels, zoomed-&#62;w, zoomed-&#62;h);</font>
+  SDL_FreeSurface<font color="black">(</font>glass<font color="black">)</font>;
+  SDL_FreeSurface<font color="black">(</font>zoomed<font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">void</font> HighlightButton<font color="black">:</font><font color="black">:</font>paint<font color="black">(</font>Display<font color="black">*</font> surface<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">if</font> <font color="black">(</font>m_glass <font color="black">=</font><font color="black">=</font> <font color="maroon">-1</font><font color="black">)</font>
+  <font color="black">{</font>
+    createHighlight<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">if</font> <font color="black">(</font>isMouseOver<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    Rect r<font color="black">=</font>getTranslatedPosition<font color="black">(</font><font color="black">)</font>;
+    surface<font color="black">-</font><font color="black">&#62;</font>blit<font color="black">(</font>m_glass, r.x, r.y<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

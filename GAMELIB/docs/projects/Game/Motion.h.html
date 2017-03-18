@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+<TITLE>
+Motion.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#ifndef</font> _Motion_h
+<font color="blue">#define</font> _Motion_h
+
+
+<font color="blue">class</font> Motion
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+  Motion<font color="black">(</font><font color="blue">float</font> x, <font color="blue">float</font> y, <font color="blue">int</font> w, <font color="blue">int</font> h<font color="black">)</font><font color="black">:</font> m_x<font color="black">(</font>x<font color="black">)</font>, m_y<font color="black">(</font>y<font color="black">)</font>, m_w<font color="black">(</font>w<font color="black">)</font>, m_h<font color="black">(</font>h<font color="black">)</font>
+  <font color="black">{</font>
+    m_moved<font color="black">=</font><font color="blue">true</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> setPostion<font color="black">(</font><font color="blue">float</font> x, <font color="blue">float</font> y<font color="black">)</font>
+  <font color="black">{</font>
+    m_x<font color="black">=</font>x;
+    m_y<font color="black">=</font>y;
+    m_moved<font color="black">=</font><font color="blue">true</font>;
+  <font color="black">}</font>
+
+  virtual <font color="blue">void</font> tickAndMove<font color="black">(</font><font color="blue">int</font><font color="black">&</font> retX, <font color="blue">int</font><font color="black">&</font> retY<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font>; <font color="black">}</font>
+
+  <font color="blue">bool</font> moved<font color="black">(</font><font color="black">)</font>  <font color="black">{</font> <font color="blue">return</font> m_moved; <font color="black">}</font>
+  <font color="blue">void</font> setMoved<font color="black">(</font><font color="blue">bool</font> m<font color="black">)</font> <font color="black">{</font> m_moved<font color="black">=</font>m; <font color="black">}</font>
+
+
+
+
+
+<font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">float</font> m_x;
+  <font color="blue">float</font> m_y;
+
+  <font color="blue">int</font> m_w;
+  <font color="blue">int</font> m_h;
+  <font color="blue">bool</font> m_moved;
+<font color="black">}</font>;
+
+
+<font color="blue">#endif</font>
+
+</PRE>
+</BODY>
+</HTML>

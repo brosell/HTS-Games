@@ -1,0 +1,111 @@
+09/30/03 15:24:16 - Inform: HW Available: 1
+09/30/03 15:24:16 - Inform: Accelerated HW->HW Blits: 1
+09/30/03 15:24:16 - Inform: Accelerated HW->HW Colorkey Blits: 1
+09/30/03 15:24:16 - Inform: Accelerated HW->HW ALPHA Blits: 0
+09/30/03 15:24:16 - Inform: Accelerated SW->HW Blits: 1
+09/30/03 15:24:16 - Inform: Accelerated SW->HW Colorkey Blits: 1
+09/30/03 15:24:16 - Inform: Accelerated SW->HW ALPHA Blits: 0
+09/30/03 15:24:16 - Inform: Accelerated Fills :1
+09/30/03 15:24:16 - Inform: Screen is SW surface
+09/30/03 15:24:16 - Inform: Rmask 00ff0000
+09/30/03 15:24:16 - Inform: Gmask 0000ff00
+09/30/03 15:24:16 - Inform: Bmask 000000ff
+09/30/03 15:24:16 - Inform: Amask 00000000
+09/30/03 15:24:16 - Inform: SDLDisplay created.
+09/30/03 15:24:17 - Inform: Loading Font ui\sfont_comic_red.png
+09/30/03 15:24:28 - Inform: 
+09/30/03 15:24:28 - Inform: Time Report
+09/30/03 15:24:28 - Inform: -----------------------
+09/30/03 15:24:28 - Inform: drawing    : 079
+09/30/03 15:24:28 - Inform: network    : 000
+09/30/03 15:24:28 - Inform: input      : 000
+09/30/03 15:24:28 - Inform: timer      : 000
+09/30/03 15:24:28 - Inform: coroutine  : 000
+09/30/03 15:24:28 - Inform: worldDraw  : 066
+09/30/03 15:24:28 - Inform: -----------------------
+09/30/03 15:24:28 - Inform: TOTAL      :0077
+09/30/03 15:24:44 - Inform: 
+09/30/03 15:24:44 - Inform: Time Report
+09/30/03 15:24:44 - Inform: -----------------------
+09/30/03 15:24:44 - Inform: drawing    : 080
+09/30/03 15:24:44 - Inform: network    : 000
+09/30/03 15:24:45 - Inform: input      : 000
+09/30/03 15:24:45 - Inform: timer      : 000
+09/30/03 15:24:45 - Inform: coroutine  : 000
+09/30/03 15:24:45 - Inform: worldDraw  : 067
+09/30/03 15:24:45 - Inform: -----------------------
+09/30/03 15:24:45 - Inform: TOTAL      :0077
+09/30/03 15:24:45 - Inform: 
+09/30/03 15:24:45 - Inform: Time Report
+09/30/03 15:24:45 - Inform: -----------------------
+09/30/03 15:24:45 - Inform: drawing    : 081
+09/30/03 15:24:45 - Inform: network    : 000
+09/30/03 15:24:45 - Inform: input      : 000
+09/30/03 15:24:45 - Inform: timer      : 000
+09/30/03 15:24:45 - Inform: coroutine  : 001
+09/30/03 15:24:45 - Inform: worldDraw  : 068
+09/30/03 15:24:45 - Inform: -----------------------
+09/30/03 15:24:45 - Inform: TOTAL      :0080
+09/30/03 15:24:45 - Inform: 
+09/30/03 15:24:45 - Inform: Time Report
+09/30/03 15:24:45 - Inform: -----------------------
+09/30/03 15:24:45 - Inform: drawing    : 078
+09/30/03 15:24:45 - Inform: network    : 000
+09/30/03 15:24:45 - Inform: input      : 000
+09/30/03 15:24:45 - Inform: timer      : 000
+09/30/03 15:24:45 - Inform: coroutine  : 001
+09/30/03 15:24:45 - Inform: worldDraw  : 065
+09/30/03 15:24:45 - Inform: -----------------------
+09/30/03 15:24:45 - Inform: TOTAL      :0079
+09/30/03 15:24:46 - Inform: 
+09/30/03 15:24:46 - Inform: Time Report
+09/30/03 15:24:46 - Inform: -----------------------
+09/30/03 15:24:46 - Inform: drawing    : 082
+09/30/03 15:24:46 - Inform: network    : 000
+09/30/03 15:24:46 - Inform: input      : 000
+09/30/03 15:24:46 - Inform: timer      : 000
+09/30/03 15:24:46 - Inform: coroutine  : 001
+09/30/03 15:24:46 - Inform: worldDraw  : 068
+09/30/03 15:24:46 - Inform: -----------------------
+09/30/03 15:24:46 - Inform: TOTAL      :0079
+09/30/03 15:24:46 - Inform: 
+09/30/03 15:24:46 - Inform: Time Report
+09/30/03 15:24:46 - Inform: -----------------------
+09/30/03 15:24:46 - Inform: drawing    : 082
+09/30/03 15:24:46 - Inform: network    : 000
+09/30/03 15:24:46 - Inform: input      : 001
+09/30/03 15:24:46 - Inform: timer      : 000
+09/30/03 15:24:46 - Inform: coroutine  : 000
+09/30/03 15:24:46 - Inform: worldDraw  : 069
+09/30/03 15:24:46 - Inform: -----------------------
+09/30/03 15:24:46 - Inform: TOTAL      :0080
+09/30/03 15:24:47 - Inform: 
+09/30/03 15:24:47 - Inform: Time Report
+09/30/03 15:24:47 - Inform: -----------------------
+09/30/03 15:24:47 - Inform: drawing    : 077
+09/30/03 15:24:47 - Inform: network    : 000
+09/30/03 15:24:47 - Inform: input      : 000
+09/30/03 15:24:47 - Inform: timer      : 000
+09/30/03 15:24:47 - Inform: coroutine  : 001
+09/30/03 15:24:47 - Inform: worldDraw  : 066
+09/30/03 15:24:47 - Inform: -----------------------
+09/30/03 15:24:47 - Inform: TOTAL      :0079
+09/30/03 15:24:48 - Inform: 
+09/30/03 15:24:48 - Inform: Time Report
+09/30/03 15:24:48 - Inform: -----------------------
+09/30/03 15:24:48 - Inform: drawing    : 081
+09/30/03 15:24:48 - Inform: network    : 000
+09/30/03 15:24:48 - Inform: input      : 000
+09/30/03 15:24:48 - Inform: timer      : 000
+09/30/03 15:24:48 - Inform: coroutine  : 001
+09/30/03 15:24:48 - Inform: worldDraw  : 066
+09/30/03 15:24:48 - Inform: -----------------------
+09/30/03 15:24:48 - Inform: TOTAL      :0084
+09/30/03 15:24:52 - *Error: SharableSkin deleted with outstanding children (02dca630)
+09/30/03 15:24:52 - *Error: SharableRotateSkin deleted with outstanding children (02de6180)
+09/30/03 15:24:52 - *Error: SharableRotateSkin deleted with outstanding children (02dfba08)
+09/30/03 15:24:52 - *Error: SharableRotateSkin deleted with outstanding children (02de8b10)
+09/30/03 15:24:52 - *Error: Asset "mouse_Square" was never used
+09/30/03 15:24:52 - *Error: Asset "skn_None" was never used
+09/30/03 15:24:52 - *Error: Asset "skn_World_Background" was never used
+09/30/03 15:24:52 - *Error: Asset "txt_GameOver" was never used

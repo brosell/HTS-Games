@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<TITLE>
+StringTokenizer.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/*
+ StringTokenizer.h - definition of StringTokenizer
+
+---------------------------------------------------
+        Revision History
+---------------------------------------------------
+
+$Log: StringTokenizer.h,v $
+Revision 1.1  2003-09-09 23:11:26-04  hey_now
+&#60;&#62;
+
+Revision 1.0  2003-01-23 21:23:02-05  hey_now
+Initial revision
+
+ * 
+ *    Rev 1.3   21 Mar 2000 15:41:50   BRosell
+ * the great const
+ * 
+ *    Rev 1.2   06 Jul 1999 15:44:48   BRosell
+ * logging added
+
+*/</font>
+
+<font color="blue">#ifndef</font> STRINGTOKENIZER
+<font color="blue">#define</font> STRINGTOKENIZER
+
+<font color="green">//const char* CONSTDelims="\t \n\r";</font>
+<font color="blue">#include</font> <font color="maroon">&#60;list&#62;</font>
+<font color="blue">#include</font> <font color="maroon">"StdString.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">class</font> StringTokenizer
+<font color="black">{</font>
+<font color="blue">public</font><font color="black">:</font>
+    StringTokenizer<font color="black">(</font>CStdString str, CStdString delims<font color="black">=</font><font color="maroon">"\t \n\r"</font><font color="black">)</font>;
+    ~StringTokenizer<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">bool</font> hasMoreTokens<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">int</font> countTokens<font color="black">(</font><font color="black">)</font>;
+  CStdString nextToken<font color="black">(</font><font color="black">)</font>;
+
+<font color="blue">private</font><font color="black">:</font>
+    <font color="blue">int</font> currentPosition;
+    <font color="blue">int</font> maxPostition;
+
+  list<font color="black">&#60;</font>CStdString<font color="black">&#62;</font> m_tokens;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>
+
+<font color="blue">char</font><font color="black">*</font> trim<font color="black">(</font><font color="blue">char</font><font color="black">*</font> str<font color="black">)</font>;
+
+</PRE>
+</BODY>
+</HTML>

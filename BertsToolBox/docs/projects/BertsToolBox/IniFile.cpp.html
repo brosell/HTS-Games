@@ -1,0 +1,196 @@
+<HTML>
+<HEAD>
+<TITLE>
+IniFile.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="blue">#pragma</font> <font color="blue">warning</font> <font color="black">(</font>disable <font color="black">:</font> <font color="maroon">4503</font> <font color="maroon">4786</font><font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"IniFile.h"</font>
+<font color="blue">#include</font> <font color="maroon">"StringTokenizer.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;fstream&#62;</font>
+<font color="blue">#include</font> <font color="maroon">"FileManager.h"</font>
+<font color="blue">#include</font> <font color="maroon">"StdString.h"</font>
+
+<font color="blue">#include</font> <font color="maroon">"Log.h"</font>
+
+map<font color="black">&#60;</font>string, IniFile<font color="black">*</font><font color="black">&#62;</font> IniFile<font color="black">:</font><font color="black">:</font>s_map;
+
+IniFile<font color="black">&</font> IniFile<font color="black">:</font><font color="black">:</font>get<font color="black">(</font>string filename<font color="black">)</font>
+<font color="black">{</font>
+  IniFile<font color="black">*</font> ret <font color="black">=</font> <font color="maroon">0</font>;
+  map<font color="black">&#60;</font>string, IniFile<font color="black">*</font><font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair <font color="black">=</font> s_map.find<font color="black">(</font>filename<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>pair <font color="black">=</font><font color="black">=</font> s_map.end<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    ret <font color="black">=</font> <font color="blue">new</font> IniFile<font color="black">(</font>filename<font color="black">)</font>;
+    s_map<font color="black">[</font>filename<font color="black">]</font> <font color="black">=</font> ret;
+  <font color="black">}</font>
+  <font color="blue">else</font>
+  <font color="black">{</font>
+    ret <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second;
+  <font color="black">}</font>
+
+  <font color="blue">return</font> <font color="black">*</font>ret;
+<font color="black">}</font>
+
+IniFile<font color="black">:</font><font color="black">:</font>IniFile<font color="black">(</font>string filename<font color="black">)</font><font color="black">:</font>
+m_read<font color="black">(</font><font color="blue">false</font><font color="black">)</font>
+<font color="black">{</font>
+  m_filenames.push_back<font color="black">(</font>filename<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> IniFile<font color="black">:</font><font color="black">:</font>addIniFile<font color="black">(</font>string filename<font color="black">)</font>
+<font color="black">{</font>
+  m_filenames.push_back<font color="black">(</font>filename<font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">bool</font> IniFile<font color="black">:</font><font color="black">:</font>read<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  list<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator i;
+  <font color="blue">for</font> <font color="black">(</font>i<font color="black">=</font>m_filenames.begin<font color="black">(</font><font color="black">)</font>; i<font color="black">!</font><font color="black">=</font> m_filenames.end<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    read<font color="black">(</font><font color="black">*</font>i<font color="black">)</font>;
+  <font color="black">}</font>
+  m_read <font color="black">=</font> <font color="blue">true</font>;
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+<font color="blue">bool</font> IniFile<font color="black">:</font><font color="black">:</font>read<font color="black">(</font>string filename<font color="black">)</font>
+<font color="black">{</font>
+  <font color="blue">char</font><font color="black">*</font> fileContents;
+  <font color="blue">int</font> size <font color="black">=</font> loadFileToMemory<font color="black">(</font>filename, <font color="black">(</font><font color="blue">void</font><font color="black">*</font><font color="black">*</font><font color="black">)</font><font color="black">&</font>fileContents<font color="black">)</font>;
+  <font color="blue">if</font> <font color="black">(</font>size <font color="black">&#60;</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+
+  string currentSection <font color="black">=</font> <font color="maroon">"None"</font>;
+
+  StringTokenizer st<font color="black">(</font>fileContents, <font color="maroon">"\r\n"</font><font color="black">)</font>;
+  <font color="blue">while</font> <font color="black">(</font>st.hasMoreTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    CStdString nl <font color="black">=</font> st.nextToken<font color="black">(</font><font color="black">)</font>;
+    nl.Trim<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>nl <font color="black">=</font><font color="black">=</font> <font color="maroon">""</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="blue">continue</font>;
+    <font color="black">}</font>
+    <font color="blue">if</font> <font color="black">(</font>nl.at<font color="black">(</font><font color="maroon">0</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">'['</font><font color="black">)</font>
+    <font color="black">{</font>
+      StringTokenizer sectionTok<font color="black">(</font>nl, <font color="maroon">"[]"</font><font color="black">)</font>;
+      currentSection <font color="black">=</font> sectionTok.nextToken<font color="black">(</font><font color="black">)</font>;
+      <font color="blue">continue</font>;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font>nl.at<font color="black">(</font><font color="maroon">0</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">':'</font> <font color="black">|</font><font color="black">|</font> nl.at<font color="black">(</font><font color="maroon">0</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">'\''</font> <font color="black">|</font><font color="black">|</font> <font color="black">(</font>nl.at<font color="black">(</font><font color="maroon">0</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">'/'</font> <font color="black">&</font><font color="black">&</font> nl.at<font color="black">(</font><font color="maroon">1</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">'/'</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      <font color="green">// this is a comment</font>
+      <font color="blue">continue</font>;
+    <font color="black">}</font>
+
+    StringTokenizer keyValueTok<font color="black">(</font>nl, <font color="maroon">"="</font><font color="black">)</font>;
+
+    CStdString key <font color="black">=</font> <font color="maroon">""</font>;
+    CStdString value <font color="black">=</font> <font color="maroon">""</font>;
+    <font color="blue">if</font> <font color="black">(</font>keyValueTok.countTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      key <font color="black">=</font> keyValueTok.nextToken<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+    <font color="blue">if</font> <font color="black">(</font>keyValueTok.countTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+      value <font color="black">=</font> keyValueTok.nextToken<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    key.Trim<font color="black">(</font><font color="black">)</font>;
+    value.Trim<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>value <font color="black">=</font><font color="black">=</font> <font color="maroon">"&#60;pre&#62;"</font><font color="black">)</font>
+    <font color="black">{</font>
+      value <font color="black">=</font> <font color="maroon">""</font>;
+      CStdString v <font color="black">=</font> <font color="maroon">""</font>;
+      <font color="blue">while</font> <font color="black">(</font>st.hasMoreTokens<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+      <font color="black">{</font>
+        v <font color="black">=</font> st.nextToken<font color="black">(</font><font color="black">)</font>;
+        v.Trim<font color="black">(</font><font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font>v <font color="black">=</font><font color="black">=</font> <font color="maroon">"&#60;/pre&#62;"</font><font color="black">)</font>
+        <font color="black">{</font>
+          <font color="blue">break</font>;
+        <font color="black">}</font>
+        value <font color="black">+</font><font color="black">=</font> v;
+        value<font color="black">+</font><font color="black">=</font><font color="maroon">"\n"</font>;
+      <font color="black">}</font>
+      value.Trim<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="black">(</font><font color="black">*</font><font color="blue">this</font><font color="black">)</font><font color="black">[</font>currentSection<font color="black">]</font><font color="black">[</font>key<font color="black">]</font> <font color="black">=</font> value;
+
+    <font color="blue">if</font> <font color="black">(</font>currentSection <font color="black">=</font><font color="black">=</font> <font color="maroon">"Includes"</font><font color="black">)</font>
+    <font color="black">{</font>
+      read<font color="black">(</font>key<font color="black">)</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  free<font color="black">(</font>fileContents<font color="black">)</font>;
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+
+<font color="blue">bool</font> IniFile<font color="black">:</font><font color="black">:</font>write<font color="black">(</font>string filename<font color="black">)</font>
+<font color="black">{</font>
+  ofstream out<font color="black">(</font>filename.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  lassert<font color="black">(</font>out.is_open<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+  <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>out.is_open<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+  <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+
+  map<font color="black">&#60;</font>string, map<font color="black">&#60;</font>string, string<font color="black">&#62;</font> <font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator pair;
+  map<font color="black">&#60;</font>string, string<font color="black">&#62;</font><font color="black">:</font><font color="black">:</font>iterator p2;
+  <font color="blue">for</font> <font color="black">(</font>pair <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>begin<font color="black">(</font><font color="black">)</font>; pair<font color="black">!</font><font color="black">=</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>end<font color="black">(</font><font color="black">)</font>; pair<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+  <font color="black">{</font>
+    string currentSection <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>first;
+    out <font color="black">&#60;</font><font color="black">&#60;</font> endl <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"["</font> <font color="black">&#60;</font><font color="black">&#60;</font> currentSection <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"]"</font> <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+    <font color="blue">for</font><font color="black">(</font>p2 <font color="black">=</font> pair<font color="black">-</font><font color="black">&#62;</font>second.begin<font color="black">(</font><font color="black">)</font>; p2<font color="black">!</font><font color="black">=</font>pair<font color="black">-</font><font color="black">&#62;</font>second.end<font color="black">(</font><font color="black">)</font>; p2<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+    <font color="black">{</font> 
+      out <font color="black">&#60;</font><font color="black">&#60;</font> p2<font color="black">-</font><font color="black">&#62;</font>first <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">" = "</font> <font color="black">&#60;</font><font color="black">&#60;</font> p2<font color="black">-</font><font color="black">&#62;</font>second <font color="black">&#60;</font><font color="black">&#60;</font> endl;
+    <font color="black">}</font>
+  <font color="black">}</font>
+  <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+      
+<font color="blue">void</font> testIniFile<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+  <font color="green">// create one</font>
+
+  IniFile iniFile<font color="black">(</font><font color="maroon">"test.ini"</font><font color="black">)</font>;
+  iniFile<font color="black">[</font><font color="maroon">"Section1"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field1"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value1"</font>;
+  iniFile<font color="black">[</font><font color="maroon">"Section1"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field2"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value2"</font>;
+  iniFile<font color="black">[</font><font color="maroon">"Section1"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field3"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value3"</font>;
+  iniFile<font color="black">[</font><font color="maroon">"Section1"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field4"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value4"</font>;
+
+  iniFile<font color="black">[</font><font color="maroon">"Section2"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field1"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value1"</font>;
+  iniFile<font color="black">[</font><font color="maroon">"Section2"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field2"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value2"</font>;
+  iniFile<font color="black">[</font><font color="maroon">"Section2"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field3"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value3"</font>;
+  iniFile<font color="black">[</font><font color="maroon">"Section2"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field4"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value4"</font>;
+
+  iniFile<font color="black">[</font><font color="maroon">"Section3"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field1"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value1"</font>;
+  iniFile<font color="black">[</font><font color="maroon">"Section3"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field2"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value2"</font>;
+  iniFile<font color="black">[</font><font color="maroon">"Section3"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field3"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value3"</font>;
+  iniFile<font color="black">[</font><font color="maroon">"Section3"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field4"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value4"</font>;
+
+  iniFile<font color="black">[</font><font color="maroon">"Section1"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field5"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value5"</font>;
+  iniFile<font color="black">[</font><font color="maroon">"Section1"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field6"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value6"</font>;
+  iniFile<font color="black">[</font><font color="maroon">"Section1"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field7"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value7"</font>;
+  iniFile<font color="black">[</font><font color="maroon">"Section1"</font><font color="black">]</font><font color="black">[</font><font color="maroon">"Field8"</font><font color="black">]</font> <font color="black">=</font> <font color="maroon">"Value8"</font>;
+
+  iniFile.write<font color="black">(</font><font color="maroon">"blah.ini"</font><font color="black">)</font>;
+
+  IniFile in<font color="black">(</font><font color="maroon">"test.ini"</font><font color="black">)</font>;
+  in.read<font color="black">(</font><font color="black">)</font>;
+
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>
