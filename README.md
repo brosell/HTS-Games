@@ -31,9 +31,12 @@ The games, libraries, and test concepts from some games I developed in 2003-4.
 and a bunch of other odds and ends
 
 ## FAQ
-1. What does HTS stand for?
-- Highly Technical Sh!t - A synonym for 'magic'. The acronym started as a thing my friend Tim and I would use to describe something we didn't totally understand.
-2. Does all this stuff still compile?
-- IDK
-#. What are your plans for this code?
-- None really
+#### What does HTS stand for?
+Highly Technical Sh!t - A synonym for 'magic'. The acronym started as a thing my friend Tim and I would use to describe something we didn't totally understand.
+
+#### Does all this stuff still compile?
+IDK
+
+#### What are your plans for this code?
+None really
+
